@@ -1,8 +1,8 @@
 {
   "name": "ITravel_54",
   "short_name": "ITravel_54",
-  "description": "ITravel_54 app build itravel54-fixed-20260626-001",
-  "start_url": "./index.html?sw_nuke_start=1",
+  "description": "ITravel_54 store travel map, routes, weather, notes, and action items.",
+  "start_url": "./index.html?safe=1",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

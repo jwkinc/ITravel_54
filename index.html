@@ -2491,63 +2491,6 @@ header{
 }
 </style>
 
-
-
-<script id="itravelServiceWorkerNuke">
-(function(){
-  window.ITravel54DisableServiceWorker = true;
-
-  function log(){
-    try { console.log.apply(console, ['ITravel_54 SW NUKE:'].concat([].slice.call(arguments))); } catch(e) {}
-  }
-
-  async function nuke(){
-    try {
-      if ('serviceWorker' in navigator) {
-        try {
-          const regs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(regs.map(r => r.unregister()));
-          log('unregistered service workers', regs.length);
-        } catch(e) { log('unregister failed', e); }
-
-        try {
-          // Prevent any later script in the page from re-registering the worker.
-          if (navigator.serviceWorker.register) {
-            navigator.serviceWorker.register = function(){
-              log('blocked service worker register');
-              return Promise.resolve({
-                update:function(){ return Promise.resolve(); },
-                unregister:function(){ return Promise.resolve(true); },
-                active:null,
-                installing:null,
-                waiting:null
-              });
-            };
-          }
-        } catch(e) {}
-      }
-
-      if ('caches' in window) {
-        try {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(k => caches.delete(k)));
-          log('deleted caches', keys);
-        } catch(e) { log('cache delete failed', e); }
-      }
-
-      if (!sessionStorage.getItem('itravel54_sw_nuked_once')) {
-        sessionStorage.setItem('itravel54_sw_nuked_once', '1');
-        const u = new URL(location.href);
-        u.searchParams.set('sw_nuked', Date.now().toString());
-        location.replace(u.toString());
-      }
-    } catch(e) { log('nuke error', e); }
-  }
-
-  nuke();
-})();
-</script>
-
 </head>
 <body>
 <div id="app">
@@ -13660,10 +13603,7 @@ startSevereWeatherPolling();
 
 
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    window.ITravel54DisableServiceWorker ? Promise.resolve({update:function(){return Promise.resolve();}}) : navigator.serviceWorker.register('./sw.js').catch(console.warn);
-  });
+/* Service worker disabled in safe recovery build. */);
 }
 </script>
 
@@ -17226,141 +17166,27 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
-<script>
-window.ITRAVEL_54_BUILD = "ITravel_54 VERIFIED BUILD 2026-06-26";
-console.log(window.ITRAVEL_54_BUILD);
-</script>
-
-
-<style id="verifiedDirectFixPatch">
-  /* Verified direct fixes */
-  .inline-nearby-card, #nearbyScroll, #infoNearbyPlaces,
-  [data-nearby-q], [data-remove-nearby-final="1"] {
-    display:none!important; visibility:hidden!important; height:0!important; margin:0!important; padding:0!important; overflow:hidden!important;
-  }
-
-  .inline-travel-stats {
-    display:grid!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:9px!important;
-    width:100%!important;
-    max-width:100%!important;
-  }
-  .inline-travel-stats .stat {
-    min-height:76px!important;
-    height:auto!important;
-    overflow:visible!important;
-    padding:10px!important;
-  }
-  .inline-travel-stats .stat .n,
-  .inline-travel-stats .stat .l {
-    white-space:normal!important;
-    overflow:visible!important;
-    text-overflow:clip!important;
-  }
-
-  #garagePanel .garage-strip,
-  #garagePanel #garageStrip {
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    justify-content:flex-start!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    gap:0!important;
-    scrollbar-width:none!important;
-  }
-  #garagePanel .garage-opt {
-    flex:0 0 82px!important;
-    width:82px!important;
-    min-width:82px!important;
-    max-width:82px!important;
-    overflow:visible!important;
-  }
-  #garagePanel .garage-opt .veh-box {
-    overflow:visible!important;
-  }
-  #garagePanel .garage-opt img {
-    transform:translateY(2px)!important;
-    object-fit:contain!important;
-  }
-
-  #routePanel .route-main-buttons-final,
-  #routeHud .route-main-buttons-final,
-  .route-main-buttons-final {
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    gap:10px!important;
-    align-items:center!important;
-    overflow-x:auto!important;
-  }
-</style>
-
-<script id="verifiedDirectFixScript">
+<div id="itravelBuildBadge" style="position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(20,95,180,.96);color:#fff;font:800 11px/1.2 system-ui,sans-serif;padding:5px 7px;border-radius:5px;pointer-events:none;letter-spacing:.02em;">
+  ITravel_54 SAFE BUILD
+</div>
+<script id="safeNoSwCleanup">
 (function(){
-  const CRV_SRC = 'assets/vehicle-crv.webp';
-
-  function hideNearby(){
-    document.querySelectorAll('.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,[data-nearby-q]').forEach(el=>{
-      const block = el.closest('.inline-nearby-card') || el.parentElement || el;
-      block.style.setProperty('display','none','important');
-      block.style.setProperty('visibility','hidden','important');
-      block.style.setProperty('height','0','important');
-      block.style.setProperty('margin','0','important');
-      block.style.setProperty('padding','0','important');
-      block.dataset.removeNearbyFinal = '1';
-    });
-  }
-
-  function ensureCrv(){
-    const strip = document.querySelector('#garagePanel #garageStrip,#garagePanel .garage-strip');
-    if(!strip) return;
-    if(!strip.querySelector('[data-vehicle="crv"]')){
-      const btn = document.createElement('button');
-      btn.className = 'garage-opt';
-      btn.type = 'button';
-      btn.dataset.vehicle = 'crv';
-      btn.innerHTML = '<div class="veh-box"><img src="'+CRV_SRC+'" alt="CRV" draggable="false"></div><div class="veh-label">CRV</div>';
-      const delorean = strip.querySelector('[data-vehicle="delorean"]');
-      if(delorean) delorean.insertAdjacentElement('afterend', btn);
-      else strip.appendChild(btn);
+  window.ITRAVEL_54_BUILD = 'ITravel_54 SAFE BUILD';
+  // Quiet cleanup only. No forced reload, so the site will not spin.
+  window.addEventListener('load', function(){
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations()
+        .then(function(regs){ return Promise.all(regs.map(function(r){ return r.unregister(); })); })
+        .catch(function(){});
     }
-  }
-
-  function routeRow(){
-    document.querySelectorAll('#routePanel,#routeHud,.route-panel').forEach(panel=>{
-      const buttons = Array.from(panel.querySelectorAll('button')).filter(b=>{
-        const t=(b.textContent||'').trim().toLowerCase();
-        return t === 'my location' || t === 'start here' || t === 'navigate';
-      });
-      if(buttons.length < 3) return;
-      let row = panel.querySelector('.route-main-buttons-final');
-      if(!row){
-        row=document.createElement('div');
-        row.className='route-main-buttons-final';
-        buttons[0].parentElement.insertBefore(row, buttons[0]);
-      }
-      buttons.forEach(b=>row.appendChild(b));
-    });
-  }
-
-  function run(){
-    hideNearby();
-    ensureCrv();
-    routeRow();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-  [100,300,700,1200,2500,5000].forEach(ms=>setTimeout(run,ms));
-  document.addEventListener('click',()=>{setTimeout(run,50); setTimeout(run,250);},true);
-  new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+    if ('caches' in window) {
+      caches.keys()
+        .then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); })
+        .catch(function(){});
+    }
+  });
 })();
 </script>
-
-
-<div id="itravelBuildBadge" style="position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(10,120,42,.94);color:#fff;font:800 11px/1.2 system-ui,sans-serif;padding:5px 7px;border-radius:5px;pointer-events:none;letter-spacing:.02em;">
-  ITravel_54 SW NUKED BUILD
-</div>
 
 </body>
 </html>
