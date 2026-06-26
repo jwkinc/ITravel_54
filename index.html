@@ -3111,22 +3111,6 @@ function renderInfoTab(l){
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
   ${storeRouteCard(l)}
-  <div class="inline-nearby-card">
-    <div class="sech" style="margin:0 0 8px">Nearby</div>
-    <div class="nearby-scroll nearby-quick" id="nearbyScroll">
-      <button class="btn" data-nearby-q="coffee">Coffee</button>
-      <button class="btn" data-nearby-q="food">Food</button>
-      <button class="btn" data-nearby-q="gas">Gas</button>
-      <button class="btn" data-nearby-q="hotel">Hotels</button>
-      <button class="btn" data-nearby-q="pharm">Pharmacy</button>
-      <button class="btn" data-nearby-q="grocery">Groceries</button>
-      <button class="btn" data-nearby-q="bar">Bars</button>
-      <button class="btn" data-nearby-q="car">Rental cars</button>
-      <button class="btn" data-nearby-q="park">Parking</button>
-      <button class="btn" data-nearby-q="fun">Entertainment</button>
-    </div>
-    <div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to find nearby options. For quickest results, open the search in Maps; in-app search is available when configured.</div></div>
-  </div>
   ${field("Address",l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:"")}
   ${field("Phone",l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:"")}
   ${field("Hours",esc(l.hours))}
@@ -3137,67 +3121,7 @@ function renderInfoTab(l){
   }
   pane.innerHTML=html;
   pane.querySelector("#aCheckinBtn").onclick=()=>checkIn(l.id);
-  pane.querySelectorAll("[data-nearby-q]").forEach(btn=>btn.onclick=()=>loadNearby(l.id,CATS.find(c=>c.key===btn.dataset.nearbyQ),pane.querySelector("#infoNearbyPlaces")));
-  makeDragScroll(pane.querySelector("#nearbyScroll"));
-  wireStoreRouteActions(pane,l);
-  updateInlineTravelStats(l);
-  if(userPos&&!tripRoute&&!tripSel.includes(l.id)){
-    fetchDriveInto(userPos,l,"#iDist","#iDrive");
-  }
-  fetchWeatherInto(l,"i");
-}
-
-function updateInlineTravelStats(l){
-  const dist=$("#iDist"), drive=$("#iDrive"), distLbl=$("#iDistLbl"), driveLbl=$("#iDriveLbl");
-  if(!dist||!drive)return;
-  if(tripRoute){
-    const mins=Math.round(tripRoute.duration/60);
-    dist.textContent=miles(tripRoute.distance);
-    drive.textContent=mins>=60?Math.floor(mins/60)+"h "+(mins%60)+"m":mins+" min";
-    if(distLbl)distLbl.textContent="Route miles";
-    if(driveLbl)driveLbl.textContent="Route time";
-    return;
-  }
-  if(tripSel.includes(l.id)){
-    dist.textContent="In route";
-    drive.textContent=tripSel.length>=2?"Ready":"Add stop";
-    if(distLbl)distLbl.textContent="Selected";
-    if(driveLbl)driveLbl.textContent="Status";
-    return;
-  }
-  if(userPos){
-    dist.textContent=miles(haversine(userPos,l));
-    drive.textContent="…";
-    if(distLbl)distLbl.textContent="From you";
-    if(driveLbl)driveLbl.textContent="Drive time";
-  }else{
-    dist.textContent="—";drive.textContent="Use location";
-    if(distLbl)distLbl.textContent="From you";
-    if(driveLbl)driveLbl.textContent="Drive time";
-  }
-}
-
-function makeDragScroll(scroller){
-  if(!scroller)return;
-  let down=false,startX=0,left=0;
-  scroller.addEventListener("pointerdown",e=>{down=true;startX=e.clientX;left=scroller.scrollLeft;scroller.setPointerCapture&&scroller.setPointerCapture(e.pointerId);scroller.classList.add("dragging");});
-  scroller.addEventListener("pointermove",e=>{if(!down)return;const dx=e.clientX-startX;if(Math.abs(dx)>3)e.preventDefault();scroller.scrollLeft=left-dx;});
-  const up=()=>{down=false;scroller.classList.remove("dragging");};
-  scroller.addEventListener("pointerup",up);scroller.addEventListener("pointercancel",up);scroller.addEventListener("mouseleave",up);
-}
-
-
-function saveActions(){DB.write("actions",ACTIONS);}
-function getStoreActions(storeId){return (ACTIONS&&ACTIONS[storeId])?ACTIONS[storeId]:[];}
-function statusLabel(s){return s==="done"?"Done":s==="blocked"?"Blocked":"Open";}
-function priorityLabel(p){return p==="high"?"High":p==="low"?"Low":"Normal";}
-function renderActionsTab(l){
-  const pane=$("#tabActions");
-  if(!pane)return;
-  const items=getStoreActions(l.id).slice().sort((a,b)=>{
-    const order={open:0,blocked:1,done:2};
-    return (order[a.status||"open"]-order[b.status||"open"]) || ((a.due||"").localeCompare(b.due||"")) || ((b.created||0)-(a.created||0));
-  });
+  /* Nearby removed from store panel. */
   const openCount=items.filter(i=>(i.status||"open")!=="done").length;
   pane.innerHTML=`<div class="action-panel">
     <div class="action-head"><div><b>Action Items</b><small>${openCount} open · saved for ${esc(l.name)}</small></div></div>
@@ -5427,7 +5351,7 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
-  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to open nearby options fast.</div></div></div>
+  </div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
@@ -5917,7 +5841,7 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
-  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to open nearby results fast.</div></div></div>
+  </div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
@@ -6530,7 +6454,6 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
-  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"></div></div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
@@ -16581,6 +16504,667 @@ if ('serviceWorker' in navigator) {
 
   const mo = new MutationObserver(() => apply());
   if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+<style id="crvMobileGarageRouteFinalPatch">
+  /*
+    Mobile garage + route final:
+    - CRV visible/reliable in garage.
+    - Garage options align cleanly and swipe horizontally.
+    - Vehicle images are not clipped.
+    - Route buttons remain same size but sit together in one row.
+  */
+
+  #garagePanel,
+  body #garagePanel,
+  body > #garagePanel,
+  .garage-panel#garagePanel,
+  #garagePanel.viewport-centered-garage-tight,
+  #garagePanel.crv-mobile-garage-fixed {
+    width: min(650px, calc(100vw - 12px)) !important;
+    max-width: min(650px, calc(100vw - 12px)) !important;
+    height: 166px !important;
+    min-height: 166px !important;
+    max-height: 166px !important;
+    padding: 8px 10px 8px !important;
+    overflow: hidden !important;
+    left: 50vw !important;
+    right: auto !important;
+    transform: translate3d(-50%, 0, 0) !important;
+    box-sizing: border-box !important;
+  }
+
+  #garagePanel .garage-title {
+    height: 22px !important;
+    line-height: 22px !important;
+    margin: 0 !important;
+    padding-left: 2px !important;
+  }
+
+  #garagePanel .garage-strip,
+  #garagePanel #garageStrip {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    column-gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 128px !important;
+    min-height: 128px !important;
+    max-height: 128px !important;
+    padding: 0 2px !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    scroll-snap-type: x proximity !important;
+  }
+
+  #garagePanel .garage-strip::-webkit-scrollbar,
+  #garagePanel #garageStrip::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  #garagePanel .garage-opt {
+    flex: 0 0 82px !important;
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    height: 126px !important;
+    min-height: 126px !important;
+    max-height: 126px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    scroll-snap-align: start !important;
+  }
+
+  #garagePanel .garage-opt .veh-box {
+    width: 82px !important;
+    height: 101px !important;
+    min-height: 101px !important;
+    max-height: 101px !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  #garagePanel .garage-opt img,
+  #garagePanel .garage-opt[data-vehicle="corvette"] img,
+  #garagePanel .garage-opt[data-vehicle="delorean"] img,
+  #garagePanel .garage-opt[data-vehicle="crv"] img {
+    width: 98px !important;
+    height: 98px !important;
+    max-width: 98px !important;
+    max-height: 98px !important;
+    object-fit: contain !important;
+    transform: translateY(2px) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  #garagePanel .garage-opt .veh-label {
+    width: 82px !important;
+    max-width: 82px !important;
+    height: 21px !important;
+    line-height: 21px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    text-align: center !important;
+  }
+
+  #garagePanel .garage-opt[data-vehicle="default"],
+  #garagePanel .garage-opt[data-vehicle="dot"] {
+    flex-basis: 72px !important;
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  #garagePanel .garage-opt[data-vehicle="default"] .veh-box,
+  #garagePanel .garage-opt[data-vehicle="dot"] .veh-box,
+  #garagePanel .garage-opt[data-vehicle="default"] .veh-label,
+  #garagePanel .garage-opt[data-vehicle="dot"] .veh-label {
+    width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    body #garagePanel,
+    body > #garagePanel,
+    .garage-panel#garagePanel,
+    #garagePanel.viewport-centered-garage-tight,
+    #garagePanel.crv-mobile-garage-fixed {
+      width: calc(100vw - 10px) !important;
+      max-width: calc(100vw - 10px) !important;
+    }
+
+    #garagePanel .garage-opt {
+      flex-basis: 80px !important;
+      width: 80px !important;
+      min-width: 80px !important;
+      max-width: 80px !important;
+    }
+
+    #garagePanel .garage-opt .veh-box,
+    #garagePanel .garage-opt .veh-label {
+      width: 80px !important;
+      max-width: 80px !important;
+    }
+  }
+
+  /* Route panel: keep current button size, but force the three main buttons together in one row */
+  #routePanel .route-actions,
+  #routeHud .route-actions,
+  .route-panel .route-actions,
+  .route-actions,
+  #routePanel .route-buttons,
+  #routeHud .route-buttons,
+  .route-panel .route-buttons,
+  .route-buttons {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+  }
+
+  #routePanel .route-actions::-webkit-scrollbar,
+  #routeHud .route-actions::-webkit-scrollbar,
+  .route-panel .route-actions::-webkit-scrollbar,
+  .route-actions::-webkit-scrollbar,
+  #routePanel .route-buttons::-webkit-scrollbar,
+  #routeHud .route-buttons::-webkit-scrollbar,
+  .route-panel .route-buttons::-webkit-scrollbar,
+  .route-buttons::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  #routePanel .route-actions button,
+  #routeHud .route-actions button,
+  .route-panel .route-actions button,
+  .route-actions button,
+  #routePanel .route-buttons button,
+  #routeHud .route-buttons button,
+  .route-panel .route-buttons button,
+  .route-buttons button {
+    flex: 0 0 auto !important;
+  }
+
+  /* Keep Clear route on the next line if it is disabled/secondary, without changing the three main buttons */
+  #routePanel button.clear,
+  #routePanel button[data-action="clear"],
+  #routePanel .clear-route,
+  #routeHud button.clear,
+  #routeHud button[data-action="clear"],
+  #routeHud .clear-route,
+  .route-panel button.clear,
+  .route-panel button[data-action="clear"],
+  .route-panel .clear-route {
+    order: 10 !important;
+  }
+</style>
+
+<script id="crvMobileGarageRouteFinalScript">
+(function(){
+  const CRV_ID = 'crv';
+  const CRV_LABEL = 'CRV';
+  const CRV_SRC = 'assets/vehicle-crv.webp';
+
+  function garageStrip(){
+    return document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
+  }
+
+  function makeOpt(id, label, src){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'garage-opt';
+    btn.dataset.vehicle = id;
+    btn.setAttribute('aria-label', label + ' marker');
+    btn.innerHTML = '<div class="veh-box"><img src="' + src + '" alt="' + label + '" draggable="false"></div><div class="veh-label">' + label + '</div>';
+    return btn;
+  }
+
+  function addCrv(){
+    const strip = garageStrip();
+    if(!strip) return;
+
+    let crv = strip.querySelector('.garage-opt[data-vehicle="crv"]');
+    if(!crv){
+      crv = makeOpt(CRV_ID, CRV_LABEL, CRV_SRC);
+
+      // Put CRV right after DeLorean, or append if DeLorean is not found.
+      const delorean = strip.querySelector('.garage-opt[data-vehicle="delorean"]');
+      if(delorean) delorean.insertAdjacentElement('afterend', crv);
+      else strip.appendChild(crv);
+    }
+
+    const img = crv.querySelector('img');
+    if(img){
+      img.src = CRV_SRC;
+      img.alt = CRV_LABEL;
+      img.draggable = false;
+    }
+
+    const label = crv.querySelector('.veh-label');
+    if(label) label.textContent = CRV_LABEL;
+  }
+
+  function layoutGarage(reset){
+    const panel = document.getElementById('garagePanel');
+    const strip = garageStrip();
+    if(!panel || !strip) return;
+
+    panel.classList.add('crv-mobile-garage-fixed');
+    if(panel.parentElement !== document.body) document.body.appendChild(panel);
+
+    panel.style.setProperty('position','fixed','important');
+    panel.style.setProperty('left','50vw','important');
+    panel.style.setProperty('right','auto','important');
+    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(650px, calc(100vw - 12px))','important');
+    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(650px, calc(100vw - 12px))','important');
+    panel.style.setProperty('height','166px','important');
+    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
+    panel.style.setProperty('overflow','hidden','important');
+
+    strip.style.setProperty('display','flex','important');
+    strip.style.setProperty('flex-flow','row nowrap','important');
+    strip.style.setProperty('justify-content','flex-start','important');
+    strip.style.setProperty('align-items','flex-start','important');
+    strip.style.setProperty('gap','0','important');
+    strip.style.setProperty('overflow-x','auto','important');
+    strip.style.setProperty('overflow-y','hidden','important');
+    strip.style.setProperty('-webkit-overflow-scrolling','touch','important');
+    if(reset) strip.scrollLeft = 0;
+
+    strip.querySelectorAll('.garage-opt').forEach(opt => {
+      const isDefault = opt.dataset.vehicle === 'default' || opt.dataset.vehicle === 'dot';
+      const w = isDefault ? (window.innerWidth <= 560 ? '72px' : '72px') : (window.innerWidth <= 560 ? '80px' : '82px');
+      opt.style.setProperty('flex','0 0 ' + w,'important');
+      opt.style.setProperty('width',w,'important');
+      opt.style.setProperty('min-width',w,'important');
+      opt.style.setProperty('max-width',w,'important');
+      opt.style.setProperty('overflow','visible','important');
+    });
+  }
+
+  function selectedVehicle(){
+    return localStorage.getItem('f54_vehicle_choice_hardfix') ||
+      localStorage.getItem('f54_vehicle_choice_final_v3') ||
+      localStorage.getItem('f54_vehicle_choice_final_v2') ||
+      localStorage.getItem('f54_vehicle_choice_final') ||
+      localStorage.getItem('f54_vehicle_choice_v4') ||
+      localStorage.getItem('f54_vehicle_choice_v3') ||
+      localStorage.getItem('f54_vehicle_choice_v2') ||
+      localStorage.getItem('f54_vehicle_choice') ||
+      'f150';
+  }
+
+  function saveVehicle(id){
+    ['f54_vehicle_choice_hardfix','f54_vehicle_choice_final_v3','f54_vehicle_choice_final_v2','f54_vehicle_choice_final','f54_vehicle_choice_v4','f54_vehicle_choice_v3','f54_vehicle_choice_v2','f54_vehicle_choice'].forEach(k => {
+      try { localStorage.setItem(k, id); } catch(e){}
+    });
+  }
+
+  function syncOn(){
+    const active = selectedVehicle();
+    document.querySelectorAll('#garagePanel .garage-opt').forEach(btn => {
+      const id = btn.dataset.vehicle === 'dot' ? 'default' : btn.dataset.vehicle;
+      btn.classList.toggle('on', id === active);
+      btn.setAttribute('aria-selected', id === active ? 'true' : 'false');
+    });
+  }
+
+  function patchCrvMarker(){
+    if(window.__crvMarkerPatchFinal) return;
+    window.__crvMarkerPatchFinal = true;
+    const old = window.setUserTruckMarker;
+
+    window.setUserTruckMarker = function(latlng){
+      if(selectedVehicle() !== 'crv'){
+        if(typeof old === 'function') return old.apply(this, arguments);
+        return;
+      }
+
+      if(typeof L === 'undefined' || typeof map === 'undefined' || !map || !latlng) return;
+      const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
+      const h = 118, w = 76;
+      const icon = L.divIcon({
+        className: 'user-vehicle-marker',
+        html: '<img src="' + CRV_SRC + '" alt="CRV">',
+        iconSize: [w,h],
+        iconAnchor: [Math.round(w/2), Math.round(h/2)]
+      });
+
+      try {
+        if(typeof userMarker === 'undefined' || !userMarker || !userMarker.setIcon){
+          userMarker = L.marker(ll, {icon:icon, interactive:false, keyboard:false, zIndexOffset:1500}).addTo(map);
+        } else {
+          userMarker.setLatLng(ll);
+          userMarker.setIcon(icon);
+        }
+      } catch(e){}
+    };
+  }
+
+  function wireCrv(){
+    const panel = document.getElementById('garagePanel');
+    if(!panel || panel.__crvFinalWired) return;
+    panel.__crvFinalWired = true;
+
+    panel.addEventListener('click', function(e){
+      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
+      if(!opt) return;
+      e.preventDefault();
+      e.stopPropagation();
+      saveVehicle('crv');
+      syncOn();
+      if(typeof userPos !== 'undefined' && userPos && typeof window.setUserTruckMarker === 'function') window.setUserTruckMarker(userPos);
+      if(typeof toast === 'function') toast('CRV selected');
+    }, true);
+  }
+
+  function fixRouteButtons(){
+    const panels = document.querySelectorAll('#routePanel,#routeHud,.route-panel');
+    panels.forEach(panel => {
+      const buttons = Array.from(panel.querySelectorAll('button')).filter(btn => {
+        const t = (btn.textContent || '').trim().toLowerCase();
+        return t === 'my location' || t === 'start here' || t === 'navigate';
+      });
+      if(buttons.length < 3) return;
+
+      let row = panel.querySelector('.route-main-buttons-final');
+      if(!row){
+        row = document.createElement('div');
+        row.className = 'route-main-buttons-final route-actions route-buttons';
+        buttons[0].parentElement.insertBefore(row, buttons[0]);
+      }
+
+      buttons.forEach(btn => row.appendChild(btn));
+      row.style.setProperty('display','flex','important');
+      row.style.setProperty('flex-flow','row nowrap','important');
+      row.style.setProperty('align-items','center','important');
+      row.style.setProperty('justify-content','flex-start','important');
+      row.style.setProperty('gap','10px','important');
+      row.style.setProperty('overflow-x','auto','important');
+
+      buttons.forEach(btn => {
+        btn.style.setProperty('flex','0 0 auto','important');
+      });
+    });
+  }
+
+  function apply(resetGarage){
+    addCrv();
+    layoutGarage(resetGarage);
+    patchCrvMarker();
+    wireCrv();
+    syncOn();
+    fixRouteButtons();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => apply(false));
+  else apply(false);
+
+  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(() => apply(false), ms));
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))){
+      setTimeout(() => apply(true), 40);
+      setTimeout(() => apply(false), 160);
+      setTimeout(() => apply(false), 500);
+    }
+  }, true);
+
+  const mo = new MutationObserver(() => apply(false));
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+<style id="nearbyTemplateRemovedFinalPatch">
+  /* Nearby is removed from the template; this is a backup for any cached/legacy rendered block. */
+  .inline-nearby-card,
+  #nearbyScroll,
+  #infoNearbyPlaces,
+  [data-remove-nearby-final="1"],
+  [data-hidden-nearby="1"],
+  #sheet .nearby,
+  #sheet .nearby-section,
+  #sheet .nearby-panel,
+  #sheet .nearby-wrap,
+  #sheet .nearby-box,
+  #sheet .nearby-card,
+  #sheet .nearby-row,
+  #sheet .places,
+  #sheet .places-row,
+  #sheet [data-section="nearby"],
+  .sheet .nearby,
+  .sheet .nearby-section,
+  .sheet .nearby-panel,
+  .sheet .nearby-wrap,
+  .sheet .nearby-box,
+  .sheet .nearby-card,
+  .sheet .nearby-row,
+  .sheet .places,
+  .sheet .places-row,
+  .sheet [data-section="nearby"],
+  .store-sheet .nearby,
+  .store-sheet .nearby-section,
+  .store-sheet .nearby-panel,
+  .store-sheet .nearby-wrap,
+  .store-sheet .nearby-box,
+  .store-sheet .nearby-card,
+  .store-sheet .nearby-row,
+  .store-sheet .places,
+  .store-sheet .places-row,
+  .store-sheet [data-section="nearby"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Make the travel/weather info readable: 2x2, not squeezed four across. */
+  .inline-travel-stats,
+  #sheet .inline-travel-stats,
+  .sheet .inline-travel-stats,
+  .store-sheet .inline-travel-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 12px !important;
+    overflow: visible !important;
+  }
+
+  .inline-travel-stats .stat,
+  #sheet .inline-travel-stats .stat,
+  .sheet .inline-travel-stats .stat,
+  .store-sheet .inline-travel-stats .stat {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-height: 76px !important;
+    height: auto !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .inline-travel-stats .stat .n,
+  #sheet .inline-travel-stats .stat .n,
+  .sheet .inline-travel-stats .stat .n,
+  .store-sheet .inline-travel-stats .stat .n {
+    display: block !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    font-size: clamp(19px, 4.4vw, 25px) !important;
+    line-height: 1.05 !important;
+  }
+
+  .inline-travel-stats .stat .l,
+  #sheet .inline-travel-stats .stat .l,
+  .sheet .inline-travel-stats .stat .l,
+  .store-sheet .inline-travel-stats .stat .l {
+    display: block !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .06em !important;
+  }
+
+  .inline-forecast-card,
+  #sheet .inline-forecast-card,
+  .sheet .inline-forecast-card,
+  .store-sheet .inline-forecast-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+</style>
+
+<script id="nearbyTemplateRemovedFinalScript">
+(function(){
+  function text(el){
+    return (el && el.textContent || '').replace(/\s+/g,' ').trim();
+  }
+
+  function kill(el){
+    if(!el || el === document.body || el === document.documentElement) return;
+    el.dataset.removeNearbyFinal = '1';
+    el.dataset.hiddenNearby = '1';
+    el.style.setProperty('display','none','important');
+    el.style.setProperty('visibility','hidden','important');
+    el.style.setProperty('height','0','important');
+    el.style.setProperty('min-height','0','important');
+    el.style.setProperty('max-height','0','important');
+    el.style.setProperty('padding','0','important');
+    el.style.setProperty('margin','0','important');
+    el.style.setProperty('border','0','important');
+    el.style.setProperty('overflow','hidden','important');
+    el.style.setProperty('pointer-events','none','important');
+  }
+
+  function removeNearby(){
+    document.querySelectorAll('.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.nearby-card,.nearby-row,.places,.places-row,[data-section="nearby"]').forEach(kill);
+
+    document.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
+      const t = text(el).toLowerCase();
+
+      if(t === 'nearby'){
+        let block = el.closest('.inline-nearby-card,.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.nearby-card,.section,.card,.panel,section,div') || el;
+        // Prefer the block that contains the nearby buttons if present.
+        let cur = el;
+        for(let i=0;i<6 && cur && cur !== document.body;i++,cur=cur.parentElement){
+          if(cur.querySelector && (cur.querySelector('#nearbyScroll') || cur.querySelector('[data-nearby-q]') || /hotels|hilton/i.test(text(cur)))) {
+            block = cur;
+            break;
+          }
+        }
+        kill(block);
+      }
+
+      if(el.hasAttribute && el.hasAttribute('data-nearby-q')){
+        let block = el.closest('.inline-nearby-card,.nearby-scroll,.nearby-quick,.nearby,.places-row,.card,.section,section,div') || el.parentElement || el;
+        kill(block);
+      }
+    });
+
+    // If only the Hotels/Hilton chip row remains, remove its row/container.
+    document.querySelectorAll('button,a,.btn,.chip,.pill,div').forEach(el => {
+      const t = text(el).toLowerCase();
+      if(t === 'hotels' || t === 'hilton'){
+        let row = el.parentElement || el;
+        for(let i=0;i<5 && row && row !== document.body;i++,row=row.parentElement){
+          if(/hotels|hilton/i.test(text(row))) {
+            kill(row);
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  function fixTravelStats(){
+    document.querySelectorAll('.inline-travel-stats').forEach(grid => {
+      grid.style.setProperty('display','grid','important');
+      grid.style.setProperty('grid-template-columns','repeat(2, minmax(0, 1fr))','important');
+      grid.style.setProperty('gap','9px','important');
+      grid.style.setProperty('width','100%','important');
+      grid.style.setProperty('max-width','100%','important');
+      grid.querySelectorAll('.stat').forEach(card => {
+        card.style.setProperty('min-height','76px','important');
+        card.style.setProperty('height','auto','important');
+        card.style.setProperty('overflow','visible','important');
+      });
+      grid.querySelectorAll('.stat .n,.stat .l').forEach(el => {
+        el.style.setProperty('white-space','normal','important');
+        el.style.setProperty('overflow','visible','important');
+        el.style.setProperty('text-overflow','clip','important');
+      });
+    });
+  }
+
+  function run(){
+    removeNearby();
+    fixTravelStats();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+
+  [50,150,300,700,1200,2200,5000,8000].forEach(ms => setTimeout(run, ms));
+  document.addEventListener('click', () => {
+    setTimeout(run, 50);
+    setTimeout(run, 180);
+    setTimeout(run, 450);
+  }, true);
+
+  const mo = new MutationObserver(run);
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true, characterData:true});
 })();
 </script>
 
