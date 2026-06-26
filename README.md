@@ -1,6 +1,9 @@
-# 54th Street Field Travel Map — SATX Market PWA
+# 54th Street Field Travel Map — Transparent Header PWA
 
-This GitHub Pages PWA version centers the garage panel horizontally on phone/tablet screens and changes the San Antonio market label from SAT to SATX.
+This GitHub Pages PWA version:
+- Centers the garage panel on phone/tablet screens
+- Uses SATX for the San Antonio market label
+- Removes the boxes behind the time, temperature, and forecast header info
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.

@@ -14218,5 +14218,133 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="transparentHeaderInfoPatch">
+  /* Remove boxes behind top time, temperature, and forecast info */
+  .wxnow,
+  #wxNow,
+  .weather-now,
+  .timebox,
+  .time-temp,
+  .nowbox,
+  .clockbox,
+  .header-time,
+  .current-weather,
+  .fcstrip,
+  #fcStrip,
+  .header-forecast {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .wxnow::before,
+  .wxnow::after,
+  #wxNow::before,
+  #wxNow::after,
+  .weather-now::before,
+  .weather-now::after,
+  .timebox::before,
+  .timebox::after,
+  .fcstrip::before,
+  .fcstrip::after,
+  #fcStrip::before,
+  #fcStrip::after,
+  .header-forecast::before,
+  .header-forecast::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+  }
+
+  .wxnow *,
+  #wxNow *,
+  .weather-now *,
+  .timebox *,
+  .fcstrip *,
+  #fcStrip *,
+  .header-forecast * {
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep the separator line only if the layout already uses it */
+  .wxnow,
+  #wxNow,
+  .weather-now,
+  .timebox {
+    color: inherit !important;
+  }
+
+  @media (max-width: 980px) {
+    .wxnow,
+    #wxNow,
+    .weather-now,
+    .timebox,
+    .fcstrip,
+    #fcStrip,
+    .header-forecast {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+</style>
+
+<script id="transparentHeaderInfoScript">
+(function(){
+  function clearHeaderBoxes(){
+    const selectors = [
+      '.wxnow',
+      '#wxNow',
+      '.weather-now',
+      '.timebox',
+      '.time-temp',
+      '.nowbox',
+      '.clockbox',
+      '.header-time',
+      '.current-weather',
+      '.fcstrip',
+      '#fcStrip',
+      '.header-forecast'
+    ];
+
+    document.querySelectorAll(selectors.join(',')).forEach(el => {
+      el.style.background = 'transparent';
+      el.style.backgroundColor = 'transparent';
+      el.style.backgroundImage = 'none';
+      el.style.border = '0';
+      el.style.boxShadow = 'none';
+      el.style.backdropFilter = 'none';
+      el.style.webkitBackdropFilter = 'none';
+    });
+
+    document.querySelectorAll('.wxnow *, #wxNow *, .weather-now *, .timebox *, .fcstrip *, #fcStrip *, .header-forecast *').forEach(el => {
+      el.style.backgroundColor = 'transparent';
+      el.style.backgroundImage = 'none';
+      el.style.boxShadow = 'none';
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', clearHeaderBoxes);
+  else clearHeaderBoxes();
+
+  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(clearHeaderBoxes, ms));
+
+  const mo = new MutationObserver(() => clearHeaderBoxes());
+  if (document.documentElement) {
+    mo.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+
 </body>
 </html>
