@@ -1,10 +1,6 @@
-# 54th Street Field Travel Map — Centered Garage + No Map Shift
+# ITravel_54 — GitHub Pages PWA
 
-This version:
-- Forces the garage panel to center horizontally in the phone/tablet viewport.
-- Keeps the garage content scrollable inside the centered panel.
-- Prevents the map from panning/zooming when selecting store/location markers or rows.
-- Preserves the compact location search and prior header/panel updates.
+This package uses the app name **ITravel_54** in the browser title and installable PWA manifest.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.
