@@ -15017,5 +15017,399 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="compactLocationSearchPatch">
+  /* Make the Choose location search/dropdown only wide enough for its text */
+  .filterbar select,
+  .controls select,
+  .marketbar select,
+  .top-controls select,
+  #storeSelect,
+  #locationSelect,
+  #storePicker,
+  #locationPicker,
+  #locSelect,
+  .store-select,
+  .location-select,
+  .location-picker,
+  .choose-location,
+  .store-search,
+  .location-search {
+    flex: 0 0 auto !important;
+    width: clamp(155px, 18vw, 205px) !important;
+    max-width: 205px !important;
+    min-width: 155px !important;
+    justify-self: center !important;
+  }
+
+  .filterbar .search,
+  .controls .search,
+  .marketbar .search,
+  .top-controls .search,
+  .filterbar .searchbox,
+  .controls .searchbox,
+  .marketbar .searchbox,
+  .top-controls .searchbox,
+  .filterbar .selectwrap,
+  .controls .selectwrap,
+  .marketbar .selectwrap,
+  .top-controls .selectwrap,
+  .filterbar .location-wrap,
+  .controls .location-wrap,
+  .marketbar .location-wrap,
+  .top-controls .location-wrap {
+    flex: 0 0 auto !important;
+    width: clamp(155px, 18vw, 205px) !important;
+    max-width: 205px !important;
+    min-width: 155px !important;
+  }
+
+  @media (max-width: 980px) {
+    .filterbar select,
+    .controls select,
+    .marketbar select,
+    .top-controls select,
+    #storeSelect,
+    #locationSelect,
+    #storePicker,
+    #locationPicker,
+    #locSelect,
+    .store-select,
+    .location-select,
+    .location-picker,
+    .choose-location,
+    .store-search,
+    .location-search {
+      width: 172px !important;
+      max-width: 172px !important;
+      min-width: 172px !important;
+    }
+
+    .filterbar .search,
+    .controls .search,
+    .marketbar .search,
+    .top-controls .search,
+    .filterbar .searchbox,
+    .controls .searchbox,
+    .marketbar .searchbox,
+    .top-controls .searchbox,
+    .filterbar .selectwrap,
+    .controls .selectwrap,
+    .marketbar .selectwrap,
+    .top-controls .selectwrap,
+    .filterbar .location-wrap,
+    .controls .location-wrap,
+    .marketbar .location-wrap,
+    .top-controls .location-wrap {
+      width: 172px !important;
+      max-width: 172px !important;
+      min-width: 172px !important;
+      flex-basis: 172px !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .filterbar select,
+    .controls select,
+    .marketbar select,
+    .top-controls select,
+    #storeSelect,
+    #locationSelect,
+    #storePicker,
+    #locationPicker,
+    #locSelect,
+    .store-select,
+    .location-select,
+    .location-picker,
+    .choose-location,
+    .store-search,
+    .location-search {
+      width: 158px !important;
+      max-width: 158px !important;
+      min-width: 158px !important;
+      font-size: 14px !important;
+    }
+
+    .filterbar .search,
+    .controls .search,
+    .marketbar .search,
+    .top-controls .search,
+    .filterbar .searchbox,
+    .controls .searchbox,
+    .marketbar .searchbox,
+    .top-controls .searchbox,
+    .filterbar .selectwrap,
+    .controls .selectwrap,
+    .marketbar .selectwrap,
+    .top-controls .selectwrap,
+    .filterbar .location-wrap,
+    .controls .location-wrap,
+    .marketbar .location-wrap,
+    .top-controls .location-wrap {
+      width: 158px !important;
+      max-width: 158px !important;
+      min-width: 158px !important;
+      flex-basis: 158px !important;
+    }
+  }
+</style>
+
+<script id="compactLocationSearchScript">
+(function(){
+  function shrinkChooseLocation(){
+    const candidates = Array.from(document.querySelectorAll('select,input,button,div,span'))
+      .filter(el => {
+        const text = ((el.value || el.placeholder || el.textContent || '') + '').trim();
+        const idClass = ((el.id || '') + ' ' + (el.className || '')).toLowerCase();
+        return /choose location/i.test(text) || /storeselect|locationselect|storepicker|locationpicker|location-search|store-search|choose-location/.test(idClass);
+      });
+
+    candidates.forEach(el => {
+      const target = el.closest('.search,.searchbox,.selectwrap,.location-wrap') || el;
+      target.style.flex = '0 0 auto';
+      target.style.width = window.innerWidth <= 560 ? '158px' : (window.innerWidth <= 980 ? '172px' : '190px');
+      target.style.maxWidth = target.style.width;
+      target.style.minWidth = target.style.width;
+
+      el.style.width = '100%';
+      el.style.maxWidth = '100%';
+      el.style.minWidth = '0';
+    });
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', shrinkChooseLocation);
+  else shrinkChooseLocation();
+
+  window.addEventListener('resize', shrinkChooseLocation, {passive:true});
+  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(shrinkChooseLocation, ms));
+})();
+</script>
+
+
+<style id="garageViewportCenterNoShiftPatch">
+  /* Final force: garage is centered to the visible viewport, not the toolbar icon */
+  @media (max-width: 1100px) {
+    body #garagePanel,
+    body .garage-panel#garagePanel,
+    html body #garagePanel[hidden=""],
+    html body #garagePanel:not([hidden]) {
+      position: fixed !important;
+      left: 50% !important;
+      right: auto !important;
+      top: var(--garage-centered-top, 318px) !important;
+      width: min(760px, calc(100dvw - 12px)) !important;
+      max-width: calc(100dvw - 12px) !important;
+      min-width: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      transform: translate3d(-50%, 0, 0) !important;
+      box-sizing: border-box !important;
+      z-index: 99999 !important;
+      overflow: hidden !important;
+      inset-inline-start: 50% !important;
+      inset-inline-end: auto !important;
+    }
+
+    body #garagePanel .garage-strip,
+    body #garagePanel #garageStrip {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      justify-content: flex-start !important;
+      scrollbar-width: none !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    body #garagePanel .garage-strip::-webkit-scrollbar,
+    body #garagePanel #garageStrip::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    body #garagePanel,
+    body .garage-panel#garagePanel {
+      width: calc(100dvw - 10px) !important;
+      max-width: calc(100dvw - 10px) !important;
+      left: 50% !important;
+      transform: translate3d(-50%, 0, 0) !important;
+    }
+  }
+</style>
+
+<script id="garageViewportCenterNoShiftScript">
+(function(){
+  let suppressMapMoveUntil = 0;
+  let lastMapCenter = null;
+  let lastMapZoom = null;
+
+  function isSmallScreen(){
+    return window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
+  }
+
+  function getMap(){
+    return (typeof window.map !== 'undefined' && window.map) ? window.map : null;
+  }
+
+  function rememberMapView(){
+    const m = getMap();
+    if(!m || !m.getCenter) return;
+    try{
+      lastMapCenter = m.getCenter();
+      lastMapZoom = m.getZoom ? m.getZoom() : null;
+    }catch(e){}
+  }
+
+  function restoreMapView(){
+    const m = getMap();
+    if(!m || !lastMapCenter || !m.setView) return;
+    try{
+      m.setView(lastMapCenter, lastMapZoom == null ? m.getZoom() : lastMapZoom, {animate:false, pan:false});
+    }catch(e){}
+  }
+
+  function preventNextMapShift(){
+    suppressMapMoveUntil = Date.now() + 1400;
+    rememberMapView();
+    setTimeout(() => {
+      if(Date.now() < suppressMapMoveUntil + 50) restoreMapView();
+    }, 60);
+    setTimeout(restoreMapView, 180);
+    setTimeout(restoreMapView, 420);
+  }
+
+  function controlsBottom(){
+    const selectors = [
+      '.controls',
+      '.filterbar',
+      '.marketbar',
+      '.market-row',
+      '.top-controls',
+      '#controls'
+    ];
+    let bottom = 0;
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 80) bottom = r.bottom;
+      });
+    });
+    return Math.max(92, Math.round((bottom || 250) + 8));
+  }
+
+  function forceGarageCentered(resetScroll){
+    const panel = document.getElementById('garagePanel');
+    if(!panel || !isSmallScreen()) return;
+
+    document.documentElement.style.setProperty('--garage-centered-top', controlsBottom() + 'px');
+
+    panel.style.setProperty('position', 'fixed', 'important');
+    panel.style.setProperty('left', '50%', 'important');
+    panel.style.setProperty('right', 'auto', 'important');
+    panel.style.setProperty('inset-inline-start', '50%', 'important');
+    panel.style.setProperty('inset-inline-end', 'auto', 'important');
+    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100dvw - 10px)' : 'min(760px, calc(100dvw - 12px))', 'important');
+    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100dvw - 10px)' : 'calc(100dvw - 12px)', 'important');
+    panel.style.setProperty('min-width', '0', 'important');
+    panel.style.setProperty('margin-left', '0', 'important');
+    panel.style.setProperty('margin-right', '0', 'important');
+    panel.style.setProperty('transform', 'translate3d(-50%, 0, 0)', 'important');
+    panel.style.setProperty('box-sizing', 'border-box', 'important');
+    panel.style.setProperty('z-index', '99999', 'important');
+    panel.style.setProperty('overflow', 'hidden', 'important');
+
+    const strip = panel.querySelector('#garageStrip,.garage-strip');
+    if(strip){
+      strip.style.setProperty('width', '100%', 'important');
+      strip.style.setProperty('max-width', '100%', 'important');
+      strip.style.setProperty('overflow-x', 'auto', 'important');
+      strip.style.setProperty('overflow-y', 'hidden', 'important');
+      strip.style.setProperty('justify-content', 'flex-start', 'important');
+      if(resetScroll) strip.scrollLeft = 0;
+    }
+
+    // Safety: ensure the rendered panel is truly centered after browser layout.
+    requestAnimationFrame(() => {
+      const r = panel.getBoundingClientRect();
+      if(!r.width) return;
+      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
+      const offBy = Math.abs(r.left - targetLeft);
+      if(offBy > 3){
+        panel.style.setProperty('left', targetLeft + 'px', 'important');
+        panel.style.setProperty('transform', 'none', 'important');
+      }
+    });
+  }
+
+  function patchMapMovement(){
+    const m = getMap();
+    if(!m || m.__noLocationAutoShiftPatched) return;
+    m.__noLocationAutoShiftPatched = true;
+
+    ['setView','panTo','flyTo','fitBounds','panInsideBounds','panBy'].forEach(name => {
+      if(typeof m[name] !== 'function') return;
+      const original = m[name].bind(m);
+      m['__original_' + name] = original;
+      m[name] = function(){
+        if(Date.now() < suppressMapMoveUntil){
+          // Allow tiny internal panBy caused by UI controls? No: user asked no map shift on location click.
+          return this;
+        }
+        return original.apply(this, arguments);
+      };
+    });
+  }
+
+  function markLocationInteraction(e){
+    const t = e.target;
+    if(!t || !t.closest) return;
+
+    const locationHit = t.closest(
+      '.leaflet-marker-icon, .pin, .store-pin, .loc-pin, [data-store], [data-location], .store-row, .location-row, #storeSelect, #locationSelect, #storePicker, #locationPicker, .store-select, .location-select, .choose-location'
+    );
+
+    if(locationHit && !t.closest('#garagePanel')){
+      preventNextMapShift();
+    }
+
+    if(t.closest('#garageBtn,#garagePanel')){
+      setTimeout(() => forceGarageCentered(true), 20);
+      setTimeout(() => forceGarageCentered(false), 160);
+      setTimeout(() => forceGarageCentered(false), 480);
+    }
+  }
+
+  function init(){
+    patchMapMovement();
+    forceGarageCentered(false);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+  window.addEventListener('resize', () => forceGarageCentered(false), {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => forceGarageCentered(true), 120);
+    setTimeout(() => forceGarageCentered(false), 380);
+  }, {passive:true});
+
+  document.addEventListener('pointerdown', markLocationInteraction, true);
+  document.addEventListener('click', markLocationInteraction, true);
+  document.addEventListener('change', markLocationInteraction, true);
+
+  [80, 240, 600, 1200, 2500, 5000].forEach(ms => setTimeout(init, ms));
+
+  const mo = new MutationObserver(() => {
+    patchMapMovement();
+    forceGarageCentered(false);
+  });
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
 </body>
 </html>

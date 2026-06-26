@@ -1,10 +1,10 @@
-# 54th Street Field Travel Map — Header and Garage Final PWA
+# 54th Street Field Travel Map — Centered Garage + No Map Shift
 
-This version forces the latest mobile fixes:
-- Garage panel is centered horizontally on phone/tablet screens.
-- Time, current weather, temperature, and forecast header areas are transparent.
-- Forecast strip is pulled farther left toward the logo and uses more of the open header space.
-- Store detail panel forecast/stat-card readability fixes are preserved.
+This version:
+- Forces the garage panel to center horizontally in the phone/tablet viewport.
+- Keeps the garage content scrollable inside the centered panel.
+- Prevents the map from panning/zooming when selecting store/location markers or rows.
+- Preserves the compact location search and prior header/panel updates.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.
