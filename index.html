@@ -13657,5 +13657,162 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<style id="garageMobileFitPatch">
+  /* Keep the garage panel fully inside phone/tablet screens */
+  #garagePanel {
+    box-sizing: border-box !important;
+  }
+
+  @media (max-width: 980px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      position: fixed !important;
+      left: max(8px, env(safe-area-inset-left)) !important;
+      right: max(8px, env(safe-area-inset-right)) !important;
+      top: var(--garage-mobile-top, 348px) !important;
+      width: auto !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      height: 158px !important;
+      min-height: 158px !important;
+      max-height: 158px !important;
+      padding: 7px 10px 8px !important;
+      overflow: hidden !important;
+      z-index: 5000 !important;
+      transform: none !important;
+    }
+
+    #garagePanel .garage-title {
+      padding-left: 8px !important;
+    }
+
+    #garagePanel .garage-strip,
+    #garagePanel #garageStrip {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      justify-content: flex-start !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      padding-left: 4px !important;
+      padding-right: 4px !important;
+      scroll-snap-type: x proximity !important;
+    }
+
+    #garagePanel .garage-strip::-webkit-scrollbar,
+    #garagePanel #garageStrip::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    #garagePanel .garage-opt {
+      scroll-snap-align: start !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      left: max(6px, env(safe-area-inset-left)) !important;
+      right: max(6px, env(safe-area-inset-right)) !important;
+      top: var(--garage-mobile-top, 336px) !important;
+      height: 150px !important;
+      min-height: 150px !important;
+      max-height: 150px !important;
+    }
+  }
+</style>
+
+<script id="garageMobileFitScript">
+(function(){
+  function findToolbarBottom(){
+    const selectors = [
+      '.controls',
+      '.filterbar',
+      '.marketbar',
+      '.market-row',
+      '.top-controls',
+      '.quick-actions',
+      '#controls',
+      '#map'
+    ];
+
+    let best = null;
+    for (const sel of selectors) {
+      const el = document.querySelector(sel);
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        if (!best || r.bottom > best.bottom) best = r;
+      }
+    }
+
+    if (best && best.bottom < window.innerHeight - 80) {
+      return Math.max(92, Math.round(best.bottom + 8));
+    }
+    return Math.min(360, Math.max(116, Math.round(window.innerHeight * 0.31)));
+  }
+
+  function fitGaragePanel(){
+    const panel = document.getElementById('garagePanel');
+    if (!panel) return;
+
+    document.documentElement.style.setProperty('--garage-mobile-top', findToolbarBottom() + 'px');
+
+    if (window.matchMedia && window.matchMedia('(max-width: 980px)').matches) {
+      panel.style.position = 'fixed';
+      panel.style.left = 'max(8px, env(safe-area-inset-left))';
+      panel.style.right = 'max(8px, env(safe-area-inset-right))';
+      panel.style.width = 'auto';
+      panel.style.maxWidth = 'none';
+      panel.style.minWidth = '0';
+      panel.style.transform = 'none';
+      panel.style.zIndex = '5000';
+
+      const strip = panel.querySelector('#garageStrip,.garage-strip');
+      if (strip) {
+        strip.style.justifyContent = 'flex-start';
+        strip.style.overflowX = 'auto';
+        strip.style.overflowY = 'hidden';
+        strip.style.maxWidth = '100%';
+      }
+    }
+  }
+
+  function resetGarageScroll(){
+    const strip = document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
+    if (strip && window.matchMedia && window.matchMedia('(max-width: 980px)').matches) {
+      strip.scrollLeft = 0;
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fitGaragePanel);
+  } else {
+    fitGaragePanel();
+  }
+
+  window.addEventListener('resize', fitGaragePanel, {passive:true});
+  window.addEventListener('orientationchange', function(){
+    setTimeout(fitGaragePanel, 120);
+    setTimeout(resetGarageScroll, 180);
+  }, {passive:true});
+
+  [100, 350, 900, 1800, 3200].forEach(ms => setTimeout(fitGaragePanel, ms));
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))) {
+      setTimeout(fitGaragePanel, 30);
+      setTimeout(resetGarageScroll, 70);
+      setTimeout(fitGaragePanel, 260);
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>

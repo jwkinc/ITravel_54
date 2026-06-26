@@ -1,12 +1,12 @@
-# 54th Street Field Travel Map — GitHub Pages PWA
+# 54th Street Field Travel Map — Mobile Garage Fit PWA
 
-This version is split into normal web files so GitHub will not reject a single oversized HTML file.
+This GitHub Pages PWA version fixes the phone garage layout so the garage panel stays inside the viewport.
 
 ## Upload
-Upload all files and folders from this ZIP to the root of a GitHub repository.
+Upload all files and folders from this ZIP into the root of your GitHub repo.
 
-## Enable GitHub Pages
-Go to **Settings → Pages**, choose **Deploy from a branch**, select `main`, and use `/root`.
+## GitHub Pages
+Settings → Pages → Deploy from a branch → `main` → `/root`.
 
-## Install on Android
-Open the GitHub Pages URL in Chrome on Android, then choose **Install app** or **Add to Home screen**.
+## Install on phone
+Open the GitHub Pages URL on Android Chrome and choose **Install app** or **Add to Home screen**.
