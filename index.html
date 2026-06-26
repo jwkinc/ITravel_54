@@ -18844,5 +18844,431 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="mobilePanelFitCarSizePatch">
+  /* Mobile store sheet: fit content inside panel without horizontal/vertical scrolling */
+  @media (max-width: 760px) {
+    #sheet.sheet,
+    .sheet#sheet {
+      left: 10px !important;
+      right: 10px !important;
+      width: auto !important;
+      max-width: calc(100vw - 20px) !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+
+    #sheet.sheet *,
+    .sheet#sheet * {
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+    }
+
+    #sheet .grip {
+      margin-top: 6px !important;
+      height: 4px !important;
+    }
+
+    #sheet .sheet-head {
+      padding: 7px 42px 0 12px !important;
+    }
+
+    #sheet .titleline h2 {
+      font-size: 18px !important;
+      line-height: 1.05 !important;
+    }
+
+    #sheet .sub {
+      font-size: 12px !important;
+      gap: 5px !important;
+      margin-top: 3px !important;
+      line-height: 1.15 !important;
+    }
+
+    #sheet .open-pill {
+      font-size: 11px !important;
+      padding: 2px 7px !important;
+    }
+
+    #sheet .sheet-tabs {
+      padding: 7px 10px 0 !important;
+    }
+
+    #sheet .stab {
+      height: 34px !important;
+      font-size: 13px !important;
+    }
+
+    #sheet .sheet-body {
+      overflow: hidden !important;
+      padding-bottom: 0 !important;
+    }
+
+    #sheet .tab-pane {
+      padding: 8px 10px 8px !important;
+      overflow: hidden !important;
+    }
+
+    #sheet .inline-forecast-card {
+      width: 100% !important;
+      margin: 6px 0 8px !important;
+      padding: 8px !important;
+      border-radius: 10px !important;
+      overflow: hidden !important;
+    }
+
+    #sheet .inline-forecast-card .sech {
+      font-size: 10px !important;
+      line-height: 1 !important;
+      margin-bottom: 5px !important;
+    }
+
+    #sheet #iForecast,
+    #sheet .hint {
+      overflow: hidden !important;
+    }
+
+    #sheet #iForecast .chips,
+    #sheet .inline-forecast-card .chips {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #sheet #iForecast .chip,
+    #sheet .inline-forecast-card .chip {
+      min-width: 0 !important;
+      width: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 1px !important;
+      padding: 4px 1px !important;
+      border-radius: 0 !important;
+      border-left: 0 !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+      font-size: 10px !important;
+      line-height: 1.05 !important;
+      white-space: normal !important;
+      text-align: center !important;
+      background: transparent !important;
+    }
+
+    #sheet #iForecast .chip b,
+    #sheet .inline-forecast-card .chip b {
+      font-size: 11px !important;
+      line-height: 1.05 !important;
+      white-space: normal !important;
+    }
+
+    #sheet .inline-travel-stats {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      margin: 6px 0 8px !important;
+      width: 100% !important;
+      overflow: hidden !important;
+    }
+
+    #sheet .inline-travel-stats .stat {
+      min-width: 0 !important;
+      min-height: 66px !important;
+      padding: 8px 10px !important;
+      border-radius: 11px !important;
+      overflow: hidden !important;
+    }
+
+    #sheet .inline-travel-stats .stat .n {
+      font-size: 18px !important;
+      line-height: 1.08 !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+    }
+
+    #sheet .inline-travel-stats .stat .l {
+      font-size: 10px !important;
+      line-height: 1.05 !important;
+      letter-spacing: .25px !important;
+      margin-top: 4px !important;
+      white-space: normal !important;
+    }
+
+    #sheet .inline-nearby-card,
+    #sheet .nearby-scroll,
+    #sheet #infoNearbyPlaces {
+      display: none !important;
+    }
+
+    #sheet .field {
+      gap: 8px !important;
+      padding: 7px 0 !important;
+      align-items: flex-start !important;
+    }
+
+    #sheet .field .k {
+      width: 82px !important;
+      flex-basis: 82px !important;
+      font-size: 10px !important;
+      line-height: 1.1 !important;
+      letter-spacing: .35px !important;
+    }
+
+    #sheet .field .v {
+      min-width: 0 !important;
+      font-size: 13px !important;
+      line-height: 1.22 !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    #sheet .field.last-visit-hidden {
+      display: none !important;
+    }
+
+    #sheet.mobile-fit-tight .field.hours-field-fit {
+      display: none !important;
+    }
+
+    #sheet .actions,
+    #sheet .navrow,
+    #sheet .sech:not(.inline-forecast-card .sech) {
+      display: none !important;
+    }
+  }
+
+  /* Map car only: 10% larger. Does not affect garage cars. */
+  .leaflet-marker-icon.user-vehicle-marker img,
+  .user-vehicle-marker img {
+    transform: rotate(var(--vehicle-bearing, 0deg)) !important;
+    transform-origin: 50% 50% !important;
+    display: block !important;
+  }
+</style>
+
+<script id="mobilePanelFitCarSizeScript">
+(function(){
+  const VEHICLE_KEYS = [
+    'f54_vehicle_choice_fixed_html',
+    'f54_vehicle_choice_equal_size',
+    'f54_vehicle_choice_hardfix',
+    'f54_vehicle_choice_final_v3',
+    'f54_vehicle_choice_final_v2',
+    'f54_vehicle_choice_final',
+    'f54_vehicle_choice_v4',
+    'f54_vehicle_choice_v3',
+    'f54_vehicle_choice_v2',
+    'f54_vehicle_choice'
+  ];
+
+  const VEHICLES = {
+    default: {label:'Default', src:''},
+    f150: {label:'F-150', src:'assets/asset-018.webp'},
+    ram: {label:'Ram', src:'assets/asset-019.webp'},
+    lightning: {label:'Lightning', src:'assets/asset-020.webp'},
+    crv: {label:'CR-V', src:'assets/asset-031.webp'},
+    corvette: {label:'Corvette', src:'assets/asset-021.webp'},
+    delorean: {label:'DeLorean', src:'assets/asset-022.webp'}
+  };
+
+  function normalizeVehicle(id){
+    if(id === 'dot') return 'default';
+    return VEHICLES[id] ? id : 'default';
+  }
+
+  function currentVehicle(){
+    if(window.__garageVehicleChoice) return normalizeVehicle(window.__garageVehicleChoice);
+    for(const key of VEHICLE_KEYS){
+      try{
+        const v = localStorage.getItem(key);
+        if(v) return normalizeVehicle(v);
+      }catch(e){}
+    }
+    return 'default';
+  }
+
+  function selectedTarget(){
+    try{
+      if(window.__vehicleDirectionTargetId && typeof loc === 'function'){
+        const t = loc(window.__vehicleDirectionTargetId);
+        if(t && Number.isFinite(+t.lat) && Number.isFinite(+t.lng)) return t;
+      }
+      if(typeof selectedId !== 'undefined' && selectedId && typeof loc === 'function'){
+        const s = loc(selectedId);
+        if(s && Number.isFinite(+s.lat) && Number.isFinite(+s.lng)) return s;
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function currentLatLng(){
+    try{
+      if(typeof userPos !== 'undefined' && userPos){
+        if(Array.isArray(userPos)) return {lat:+userPos[0], lng:+userPos[1]};
+        if(Number.isFinite(+userPos.lat) && Number.isFinite(+userPos.lng)) return {lat:+userPos.lat, lng:+userPos.lng};
+        if(Number.isFinite(+userPos.latitude) && Number.isFinite(+userPos.longitude)) return {lat:+userPos.latitude, lng:+userPos.longitude};
+      }
+    }catch(e){}
+    return null;
+  }
+
+  function bearingDegrees(from, to){
+    const lat1 = +from.lat * Math.PI / 180;
+    const lat2 = +to.lat * Math.PI / 180;
+    const dLon = (+to.lng - +from.lng) * Math.PI / 180;
+    const y = Math.sin(dLon) * Math.cos(lat2);
+    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  }
+
+  function currentBearing(){
+    const from = currentLatLng();
+    const to = selectedTarget();
+    if(!from || !to) return 0;
+    return Math.round(bearingDegrees(from, to));
+  }
+
+  function mapVehicleIcon(kind){
+    kind = normalizeVehicle(kind);
+
+    if(kind === 'default'){
+      return L.divIcon({
+        className: 'user-dot-marker',
+        html: '<span class="udot"></span>',
+        iconSize: [31,31],
+        iconAnchor: [16,16]
+      });
+    }
+
+    const v = VEHICLES[kind] || VEHICLES.default;
+    const z = (typeof map !== 'undefined' && map && map.getZoom) ? map.getZoom() : 10;
+    const base = Math.max(110, Math.min(176, Math.round(110 + (z - 7) * 9)));
+    const currentSize = Math.max(100, Math.round(base * 0.90));
+    const size = Math.round(currentSize * 1.10);
+    const angle = currentBearing();
+
+    return L.divIcon({
+      className: 'user-vehicle-marker',
+      html: '<img src="' + v.src + '" alt="' + v.label + '" style="--vehicle-bearing:' + angle + 'deg">',
+      iconSize: [size, size],
+      iconAnchor: [Math.round(size / 2), Math.round(size / 2)]
+    });
+  }
+
+  function installMapCarSize(){
+    if(typeof L === 'undefined') return;
+
+    window.setUserTruckMarker = setUserTruckMarker = function(latlng){
+      if(typeof map === 'undefined' || !map || !latlng) return;
+      const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
+      const icon = mapVehicleIcon(currentVehicle());
+
+      try{
+        if(typeof userMarker === 'undefined' || !userMarker || !userMarker.setIcon){
+          if(typeof userMarker !== 'undefined' && userMarker){
+            try { map.removeLayer(userMarker); } catch(e){}
+          }
+          userMarker = L.marker(ll, {icon, interactive:false, keyboard:false, zIndexOffset:1600}).addTo(map);
+        }else{
+          userMarker.setLatLng(ll);
+          userMarker.setIcon(icon);
+        }
+      }catch(e){
+        console.warn('Map vehicle size update failed', e);
+      }
+    };
+
+    window.refreshUserTruckMarkerSize = refreshUserTruckMarkerSize = function(){
+      const cur = currentLatLng();
+      if(cur) window.setUserTruckMarker(cur);
+    };
+
+    if(typeof map !== 'undefined' && map){
+      try { map.off('zoomend', window.refreshUserTruckMarkerSize); } catch(e){}
+      map.on('zoomend', window.refreshUserTruckMarkerSize);
+    }
+  }
+
+  function hideInfoOverflowItems(){
+    const sheet = document.getElementById('sheet');
+    if(!sheet) return;
+    sheet.classList.remove('mobile-fit-tight');
+
+    document.querySelectorAll('#sheet .field').forEach(field => {
+      const label = field.querySelector('.k');
+      const text = label ? (label.textContent || '').trim().toLowerCase() : '';
+      field.classList.toggle('last-visit-hidden', text.includes('last visit'));
+      field.classList.toggle('hours-field-fit', text.includes('hours'));
+    });
+
+    const body = sheet.querySelector('.sheet-body');
+    if(body){
+      body.scrollTop = 0;
+      body.scrollLeft = 0;
+    }
+    const tab = sheet.querySelector('.tab-pane.active');
+    if(tab) tab.scrollLeft = 0;
+
+    requestAnimationFrame(() => {
+      if(body && body.scrollHeight > body.clientHeight + 4){
+        sheet.classList.add('mobile-fit-tight');
+      }
+    });
+  }
+
+  function wrapRenderInfo(){
+    if(typeof window.renderInfoTab !== 'function' || window.renderInfoTab.__mobileFitWrapped) return;
+    const orig = window.renderInfoTab;
+    window.renderInfoTab = renderInfoTab = function(l){
+      const out = orig.apply(this, arguments);
+      hideInfoOverflowItems();
+      setTimeout(hideInfoOverflowItems, 60);
+      setTimeout(hideInfoOverflowItems, 250);
+      return out;
+    };
+    window.renderInfoTab.__mobileFitWrapped = true;
+  }
+
+  function wrapOpenLocation(){
+    if(typeof window.openLocation !== 'function' || window.openLocation.__mobileFitWrapped) return;
+    const orig = window.openLocation;
+    window.openLocation = openLocation = function(id){
+      window.__vehicleDirectionTargetId = id;
+      const out = orig.apply(this, arguments);
+      hideInfoOverflowItems();
+      const cur = currentLatLng();
+      if(cur) setTimeout(() => window.setUserTruckMarker(cur), 80);
+      return out;
+    };
+    window.openLocation.__mobileFitWrapped = true;
+  }
+
+  function init(){
+    installMapCarSize();
+    wrapRenderInfo();
+    wrapOpenLocation();
+    hideInfoOverflowItems();
+
+    const cur = currentLatLng();
+    if(cur && typeof window.setUserTruckMarker === 'function'){
+      window.setUserTruckMarker(cur);
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+  [120, 400, 1000, 2500, 5000].forEach(ms => setTimeout(init, ms));
+
+  document.addEventListener('click', function(){
+    setTimeout(hideInfoOverflowItems, 120);
+  }, false);
+})();
+</script>
+
 </body>
 </html>
