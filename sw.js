@@ -1,4 +1,4 @@
-const CACHE_NAME = '54-field-map-under-25mb-v1';
+const CACHE_NAME = '54-field-map-android-final-v4';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
@@ -13,11 +13,22 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const req = event.request;
+  const accept = req.headers.get('accept') || '';
+  const isPage = req.mode === 'navigate' || accept.includes('text/html');
+
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    fetch(req).then(response => {
       const copy = response.clone();
-      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
+      caches.open(CACHE_NAME).then(cache => cache.put(req, copy)).catch(() => {});
       return response;
-    }).catch(() => caches.match('./index.html')))
+    }).catch(() => {
+      return caches.match(req).then(cached => {
+        if (cached) return cached;
+        if (isPage) return caches.match('./index.html');
+        return caches.match('./');
+      });
+    })
   );
 });
