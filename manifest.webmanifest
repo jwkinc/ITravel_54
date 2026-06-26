@@ -2,7 +2,7 @@
   "name": "ITravel_54",
   "short_name": "ITravel_54",
   "description": "ITravel_54 app build itravel54-fixed-20260626-001",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=verified-20260626",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

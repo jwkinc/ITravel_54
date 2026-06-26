@@ -2492,34 +2492,6 @@ header{
 </style>
 
 
-<meta name="itravel54-build" content="itravel54-fixed-20260626-001">
-<script id="itravelCacheBustScript">
-(function(){
-  const BUILD = "itravel54-fixed-20260626-001";
-  window.ITRAVEL_54_BUILD = BUILD;
-
-  async function cleanOldCaches(){
-    if(!('caches' in window)) return;
-    try {
-      const keys = await caches.keys();
-      await Promise.all(keys.filter(k => !k.includes(BUILD)).map(k => caches.delete(k)));
-    } catch(e) {}
-  }
-
-  async function updateServiceWorker(){
-    if(!('serviceWorker' in navigator)) return;
-    try {
-      const reg = await navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(BUILD), {updateViaCache:'none'});
-      if(reg && reg.update) await reg.update();
-      if(reg && reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
-    } catch(e) {}
-  }
-
-  cleanOldCaches();
-  window.addEventListener('load', updateServiceWorker);
-})();
-</script>
-
 </head>
 <body>
 <div id="app">
@@ -17194,6 +17166,141 @@ if ('serviceWorker' in navigator) {
 
   const mo = new MutationObserver(run);
   if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true, characterData:true});
+})();
+</script>
+
+
+<div id="itravelBuildBadge" style="position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(181,18,27,.92);color:#fff;font:700 10px/1.2 system-ui,sans-serif;padding:4px 6px;border-radius:4px;pointer-events:none;letter-spacing:.02em;">
+  ITravel_54 VERIFIED BUILD 2026-06-26
+</div>
+<script>
+window.ITRAVEL_54_BUILD = "ITravel_54 VERIFIED BUILD 2026-06-26";
+console.log(window.ITRAVEL_54_BUILD);
+</script>
+
+
+<style id="verifiedDirectFixPatch">
+  /* Verified direct fixes */
+  .inline-nearby-card, #nearbyScroll, #infoNearbyPlaces,
+  [data-nearby-q], [data-remove-nearby-final="1"] {
+    display:none!important; visibility:hidden!important; height:0!important; margin:0!important; padding:0!important; overflow:hidden!important;
+  }
+
+  .inline-travel-stats {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .inline-travel-stats .stat {
+    min-height:76px!important;
+    height:auto!important;
+    overflow:visible!important;
+    padding:10px!important;
+  }
+  .inline-travel-stats .stat .n,
+  .inline-travel-stats .stat .l {
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+
+  #garagePanel .garage-strip,
+  #garagePanel #garageStrip {
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    gap:0!important;
+    scrollbar-width:none!important;
+  }
+  #garagePanel .garage-opt {
+    flex:0 0 82px!important;
+    width:82px!important;
+    min-width:82px!important;
+    max-width:82px!important;
+    overflow:visible!important;
+  }
+  #garagePanel .garage-opt .veh-box {
+    overflow:visible!important;
+  }
+  #garagePanel .garage-opt img {
+    transform:translateY(2px)!important;
+    object-fit:contain!important;
+  }
+
+  #routePanel .route-main-buttons-final,
+  #routeHud .route-main-buttons-final,
+  .route-main-buttons-final {
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    gap:10px!important;
+    align-items:center!important;
+    overflow-x:auto!important;
+  }
+</style>
+
+<script id="verifiedDirectFixScript">
+(function(){
+  const CRV_SRC = 'assets/vehicle-crv.webp';
+
+  function hideNearby(){
+    document.querySelectorAll('.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,[data-nearby-q]').forEach(el=>{
+      const block = el.closest('.inline-nearby-card') || el.parentElement || el;
+      block.style.setProperty('display','none','important');
+      block.style.setProperty('visibility','hidden','important');
+      block.style.setProperty('height','0','important');
+      block.style.setProperty('margin','0','important');
+      block.style.setProperty('padding','0','important');
+      block.dataset.removeNearbyFinal = '1';
+    });
+  }
+
+  function ensureCrv(){
+    const strip = document.querySelector('#garagePanel #garageStrip,#garagePanel .garage-strip');
+    if(!strip) return;
+    if(!strip.querySelector('[data-vehicle="crv"]')){
+      const btn = document.createElement('button');
+      btn.className = 'garage-opt';
+      btn.type = 'button';
+      btn.dataset.vehicle = 'crv';
+      btn.innerHTML = '<div class="veh-box"><img src="'+CRV_SRC+'" alt="CRV" draggable="false"></div><div class="veh-label">CRV</div>';
+      const delorean = strip.querySelector('[data-vehicle="delorean"]');
+      if(delorean) delorean.insertAdjacentElement('afterend', btn);
+      else strip.appendChild(btn);
+    }
+  }
+
+  function routeRow(){
+    document.querySelectorAll('#routePanel,#routeHud,.route-panel').forEach(panel=>{
+      const buttons = Array.from(panel.querySelectorAll('button')).filter(b=>{
+        const t=(b.textContent||'').trim().toLowerCase();
+        return t === 'my location' || t === 'start here' || t === 'navigate';
+      });
+      if(buttons.length < 3) return;
+      let row = panel.querySelector('.route-main-buttons-final');
+      if(!row){
+        row=document.createElement('div');
+        row.className='route-main-buttons-final';
+        buttons[0].parentElement.insertBefore(row, buttons[0]);
+      }
+      buttons.forEach(b=>row.appendChild(b));
+    });
+  }
+
+  function run(){
+    hideNearby();
+    ensureCrv();
+    routeRow();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+  [100,300,700,1200,2500,5000].forEach(ms=>setTimeout(run,ms));
+  document.addEventListener('click',()=>{setTimeout(run,50); setTimeout(run,250);},true);
+  new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 

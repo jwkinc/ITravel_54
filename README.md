@@ -1,25 +1,27 @@
-# ITravel_54 — Cache-Busted Fixed Build
+# ITravel_54 — No-Cache Verified Build
 
-Build: `itravel54-fixed-20260626-001`
+This build adds a visible red badge in the lower-left corner:
 
-This package keeps the latest fixes and also resets the service-worker cache so the phone/PWA stops loading an old version.
+`ITravel_54 VERIFIED BUILD 2026-06-26`
 
-Included:
+If you do not see that badge on PC after uploading to GitHub Pages, the browser or GitHub Pages is not serving the new files yet.
+
+This build also disables stale service-worker caching and keeps:
 - CRV garage option
-- Mobile garage alignment fixes
-- Route button row fix
-- Nearby removed from the actual store-panel template
+- Nearby removed
 - 2x2 readable travel/weather cards
-- Cache-busting service worker
+- Route buttons together in one row
 
 ## Upload
-Upload all files and folders from this ZIP into the root of your GitHub repo.
+Upload the CONTENTS of this ZIP to the repo root. Do not upload the ZIP file itself.
 
-## After Upload
-On the phone:
-1. Open the GitHub Pages URL in Chrome.
-2. Tap the browser menu.
-3. Tap reload once or twice.
-4. If the installed app still looks old, remove the app shortcut and install it again from Chrome.
+## After upload
+On PC, hard refresh:
+- Windows: Ctrl + F5
+- Mac: Cmd + Shift + R
 
-The new `sw.js` clears older app caches automatically.
+On Android installed app:
+- remove the old home-screen app
+- open the GitHub Pages URL in Chrome
+- reload once
+- install again
