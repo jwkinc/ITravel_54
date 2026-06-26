@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ITravel_54</title>
+<title>54th Street Travel Map · Classic Weather</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
@@ -2453,51 +2453,24 @@ header{
 </style>
 
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="ITravel_54">
+  <meta name="application-name" content="54 Field Map">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="ITravel_54">
+  <meta name="apple-mobile-web-app-title" content="54 Field Map">
   <link rel="apple-touch-icon" href="assets/asset-001.webp">
 
   <link rel="icon" type="image/png" sizes="32x32" href="assets/asset-002.webp">
   <link rel="icon" type="image/png" sizes="64x64" href="assets/asset-003.webp">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#211714">
-
-<style id="transparentHeaderWeatherPatch">
-/* Transparent time/temp/forecast header treatment */
-.header-forecast, .fcstrip, #fcStrip {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-.header-forecast .fc-day, .fcstrip .fc-day, #fcStrip .fc-day,
-.header-forecast .fcitem, .fcstrip .fcitem, #fcStrip .fcitem {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-.header-forecast .fc-loc, .fcstrip .fc-loc, #fcStrip .fc-loc {
-  border-right: none !important;
-  padding-right: 8px !important;
-}
-.wxnow, .weather-now, .timebox, #wxNow {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-</style>
-
 </head>
 <body>
 <div id="app">
   <header>
     <div class="h-main">
       <div class="brand logo-brand" aria-label="54th Street Grill & Bar"><img src="assets/asset-004.webp" alt="54th Street Grill & Bar"></div>
-      <div class="fcstrip hscroll header-forecast" id="fcStrip"><span class="fc-loc"><span class="fc-city">Gallatin, MO</span></span><span class="fc-day"><span class="d">Today</span> 🌤️ <span class="t">75°/69°</span></span><span class="fc-day"><span class="d">Sat</span> 🌤️ <span class="t">87°/68°</span></span><span class="fc-day"><span class="d">Sun</span> 🌤️ <span class="t">90°/77°</span></span><span class="fc-day"><span class="d">Mon</span> 🌤️ <span class="t">90°/77°</span></span></div>
+      <div class="fcstrip hscroll header-forecast" id="fcStrip">
+        <span class="fc-loc"><span class="dot" id="netdot"></span> locating…</span>
+      </div>
       <div class="wxnow">
         <div class="clock" id="clock">--:--</div>
         <div class="tnow"><span id="wxIcon">·</span> <span id="wxTemp">--°</span></div>
@@ -2564,6 +2537,7 @@ header{
       <button class="stab" data-tab="actions">Action Items</button>
       <button class="stab" data-tab="notes">Notes</button>
       <button class="stab" data-tab="photos">Photos</button>
+      <button class="stab" data-tab="nearby">Nearby</button>
       <button class="stab" data-tab="travel">Travel</button>
     </div>
     <div class="sheet-body">
@@ -2571,6 +2545,7 @@ header{
       <div class="tab-pane" id="tabActions"></div>
       <div class="tab-pane" id="tabNotes"></div>
       <div class="tab-pane" id="tabPhotos"></div>
+      <div class="tab-pane" id="tabNearby"></div>
       <div class="tab-pane" id="tabTravel"></div>
     </div>
   </div>
@@ -2592,7 +2567,7 @@ header{
 
 
 <div class="install-app-prompt" id="installPrompt" role="status" aria-live="polite">
-  <span>Install ITravel_54</span>
+  <span>Install 54 Field Map</span>
   <button id="installAppBtn" type="button">Install</button>
   <button class="install-close" id="installCloseBtn" type="button" aria-label="Dismiss install prompt">×</button>
 </div>
@@ -2782,7 +2757,7 @@ function pinIcon(l){
   const bg = marketFilter === "ALL" ? "var(--brass)" : MK_COLOR[l.market];
   return L.divIcon({
     className:"",
-    html:`<div class="pin${fav}${up}" data-loc-id="${l.id}" style="background:${bg}"><span>${l.store}</span></div>`,
+    html:`<div class="pin${fav}${up}" style="background:${bg}"><span>${l.store}</span></div>`,
     iconSize:[30,30],iconAnchor:[15,30],popupAnchor:[0,-28]
   });
 }
@@ -2801,8 +2776,8 @@ function visibleLocs(){
 function renderMarkers(){
   clusterLayer.clearLayers();
   visibleLocs().forEach(l=>{
-    const mk=L.marker([l.lat,l.lng],{icon:pinIcon(l), keyboard:true});
-    mk.on("click touchend",()=>openLocation(l.id));
+    const mk=L.marker([l.lat,l.lng],{icon:pinIcon(l)});
+    mk.on("click",()=>openLocation(l.id));
     clusterLayer.addLayer(mk);
   });
 }
@@ -2867,7 +2842,7 @@ function renderFilters(){
   addPill("ALL",`All <span class="ct">${total}</span>`);
   Object.keys(MARKETS).filter(k=>k!=="LAB").forEach(k=>{
     const cnt=LOCS.filter(l=>l.market===k).length;
-    addPill(k,`${k==="SAT"?"SATX":k} <span class="ct">${cnt}</span>`);
+    addPill(k,`${k} <span class="ct">${cnt}</span>`);
   });
   if(existingSearch){
     wrap.appendChild(existingSearch);
@@ -2921,7 +2896,7 @@ function openLocation(id){
   renderSheetHead(l);
   renderInfoTab(l);
   renderActionsTab(l);
-  /* Nearby removed */
+  renderNearbyTab(l);
   renderTravelTab(l);
   openSheet();
   if(userPos&&!tripRoute)previewStoreRoute(l,false);
@@ -3107,6 +3082,22 @@ function renderInfoTab(l){
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
   ${storeRouteCard(l)}
+  <div class="inline-nearby-card">
+    <div class="sech" style="margin:0 0 8px">Nearby</div>
+    <div class="nearby-scroll nearby-quick" id="nearbyScroll">
+      <button class="btn" data-nearby-q="coffee">Coffee</button>
+      <button class="btn" data-nearby-q="food">Food</button>
+      <button class="btn" data-nearby-q="gas">Gas</button>
+      <button class="btn" data-nearby-q="hotel">Hotels</button>
+      <button class="btn" data-nearby-q="pharm">Pharmacy</button>
+      <button class="btn" data-nearby-q="grocery">Groceries</button>
+      <button class="btn" data-nearby-q="bar">Bars</button>
+      <button class="btn" data-nearby-q="car">Rental cars</button>
+      <button class="btn" data-nearby-q="park">Parking</button>
+      <button class="btn" data-nearby-q="fun">Entertainment</button>
+    </div>
+    <div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to find nearby options. For quickest results, open the search in Maps; in-app search is available when configured.</div></div>
+  </div>
   ${field("Address",l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:"")}
   ${field("Phone",l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:"")}
   ${field("Hours",esc(l.hours))}
@@ -3117,7 +3108,67 @@ function renderInfoTab(l){
   }
   pane.innerHTML=html;
   pane.querySelector("#aCheckinBtn").onclick=()=>checkIn(l.id);
-  /* Nearby removed from store panel. */
+  pane.querySelectorAll("[data-nearby-q]").forEach(btn=>btn.onclick=()=>loadNearby(l.id,CATS.find(c=>c.key===btn.dataset.nearbyQ),pane.querySelector("#infoNearbyPlaces")));
+  makeDragScroll(pane.querySelector("#nearbyScroll"));
+  wireStoreRouteActions(pane,l);
+  updateInlineTravelStats(l);
+  if(userPos&&!tripRoute&&!tripSel.includes(l.id)){
+    fetchDriveInto(userPos,l,"#iDist","#iDrive");
+  }
+  fetchWeatherInto(l,"i");
+}
+
+function updateInlineTravelStats(l){
+  const dist=$("#iDist"), drive=$("#iDrive"), distLbl=$("#iDistLbl"), driveLbl=$("#iDriveLbl");
+  if(!dist||!drive)return;
+  if(tripRoute){
+    const mins=Math.round(tripRoute.duration/60);
+    dist.textContent=miles(tripRoute.distance);
+    drive.textContent=mins>=60?Math.floor(mins/60)+"h "+(mins%60)+"m":mins+" min";
+    if(distLbl)distLbl.textContent="Route miles";
+    if(driveLbl)driveLbl.textContent="Route time";
+    return;
+  }
+  if(tripSel.includes(l.id)){
+    dist.textContent="In route";
+    drive.textContent=tripSel.length>=2?"Ready":"Add stop";
+    if(distLbl)distLbl.textContent="Selected";
+    if(driveLbl)driveLbl.textContent="Status";
+    return;
+  }
+  if(userPos){
+    dist.textContent=miles(haversine(userPos,l));
+    drive.textContent="…";
+    if(distLbl)distLbl.textContent="From you";
+    if(driveLbl)driveLbl.textContent="Drive time";
+  }else{
+    dist.textContent="—";drive.textContent="Use location";
+    if(distLbl)distLbl.textContent="From you";
+    if(driveLbl)driveLbl.textContent="Drive time";
+  }
+}
+
+function makeDragScroll(scroller){
+  if(!scroller)return;
+  let down=false,startX=0,left=0;
+  scroller.addEventListener("pointerdown",e=>{down=true;startX=e.clientX;left=scroller.scrollLeft;scroller.setPointerCapture&&scroller.setPointerCapture(e.pointerId);scroller.classList.add("dragging");});
+  scroller.addEventListener("pointermove",e=>{if(!down)return;const dx=e.clientX-startX;if(Math.abs(dx)>3)e.preventDefault();scroller.scrollLeft=left-dx;});
+  const up=()=>{down=false;scroller.classList.remove("dragging");};
+  scroller.addEventListener("pointerup",up);scroller.addEventListener("pointercancel",up);scroller.addEventListener("mouseleave",up);
+}
+
+
+function saveActions(){DB.write("actions",ACTIONS);}
+function getStoreActions(storeId){return (ACTIONS&&ACTIONS[storeId])?ACTIONS[storeId]:[];}
+function statusLabel(s){return s==="done"?"Done":s==="blocked"?"Blocked":"Open";}
+function priorityLabel(p){return p==="high"?"High":p==="low"?"Low":"Normal";}
+function renderActionsTab(l){
+  const pane=$("#tabActions");
+  if(!pane)return;
+  const items=getStoreActions(l.id).slice().sort((a,b)=>{
+    const order={open:0,blocked:1,done:2};
+    return (order[a.status||"open"]-order[b.status||"open"]) || ((a.due||"").localeCompare(b.due||"")) || ((b.created||0)-(a.created||0));
+  });
   const openCount=items.filter(i=>(i.status||"open")!=="done").length;
   pane.innerHTML=`<div class="action-panel">
     <div class="action-head"><div><b>Action Items</b><small>${openCount} open · saved for ${esc(l.name)}</small></div></div>
@@ -3184,7 +3235,13 @@ function renderInfoTab(l){
   });
 }
 
-function renderNearbyTab(l){/* Nearby removed */}
+function renderNearbyTab(l){
+  const pane=$("#tabNearby");
+  pane.innerHTML=`<div class="sech" style="margin-top:4px">Category</div>
+    <div class="catrow" id="catrow"></div>
+    <div id="nearbyPlaces"><div class="hint">Pick a category above to find nearby options.</div></div>`;
+  buildCatRow(l.id,pane.querySelector("#nearbyPlaces"));
+}
 
 function renderTravelTab(l){
   const pane=$("#tabTravel");
@@ -4638,7 +4695,7 @@ function openLocation(id){
   renderSheetHead(l);
   renderInfoTab(l);
   renderActionsTab(l);
-  /* Nearby removed */
+  renderNearbyTab(l);
   renderTravelTab(l);
   openSheet();
   if(tripSel.length&&!tripSel.includes(l.id))previewTripWithCandidate(l);
@@ -4757,7 +4814,7 @@ function openLocation(id){
   renderActionsTab(l);
   renderNotesTab(l);
   renderPhotosTab(l);
-  /* Nearby removed */
+  renderNearbyTab(l);
   renderTravelTab(l);
   openSheet();
   if(tripSel.length&&!tripSel.includes(l.id))previewTripWithCandidate(l);
@@ -4941,7 +4998,7 @@ function openLocation(id){
   renderActionsTab(l);
   renderNotesTab(l);
   renderPhotosTab(l);
-  /* Nearby removed */
+  renderNearbyTab(l);
   renderTravelTab(l);
   openSheet();
   if(tripSel.length&&!tripSel.includes(l.id))previewTripWithCandidate(l);
@@ -5176,13 +5233,34 @@ function renderInfoTab(l){
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
   ${storeRouteCard(l)}
+  <div class="inline-nearby-card">
+    <div class="sech" style="margin:0 0 8px">Nearby</div>
+    <div class="nearby-scroll nearby-quick" id="nearbyScroll">
+      <button class="btn" data-nearby-q="coffee">Coffee</button>
+      <button class="btn" data-nearby-q="food">Food</button>
+      <button class="btn" data-nearby-q="gas">Gas</button>
+      <button class="btn" data-nearby-q="hotel">Hotels</button>
+      <button class="btn" data-nearby-q="pharm">Pharmacy</button>
+      <button class="btn" data-nearby-q="grocery">Groceries</button>
+      <button class="btn" data-nearby-q="bar">Bars</button>
+      <button class="btn" data-nearby-q="car">Rental cars</button>
+      <button class="btn" data-nearby-q="park">Parking</button>
+      <button class="btn" data-nearby-q="fun">Entertainment</button>
+    </div>
+    <div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to open nearby options fast.</div></div>
+  </div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
   ${field('Last visit',last?new Date(last).toLocaleString():'')}`;
   pane.innerHTML=html;
   pane.querySelector('#aCheckinBtn').onclick=()=>checkIn(l.id);
-  /* Nearby removed */
+  pane.querySelectorAll('[data-nearby-q]').forEach(btn=>btn.onclick=()=>{
+    pane.querySelectorAll('[data-nearby-q]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    loadNearby(l.id,CATS.find(c=>c.key===btn.dataset.nearbyQ),pane.querySelector('#infoNearbyPlaces'));
+  });
+  makeDragScroll(pane.querySelector('#nearbyScroll'));
   wireStoreRouteActions(pane,l);
   updateInlineTravelStats(l);
   if(userPos&&!tripRoute&&!tripSel.includes(l.id)){fetchDriveInto(userPos,l,'#iDist','#iDrive');}
@@ -5320,14 +5398,65 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
-  </div>
+  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to open nearby options fast.</div></div></div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
   ${field('Last visit',last?new Date(last).toLocaleString():'')}`;
   pane.innerHTML=html;
   pane.querySelector('#aCheckinBtn').onclick=()=>checkIn(l.id);
-  /* Nearby removed */
+  pane.querySelectorAll('[data-nearby-q]').forEach(link=>link.addEventListener('click',()=>{
+    pane.querySelectorAll('[data-nearby-q]').forEach(b=>b.classList.remove('active'));
+    link.classList.add('active');
+    const cat=CATS.find(c=>c.key===link.dataset.nearbyQ);
+    const box=pane.querySelector('#infoNearbyPlaces');
+    if(cat&&box)box.innerHTML=`<div class="quick-maps-card"><div><b>${esc(cat.label)} near ${esc(l.name)}</b><small>Opening Google Maps for nearby results.</small></div><a class="tinybtn primary" href="${mapsSearchLink(l,cat.label)}" target="_blank" rel="noopener">Open Maps</a></div>`;
+  }));
+  makeDragScroll(pane.querySelector('#nearbyScroll'));
+  updateInlineTravelStats(l);
+  if(userPos&&!tripRoute&&!tripSel.includes(l.id)){fetchDriveInto(userPos,l,'#iDist','#iDrive');}
+  if(tripRoute){renderRouteWeatherPanel(pane.querySelector('#routeWeatherBox'));}
+  else fetchWeatherInto(l,'i');
+}
+function renderTripTools(out,fromExisting){
+  if(!tripRoute){out.innerHTML='';return;}
+  const pts=tripRoute.pts;
+  out.innerHTML=`<div class="stat time" style="margin-bottom:12px"><div class="n">${tripSummary()}</div><div class="l">${pts.length} stops${fromExisting?' · already on map':''}</div></div>
+    <div class="trip-stopbar">${pts.map((p,i)=>`<div class="trip-stop"><div class="num">${i+1}</div><div><div class="name">${esc(p.name)}</div><div class="meta">${routeStopMeta(p)}</div></div><button class="tinybtn danger" data-x="${i}" title="Remove stop">✕</button></div>`).join('')}</div>
+    <div class="navrow"><a class="btn primary" href="${activeNavigateUrl()}" target="_blank" rel="noopener">Navigate in Google Maps</a><button class="btn" id="tripZoomMap">Zoom</button></div>
+    <div class="sech">Trip forecast</div><div id="routeWeatherBox" class="route-weather-box"></div>`;
+  out.querySelectorAll('[data-x]').forEach(btn=>btn.onclick=()=>removeTripStopAt(btn.dataset.x));
+  const z=out.querySelector('#tripZoomMap');if(z)z.onclick=()=>drawTripRouteMap(true);
+  renderRouteWeatherPanel(out.querySelector('#routeWeatherBox'));
+}
+function alertSeverityRank(sev){return {Extreme:4,Severe:3,Moderate:2,Minor:1,Unknown:0}[sev]||0;}
+function isSevereWxAlert(p){
+  const event=String(p.event||'');
+  const sev=String(p.severity||'');
+  return alertSeverityRank(sev)>=3 || /(Tornado|Severe Thunderstorm|Flash Flood|Extreme Wind|High Wind|Winter Storm|Blizzard|Ice Storm|Excessive Heat|Red Flag|Fire Weather|Flood Warning)/i.test(event);
+}
+function alertCacheKey(){return 'f54_wx_alerts_cache_v2';}
+async function fetchAlertsForPoint(pt){
+  const ctrl=new AbortController();
+  const to=setTimeout(()=>ctrl.abort(),6500);
+  try{
+    const r=await fetch(`https://api.weather.gov/alerts/active?point=${pt.lat},${pt.lng}`,{signal:ctrl.signal,headers:{'Accept':'application/geo+json'}});
+    clearTimeout(to);
+    if(!r.ok)return [];
+    const d=await r.json();
+    return (d.features||[]).map(f=>({id:f.id||f.properties?.id||'',props:f.properties||{},point:pt})).filter(a=>isSevereWxAlert(a.props));
+  }catch(e){clearTimeout(to);return [];}
+}
+function renderWeatherAlerts(alerts){
+  const ticker=$('#ticker'); if(!ticker)return;
+  if(!ticker.querySelector('.ticker-text')){const s=document.createElement('span');s.className='ticker-text';ticker.appendChild(s);}
+  if(!alerts||!alerts.length){ticker.classList.remove('wx-alert','wx-watch');ticker.hidden=true;return;}
+  const anyWarning=alerts.some(a=>/Warning|Emergency/i.test(a.event||''));
+  ticker.classList.add('wx-alert');ticker.classList.toggle('wx-watch',!anyWarning);ticker.hidden=false;
+  ticker.querySelector('.ticker-text').innerHTML=alerts.slice(0,8).map(a=>`${alertSafeText(a.event)} — ${alertSafeText(a.impacts.slice(0,3).join(', '))}${a.more?` +${a.more}`:''}`).join(' &nbsp;&nbsp; ◆ &nbsp;&nbsp; ');
+  ticker.onclick=()=>openGen('Severe weather alerts',inner=>{
+    inner.innerHTML=`<div class="hint">Active severe alerts affecting selected store areas.</div>${alerts.map(a=>`<div class="notice alert-detail"><b>${alertSafeText(a.event)}</b><br>${alertSafeText(a.headline||a.area||'Weather alert')}<br><small>${alertSafeText(a.impacts.join(', '))}${a.expires?` · until ${new Date(a.expires).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}`:''}</small></div>`).join('')}`;
+  });
 }
 async function checkSevereWeatherAlerts(opts={}){
   const key=alertCacheKey();
@@ -5387,8 +5516,8 @@ function renderMarkers(){
   }
   clusterLayer.clearLayers();
   const pins=visibleLocs().map(l=>{
-    const mk=L.marker([l.lat,l.lng],{icon:pinIcon(l), keyboard:true});
-    mk.on("click touchend",()=>openLocation(l.id));
+    const mk=L.marker([l.lat,l.lng],{icon:pinIcon(l)});
+    mk.on("click",()=>openLocation(l.id));
     return mk;
   });
   if(marketFilter!=="ALL"){
@@ -5598,7 +5727,7 @@ function renderFilters(){
   addPill('ALL',`All <span class="ct">${total}</span>`);
   Object.keys(MARKETS).filter(k=>k!=='LAB').forEach(k=>{
     const cnt=LOCS.filter(l=>l.market===k).length;
-    addPill(k,`${k==="SAT"?"SATX":k} <span class="ct">${cnt}</span>`);
+    addPill(k,`${k} <span class="ct">${cnt}</span>`);
   });
   renderLocationPicker();
 }
@@ -5759,13 +5888,464 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
-  </div>
+  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"><div class="hint">Pick a category to open nearby results fast.</div></div></div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
   ${field('Last visit',last?new Date(last).toLocaleString():'')}`;
   pane.querySelector('#aCheckinBtn').onclick=()=>checkIn(l.id);
-  /* Nearby removed */
+  pane.querySelectorAll('[data-nearby-q]').forEach(btn=>btn.addEventListener('click',()=>{
+    pane.querySelectorAll('[data-nearby-q]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat=CATS.find(c=>c.key===btn.dataset.nearbyQ);
+    if(cat)openNearbyMaps(l,cat,pane.querySelector('#infoNearbyPlaces'));
+  }));
+  makeDragScroll(pane.querySelector('#nearbyScroll'));
+  updateInlineTravelStats(l);
+  if(userPos&&!tripRoute&&!tripSel.includes(l.id)){fetchDriveInto(userPos,l,'#iDist','#iDrive');}
+  if(tripRoute){renderRouteWeatherPanel(pane.querySelector('#routeWeatherBox'));}
+  else fetchWeatherInto(l,'i');
+}
+
+
+/* ---------- Route active panel restored to classic version ---------- */
+function showStorePreviewHud(l,rt,message){
+  const hud=$("#routeHud");
+  if(!hud||!l)return;
+  const active=tripSel.length>0;
+  const already=tripSel.includes(l.id);
+  const actionLabel=active ? (already ? "In route" : "Add stop") : "Start here";
+  const actionDisabled=already ? "disabled" : "";
+  const meta = active
+    ? (already ? "This location is already in your route." : "Preview this stop, then add it to your route.")
+    : (message || "Start here to begin a route. No route line is drawn until a route is started.");
+  const clearBtn = active
+    ? '<button class="tinybtn danger" id="rhClear">Clear route</button>'
+    : '<button class="tinybtn danger" id="rhClear" disabled>Clear route</button>';
+  hud.innerHTML=`<div class="rh-top"><div class="rh-title">${active&&!already?'Add route stop':'Route'}<div class="rh-meta">${esc(l.name)} · ${esc(meta)}</div></div><button class="tinybtn" id="rhHide" title="Hide card">Hide</button></div>
+    <div class="rh-stops">${active&&tripSel.length?tripSel.map((id,i)=>routeStopChip(loc(id)||{name:'Stop'},i)).join(''):`<span class="rh-stop"><span>${esc(l.name)}</span></span>`}</div>
+    <div class="rh-actions glass-actions"><button class="tinybtn primary" id="rhAddStore" ${actionDisabled}>${actionLabel}</button><a class="tinybtn" id="rhNav" href="${activeNavigateUrl(l)}" target="_blank" rel="noopener">Navigate</a>${clearBtn}</div>`;
+  hud.hidden=false;
+  const hide=hud.querySelector('#rhHide');if(hide)hide.onclick=()=>hud.hidden=true;
+  const add=hud.querySelector('#rhAddStore');if(add)add.onclick=()=>addStoreToTrip(l.id,active?'add':'start');
+  const clear=hud.querySelector('#rhClear');if(clear&&!clear.disabled)clear.onclick=()=>resetRouteState('Route cleared');
+  hud.querySelectorAll('[data-rh-remove]').forEach(btn=>btn.onclick=()=>removeTripStopAt(btn.dataset.rhRemove));
+}
+function previewStoreRoute(l,fit=false){
+  clearSingleRoutePreview();
+  showStorePreviewHud(l,null,tripSel.length?'Choose Add stop to include this location.':'Start here to begin a route.');
+}
+function openLocation(id){
+  selectedId=id;
+  const l=loc(id);if(!l)return;
+  map.panTo([l.lat,l.lng]);
+  renderSheetHead(l);
+  renderInfoTab(l);
+  renderActionsTab(l);
+  renderNotesTab(l);
+  renderPhotosTab(l);
+  renderNearbyTab(l);
+  renderTravelTab(l);
+  openSheet();
+  if(tripSel.length&&!tripSel.includes(l.id))previewTripWithCandidate(l);
+  else if(!tripSel.length)showStorePreviewHud(l,null,'Start here to begin a route.');
+  else showRouteHud();
+}
+function routeStopChip(p,i){
+  const seg=tripRoute?legBetweenText(i):'';
+  return `<span class="rh-stop"><span>${i+1}. ${esc(p&&p.name?p.name:'Stop')}${seg}</span><button class="rh-remove" data-rh-remove="${i}" title="Remove this stop">×</button></span>`;
+}
+function routeHudPicker(){
+  const opts=remainingTripOptions();
+  return `<div class="rh-picker"><select id="rhPick" aria-label="Add next route stop"><option value="">Add next stop or select from the map…</option>${opts||'<option value="" disabled>No more stores available</option>'}</select></div>`;
+}
+function wireHudCommon(hud){
+  hud.querySelectorAll('[data-rh-remove]').forEach(btn=>btn.onclick=()=>removeTripStopAt(btn.dataset.rhRemove));
+  const hide=hud.querySelector('#rhHide');if(hide)hide.onclick=()=>hud.hidden=true;
+  const clear=hud.querySelector('#rhClear');if(clear)clear.onclick=()=>resetRouteState('Route cleared');
+  const pick=hud.querySelector('#rhPick');
+  if(pick){pick.onchange=async e=>{const id=e.target.value;if(!id)return;e.target.value='';await addStoreToTrip(id,'add');};}
+  const stops=hud.querySelector('.rh-stops');if(stops)makeDragScroll(stops);
+}
+async function addStoreToTrip(id,mode){
+  const l=loc(id);if(!l)return;
+  clearSingleRoutePreview();
+  if(mode==='start'||!tripSel.length){
+    tripSel=[id];tripRoute=null;clearTripRouteMap(false);renderMarkers();toast(`Started route at ${l.name}`);
+    showRouteHud();
+  }else if(!tripSel.includes(id)){
+    tripSel.push(id);tripRoute=null;clearTripRouteMap(false);renderMarkers();toast(`Added ${l.name} to route`);
+  }else{toast(`${l.name} is already in the route`);}
+  refreshSelectedStoreRouteUI();
+  if(tripSel.length>=2){
+    try{await buildTrip(null,{fit:false});}catch(e){showRouteHud();}
+    refreshSelectedStoreRouteUI();
+  }else showRouteHud();
+}
+async function removeTripStopAt(index){
+  index=Number(index);if(!Number.isInteger(index)||index<0||index>=tripSel.length)return;
+  const removed=loc(tripSel[index]);
+  tripSel.splice(index,1);tripRoute=null;clearTripRouteMap(tripSel.length<2);renderMarkers();
+  if(tripSel.length>=2){try{await buildTrip(null,{fit:false});}catch(e){showRouteHud();}}
+  else showRouteHud();
+  refreshSelectedStoreRouteUI();toast(removed?`Removed ${removed.name}`:'Stop removed');
+}
+function showRouteHud(){
+  const hud=$('#routeHud');
+  if(!hud)return;
+  if(!tripRoute){
+    if(tripSel.length===1){
+      const p=loc(tripSel[0]);
+      hud.innerHTML=`<div class="rh-top"><div class="rh-title">Route started<div class="rh-meta">1 stop selected · choose another store below</div></div><button class="tinybtn" id="rhHide" title="Hide card">Hide</button></div>
+        <div class="rh-stops">${routeStopChip(p||{name:'Start'},0)}</div>
+        ${routeHudPicker()}
+        <div class="rh-actions glass-actions"><a class="tinybtn primary" id="rhNav" href="${activeNavigateUrl(p)}" target="_blank" rel="noopener">Navigate</a><button class="tinybtn danger" id="rhClear">Clear route</button></div>`;
+      hud.hidden=false;wireHudCommon(hud);
+    }else{
+      hud.hidden=true;
+      hud.innerHTML='';
+    }
+    return;
+  }
+  const stops=tripRoute.pts.map((p,i)=>routeStopChip(p,i)).join('');
+  hud.innerHTML=`<div class="rh-top"><div class="rh-title">Route active<div class="rh-meta">${tripSummary()} · ${tripRoute.pts.length} stops</div></div><button class="tinybtn" id="rhHide" title="Hide card">Hide</button></div>
+    <div class="rh-stops">${stops}</div>
+    ${routeWeatherHudLine().replace('class="rh-weather"','class="rh-weather" id="rhWeather"')}
+    ${routeHudPicker()}
+    <div class="rh-actions glass-actions"><a class="tinybtn primary" id="rhNav" href="${activeNavigateUrl()}" target="_blank" rel="noopener">Navigate</a><button class="tinybtn danger" id="rhClear">Clear route</button></div>`;
+  hud.hidden=false;wireHudCommon(hud);
+}
+async function buildTrip(out,opts={}){
+  const hasOut=!!out;
+  if(tripSel.length<2){if(hasOut)out.innerHTML='<div class="hint">Add at least two stops.</div>';else toast('Add at least two stops.');return;}
+  if(hasOut)out.innerHTML=`<div class="hint"><span class="spin"></span>Calculating route…</div>`;else toast('Calculating route…');
+  const pts=tripSel.map(loc).filter(Boolean);
+  if(pts.length<2){if(hasOut)out.innerHTML='<div class="hint">Add at least two valid stops.</div>';else toast('Add at least two valid stops.');return;}
+  try{
+    let rt;
+    try{rt=hasGeoapify()?await geoapifyRoute(pts):await osrmRoute(pts);}catch(primaryErr){if(hasGeoapify()){console.warn('Geoapify routing failed; falling back to OSRM',primaryErr);rt=await osrmRoute(pts);rt.source='Route';}else throw primaryErr;}
+    tripRoute={pts,coords:rt.coords,distance:rt.distance,duration:rt.duration,legs:rt.legs||[],geometry:rt.geometry,source:rt.source};
+    ROUTE_WEATHER_CACHE=null;ROUTE_WEATHER_ERROR='';
+    drawTripRouteMap(opts.fit===true);
+    if(hasOut){renderTripTools(out,false);closeGen();}
+    showRouteHud();loadRouteWeather(false).then(()=>showRouteHud()).catch(()=>showRouteHud());
+    toast('Route updated');
+  }catch(e){if(hasOut)out.innerHTML=`<div class="hint">Routing unavailable right now. ${esc(e.message||'')}</div>`;else toast('Routing unavailable right now');}
+}
+function drawTripRouteMap(fit){
+  if(!tripRoute)return;
+  clearSingleRoutePreview();
+  if(routeLayer)map.removeLayer(routeLayer);
+  if(tripStopLayer)map.removeLayer(tripStopLayer);
+  routeLayer=L.geoJSON(tripRoute.geometry,{style:{color:'#B5121B',weight:6,opacity:.84,lineCap:'round',lineJoin:'round'}}).addTo(map);
+  const badges=tripRoute.pts.map((p,i)=>L.marker([p.lat,p.lng],{
+    icon:L.divIcon({className:'',html:`<div class="route-stop-badge${p.kind==='place'?' via':''}">${i+1}</div>`,iconSize:[16,16],iconAnchor:[-8,20]})
+  }).bindTooltip(`${i+1}. ${p.name}${p.kind==='place'?' · selected place':''}`,{direction:'top',offset:[8,-22]}));
+  tripStopLayer=L.layerGroup(badges).addTo(map);
+  renderMarkers();
+  try{routeLayer.bringToFront();tripStopLayer.eachLayer(m=>m.setZIndexOffset(850));}catch(e){}
+  if(fit){try{map.fitBounds(routeLayer.getBounds().pad(.18));}catch(e){}}
+}
+
+
+
+/* ---------- Route HUD recoverable hide + removable scroll chips ---------- */
+function ensureRouteRestoreButton(){
+  let btn=document.querySelector('#routeRestore');
+  const stage=document.querySelector('.stage')||document.body;
+  if(!btn){
+    btn=document.createElement('button');
+    btn.id='routeRestore';
+    btn.className='route-restore';
+    btn.type='button';
+    btn.innerHTML='↗ Route';
+    btn.onclick=()=>{
+      const hud=document.querySelector('#routeHud');
+      if(hud){hud.hidden=false;}
+      btn.classList.remove('show');
+    };
+    stage.appendChild(btn);
+  }
+  return btn;
+}
+function hideRouteHud(){
+  const hud=document.querySelector('#routeHud');
+  if(hud)hud.hidden=true;
+  ensureRouteRestoreButton().classList.add('show');
+}
+function showRouteRestore(show){
+  const btn=ensureRouteRestoreButton();
+  btn.classList.toggle('show',!!show);
+}
+function legMilesText(i,pts){
+  if(i<=0)return '';
+  const leg=(tripRoute&&tripRoute.legs&&tripRoute.legs[i-1])?tripRoute.legs[i-1]:null;
+  if(leg&&Number.isFinite(Number(leg.distance)))return miles(leg.distance);
+  const a=pts&&pts[i-1], b=pts&&pts[i];
+  if(a&&b&&Number.isFinite(a.lat)&&Number.isFinite(b.lat)){
+    return `${Math.round(haversine(a,b))} mi`;
+  }
+  return '';
+}
+function routeStopChip(p,i,removable=true){
+  return `<span class="rh-stop"><span>${i+1}. ${esc(p&&p.name?p.name:'Stop')}</span>${removable?`<button class="rh-remove" data-rh-remove="${i}" title="Remove this stop">×</button>`:''}</span>`;
+}
+function routeStopStrip(pts, removable=true){
+  pts=(pts||[]).filter(Boolean);
+  if(!pts.length)return '';
+  return pts.map((p,i)=>{
+    const leg=i>0?`<span class="rh-leg">${esc(legMilesText(i,pts))}</span>`:'';
+    return `${leg}${routeStopChip(p,i,removable)}`;
+  }).join('');
+}
+function wireHudCommon(hud){
+  hud.querySelectorAll('[data-rh-remove]').forEach(btn=>btn.onclick=()=>removeTripStopAt(btn.dataset.rhRemove));
+  const hide=hud.querySelector('#rhHide');if(hide)hide.onclick=hideRouteHud;
+  const clear=hud.querySelector('#rhClear');if(clear)clear.onclick=()=>resetRouteState('Route cleared');
+  const pick=hud.querySelector('#rhPick');
+  if(pick){pick.onchange=async e=>{const id=e.target.value;if(!id)return;e.target.value='';await addStoreToTrip(id,'add');};}
+  const stops=hud.querySelector('.rh-stops');if(stops)makeDragScroll(stops);
+  showRouteRestore(false);
+}
+function showStorePreviewHud(l,rt,message){
+  const hud=$("#routeHud");
+  if(!hud||!l)return;
+  const active=tripSel.length>0;
+  const already=tripSel.includes(l.id);
+  const actionLabel=active ? (already ? "In route" : "Add stop") : "Start here";
+  const actionDisabled=already ? "disabled" : "";
+  const meta = active
+    ? (already ? "This location is already in your route." : "Preview this stop, then add it to your route.")
+    : (message || "Start here to begin a route.");
+  const clearBtn = active
+    ? '<button class="tinybtn danger" id="rhClear">Clear route</button>'
+    : '<button class="tinybtn danger" id="rhClear" disabled>Clear route</button>';
+  const shownPts=active&&tripSel.length?tripSel.map(id=>loc(id)||{name:'Stop'}):[l];
+  hud.innerHTML=`<div class="rh-top"><div class="rh-title">${active&&!already?'Add route stop':'Route'}<div class="rh-meta">${esc(l.name)} · ${esc(meta)}</div></div><button class="tinybtn" id="rhHide" title="Minimize route panel">Hide</button></div>
+    <div class="rh-stops">${routeStopStrip(shownPts,active)}</div>
+    <div class="rh-actions glass-actions"><button class="tinybtn primary" id="rhAddStore" ${actionDisabled}>${actionLabel}</button><a class="tinybtn" id="rhNav" href="${activeNavigateUrl(l)}" target="_blank" rel="noopener">Navigate</a>${clearBtn}</div>`;
+  hud.hidden=false;
+  const add=hud.querySelector('#rhAddStore');if(add)add.onclick=()=>addStoreToTrip(l.id,active?'add':'start');
+  wireHudCommon(hud);
+}
+function showRouteHud(){
+  const hud=$('#routeHud');
+  if(!hud)return;
+  if(!tripRoute){
+    if(tripSel.length===1){
+      const p=loc(tripSel[0]);
+      const pts=[p||{name:'Start'}];
+      hud.innerHTML=`<div class="rh-top"><div class="rh-title">Route started<div class="rh-meta">1 stop selected · choose another store below</div></div><button class="tinybtn" id="rhHide" title="Minimize route panel">Hide</button></div>
+        <div class="rh-stops">${routeStopStrip(pts,true)}</div>
+        ${routeHudPicker()}
+        <div class="rh-actions glass-actions"><a class="tinybtn primary" id="rhNav" href="${activeNavigateUrl(p)}" target="_blank" rel="noopener">Navigate</a><button class="tinybtn danger" id="rhClear">Clear route</button></div>`;
+      hud.hidden=false;wireHudCommon(hud);
+    }else{
+      hud.hidden=true;
+      hud.innerHTML='';
+      showRouteRestore(false);
+    }
+    return;
+  }
+  const pts=tripRoute.pts||[];
+  hud.innerHTML=`<div class="rh-top"><div class="rh-title">Route active<div class="rh-meta">${tripSummary()} · ${pts.length} stops</div></div><button class="tinybtn" id="rhHide" title="Minimize route panel">Hide</button></div>
+    <div class="rh-stops">${routeStopStrip(pts,true)}</div>
+    ${routeWeatherHudLine().replace('class="rh-weather"','class="rh-weather" id="rhWeather"')}
+    ${routeHudPicker()}
+    <div class="rh-actions glass-actions"><a class="tinybtn primary" id="rhNav" href="${activeNavigateUrl()}" target="_blank" rel="noopener">Navigate</a><button class="tinybtn danger" id="rhClear">Clear route</button></div>`;
+  hud.hidden=false;wireHudCommon(hud);
+}
+async function previewTripWithCandidate(l){
+  if(!l||!tripSel.length||tripSel.includes(l.id)){showRouteHud();return;}
+  const pts=tripSel.map(loc).filter(Boolean).concat([l]);
+  const hud=$('#routeHud');
+  try{
+    const rt=hasGeoapify()?await geoapifyRoute(pts):await osrmRoute(pts);
+    clearSingleRoutePreview();
+    if(previewLayer)map.removeLayer(previewLayer);
+    previewLayer=L.geoJSON(rt.geometry,{style:{color:'#B5121B',weight:5,opacity:.42,dashArray:'8 9',lineCap:'round',lineJoin:'round'}}).addTo(map);
+    if(hud){
+      hud.innerHTML=`<div class="rh-top"><div class="rh-title">Preview route with ${esc(l.name)}<div class="rh-meta">${miles(rt.distance)} · ${formatDuration(rt.duration)} · ${pts.length} stops</div></div><button class="tinybtn" id="rhHide" title="Minimize route panel">Hide</button></div>
+        <div class="rh-stops">${routeStopStrip(pts,false)}</div>
+        <div class="rh-actions glass-actions"><button class="tinybtn primary" id="rhAddStore">Add stop</button><button class="tinybtn" id="rhZoom">Zoom route</button><button class="tinybtn danger" id="rhClear">Clear route</button></div>`;
+      hud.hidden=false;
+      const add=hud.querySelector('#rhAddStore'); if(add)add.onclick=()=>addStoreToTrip(l.id,'add');
+      const zoom=hud.querySelector('#rhZoom'); if(zoom)zoom.onclick=()=>{try{map.fitBounds(previewLayer.getBounds().pad(.18));}catch(e){}};
+      wireHudCommon(hud);
+    }
+  }catch(e){
+    showStorePreviewHud(l,null,'Choose Add stop to include this location.');
+  }
+}
+
+
+
+/* ---------- Forecast consistency override ----------
+   Uses hourly Open-Meteo precipitation probability + weather code for the header,
+   store forecast, and route/store travel panels so the daily labels match everywhere. */
+function wxSeverity(code){
+  code=Number(code);
+  if(code>=95)return 6;                    // thunderstorm
+  if((code>=71&&code<=77)||(code>=85&&code<=86))return 5; // snow
+  if((code>=61&&code<=67)||(code>=80&&code<=82)||(code>=51&&code<=57))return 4; // rain/showers/drizzle
+  if(code>=45&&code<=48)return 2;           // fog
+  if(code>=1&&code<=3)return 1;             // clouds
+  return 0;                                 // clear/unknown
+}
+function isWetCode(code){return wxSeverity(code)>=4;}
+function dailySummaryFromHourly(day, hourly, dailyCode){
+  const times=(hourly&&hourly.time)||[];
+  let maxPop=0, wetCode=null, skyCode=null, bestWet=-1, bestSky=-1;
+  for(let i=0;i<times.length;i++){
+    if(String(times[i]).slice(0,10)!==day)continue;
+    const code=Number(hourly.weather_code&&hourly.weather_code[i]);
+    const pop=Number(hourly.precipitation_probability&&hourly.precipitation_probability[i])||0;
+    maxPop=Math.max(maxPop,pop);
+    const sev=wxSeverity(code);
+    if(isWetCode(code) && (pop>=25 || sev>=5) && sev>bestWet){wetCode=code;bestWet=sev;}
+    if(!isWetCode(code) && sev>=bestSky){skyCode=code;bestSky=sev;}
+  }
+  let code=Number.isFinite(Number(dailyCode))?Number(dailyCode):0;
+  let cls="clearish";
+  if(wetCode!==null && maxPop>=50){
+    code=wetCode; cls="wet";
+  }else if(wetCode!==null && maxPop>=25){
+    code=80; cls="chance";
+  }else if(skyCode!==null){
+    code=skyCode; cls="clearish";
+  }
+  const wx=wxText(code);
+  return {code, wx, pop:Math.round(maxPop), cls};
+}
+function forecastUrl(lat,lng,days=5){
+  return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code,wind_speed_10m&hourly=weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=${days}`;
+}
+function forecastChips(d,limit=5,header=false){
+  const days=d&&d.daily;
+  if(!days||!days.time)return "";
+  let out="";
+  for(let i=0;i<Math.min(limit,days.time.length);i++){
+    const day=days.time[i];
+    const dt=new Date(day+"T12:00");
+    const lbl=header?(i===0?"Today":dt.toLocaleDateString(undefined,{weekday:"short"})):dt.toLocaleDateString(undefined,{weekday:"short"});
+    const s=dailySummaryFromHourly(day,d.hourly,days.weather_code&&days.weather_code[i]);
+    const hi=Math.round(days.temperature_2m_max[i]);
+    const lo=Math.round(days.temperature_2m_min[i]);
+    const popTxt=s.pop>=20?`<span class="pop">${s.pop}%</span>`:"";
+    out+=header
+      ? `<span class="fc-day ${s.cls}"><span class="d">${lbl}</span> ${s.wx.icon} <span class="t">${hi}°/${lo}°</span>${popTxt}</span>`
+      : `<span class="chip ${s.cls}">${lbl} ${s.wx.icon} <b>${hi}°/${lo}°</b>${popTxt}</span>`;
+  }
+  return out;
+}
+async function getForecastData(lOrCoord,days=5){
+  const lat=Number(lOrCoord.lat), lng=Number(lOrCoord.lng);
+  const r=await fetch(forecastUrl(lat,lng,days),{cache:"no-store"});
+  const d=await r.json();
+  if(!r.ok||d.error)throw new Error((d&&d.reason)||`Weather HTTP ${r.status}`);
+  return d;
+}
+async function fetchWeather(l){
+  try{
+    const d=await getForecastData(l,5);
+    const cur=d.current,w=wxText(cur.weather_code);
+    const tEl=$("#tTemp");if(tEl)tEl.textContent=Math.round(cur.temperature_2m)+"°";
+    const cEl=$("#tCond");if(cEl)cEl.textContent=w.short;
+    const lEl=$("#tCondLbl");if(lEl)lEl.textContent="Wind "+Math.round(cur.wind_speed_10m)+" mph";
+    const cc=$("#tCondCard");if(cc){cc.classList.toggle("warn",/storm|snow|rain|showers/i.test(w.short));}
+    const fEl=$("#tForecast");if(fEl)fEl.innerHTML='<div class="chips">'+forecastChips(d,5,false)+"</div>";
+  }catch(e){
+    const tEl=$("#tTemp");if(tEl)tEl.textContent="n/a";
+    const fEl=$("#tForecast");if(fEl)fEl.innerHTML='<div class="hint">Forecast unavailable.</div>';
+  }
+}
+async function fetchWeatherInto(l,prefix){
+  try{
+    const d=await getForecastData(l,5);
+    const cur=d.current,w=wxText(cur.weather_code);
+    const set=(id,val)=>{const e=document.querySelector(`#${prefix}${id}`);if(e)e.textContent=val;};
+    set("Temp",Math.round(cur.temperature_2m)+"°");
+    set("Cond",w.short);
+    set("CondLbl","Wind "+Math.round(cur.wind_speed_10m)+" mph");
+    const cc=document.querySelector(`#${prefix}CondCard`);
+    if(cc)cc.classList.toggle("warn",/storm|snow|rain|showers/i.test(w.short));
+    const f=document.querySelector(`#${prefix}Forecast`);
+    if(f)f.innerHTML='<div class="chips">'+forecastChips(d,5,false)+"</div>";
+  }catch(e){
+    const t=document.querySelector(`#${prefix}Temp`);if(t)t.textContent="n/a";
+    const f=document.querySelector(`#${prefix}Forecast`);if(f)f.innerHTML='<div class="hint">Forecast unavailable.</div>';
+  }
+}
+async function updateBanner(coord,label){
+  try{
+    const d=await getForecastData(coord,5);
+    const cur=d.current,w=wxText(cur.weather_code), temp=Math.round(cur.temperature_2m);
+    const wxIcon=$("#wxIcon"), wxTemp=$("#wxTemp");
+    if(wxIcon)wxIcon.textContent=w.icon;
+    if(wxTemp)wxTemp.textContent=temp+"°";
+    let chips=`<span class="fc-loc"><span class="dot" id="netdot"></span><span class="fc-city">${esc(label||"Forecast")}</span></span>`;
+    chips+=forecastChips(d,5,true);
+    const fc=$("#fcStrip"); if(fc)fc.innerHTML=chips; setNet();
+  }catch(e){
+    const wxTemp=$("#wxTemp"); if(wxTemp)wxTemp.textContent="--°";
+    const fc=$("#fcStrip"); if(fc)fc.innerHTML=`<span class="fc-loc"><span class="dot off" id="netdot"></span> forecast unavailable</span>`;
+  }
+}
+
+
+
+/* Severe weather polling: refresh active alerts every 1 minute */
+const SEVERE_WX_REFRESH_MS = 60 * 1000;
+let SEVERE_WX_TIMER = null;
+let SEVERE_WX_RUNNING = false;
+
+async function severeWeatherTick(force=true){
+  if(SEVERE_WX_RUNNING)return;
+  SEVERE_WX_RUNNING = true;
+  try{
+    await checkSevereWeatherAlerts({force});
+  }catch(e){
+    console.warn("Severe weather check failed", e);
+  }finally{
+    SEVERE_WX_RUNNING = false;
+  }
+}
+
+function startSevereWeatherPolling(){
+  if(SEVERE_WX_TIMER)clearInterval(SEVERE_WX_TIMER);
+  severeWeatherTick(true);
+  SEVERE_WX_TIMER = setInterval(()=>severeWeatherTick(true), SEVERE_WX_REFRESH_MS);
+}
+
+
+
+/* ---------- Store photos ---------- */
+function savePhotos(){DB.write("photos",PHOTOS);}
+function getStorePhotos(storeId){return (PHOTOS&&PHOTOS[storeId])?PHOTOS[storeId]:[];}
+function setStorePhotos(storeId,items){PHOTOS[storeId]=items;savePhotos();}
+function uid(prefix="id"){return prefix+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);}
+
+function resizeImageDataUrl(file,maxSide=1100,quality=.74){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error("Could not read image"));
+    reader.onload=()=>{
+      img.onerror=()=>reject(new Error("Could not load image"));
+      img.onload=()=>{
+        const scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+        const w=Math.max(1,Math.round(img.width*scale));
+        const h=Math.max(1,Math.round(img.height*scale));
+        const canvas=document.createElement("canvas");
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL("image/jpeg",quality));
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 function makeThumbFromDataUrl(dataUrl,w=180,h=140,quality=.72){
   return new Promise((resolve,reject)=>{
@@ -5921,11 +6501,47 @@ function renderInfoTab(l){
     <div class="stat temp"><div class="n" id="iTemp">—</div><div class="l">Weather now</div></div>
     <div class="stat cond" id="iCondCard"><div class="n" id="iCond">—</div><div class="l" id="iCondLbl">Conditions</div></div>
   </div>
+  <div class="inline-nearby-card"><div class="sech" style="margin:0 0 8px">Nearby</div><div class="nearby-scroll nearby-quick" id="nearbyScroll">${nearbyBtns}</div><div class="nearby-results" id="infoNearbyPlaces"></div></div>
   ${field('Address',l.address?`<a href="https://maps.google.com/?q=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${esc(l.address)}</a>`:'')}
   ${field('Phone',l.phone?`<a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>`:'')}
   ${field('Hours',esc(l.hours))}
   ${field('Last visit',last?new Date(last).toLocaleString():'')}`;
-  /* Nearby removed */
+  pane.querySelectorAll('[data-nearby-q]').forEach(btn=>btn.addEventListener('click',()=>{
+    pane.querySelectorAll('[data-nearby-q]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat=CATS.find(c=>c.key===btn.dataset.nearbyQ);
+    if(cat)openNearbyMaps(l,cat,pane.querySelector('#infoNearbyPlaces'));
+  }));
+  makeDragScroll(pane.querySelector('#nearbyScroll'));
+  updateInlineTravelStats(l);
+  if(userPos&&!tripRoute&&!tripSel.includes(l.id)){fetchDriveInto(userPos,l,'#iDist','#iDrive');}
+  if(tripRoute){renderRouteWeatherPanel(pane.querySelector('#routeWeatherBox'));}
+  else fetchWeatherInto(l,'i');
+}
+
+
+
+/* ---------- PWA install support ---------- */
+let deferredInstallPrompt = null;
+
+function isStandalonePwa(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+function setupPwaInstall(){
+  /* Plain embedded HTML: service worker disabled because this is a single-file build. */
+
+  const promptBox = document.getElementById("installPrompt");
+  const installBtn = document.getElementById("installAppBtn");
+  const closeBtn = document.getElementById("installCloseBtn");
+
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    if (promptBox && !isStandalonePwa() && localStorage.getItem("f54_install_dismissed") !== "1") {
+      promptBox.classList.add("show");
+    }
+  });
 
   if (installBtn) {
     installBtn.addEventListener("click", async () => {
@@ -6005,9 +6621,9 @@ bind();
 makeDragScroll($("#fcStrip"));
 makeVerticalDragScroll(document.querySelector(".sheet-body"));
 startClock();
-updateBanner({lat:39.9142,lng:-93.9622},"Gallatin, MO");
+updateBanner({lat:39.1350039,lng:-94.5772122},"Kansas City");
 if(FEED.length)updateTicker();
-/* auto locate disabled: user can tap My Location */
+setTimeout(()=>locateMe(false),600);
 startSevereWeatherPolling();
 
 // Add ticker text node placeholder
@@ -13603,624 +14219,20 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
-<style id="panelWeatherReadablePatch">
-  /* Store panel: make forecast fit, remove Nearby, and make stat cards readable */
-  #sheet .nearby,
-  #sheet [data-section="nearby"],
-  #sheet .nearby-section,
-  #sheet .nearby-panel,
-  #sheet .nearby-wrap,
-  #sheet .nearby-box,
-  #sheet .nearby-card,
-  #sheet .places,
-  #sheet .places-row,
-  #sheet .nearby-row,
-  .store-sheet .nearby,
-  .store-sheet [data-section="nearby"],
-  .store-sheet .nearby-section,
-  .store-sheet .nearby-panel,
-  .store-sheet .nearby-wrap,
-  .store-sheet .nearby-box,
-  .store-sheet .nearby-card,
-  .store-sheet .places,
-  .store-sheet .places-row,
-  .store-sheet .nearby-row {
-    display: none !important;
-  }
-
-  /* If the Nearby block is a generic section with a heading, JS removes it too. */
-  #sheet .detail-section:empty,
-  .store-sheet .detail-section:empty {
-    display: none !important;
-  }
-
-  #sheet .forecast,
-  #sheet .forecast-box,
-  #sheet .forecast-card,
-  #sheet .wx-forecast,
-  #sheet .store-forecast,
-  #sheet .location-forecast,
-  #sheet .weather-panel,
-  .store-sheet .forecast,
-  .store-sheet .forecast-box,
-  .store-sheet .forecast-card,
-  .store-sheet .wx-forecast,
-  .store-sheet .store-forecast,
-  .store-sheet .location-forecast,
-  .store-sheet .weather-panel {
-    box-sizing: border-box !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-    padding: 11px 10px !important;
-  }
-
-  #sheet .forecast-grid,
-  #sheet .wx-grid,
-  #sheet .weather-grid,
-  #sheet .daily-grid,
-  #sheet .days,
-  #sheet .forecast-days,
-  #sheet .location-forecast-grid,
-  .store-sheet .forecast-grid,
-  .store-sheet .wx-grid,
-  .store-sheet .weather-grid,
-  .store-sheet .daily-grid,
-  .store-sheet .days,
-  .store-sheet .forecast-days,
-  .store-sheet .location-forecast-grid {
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  #sheet .forecast-day,
-  #sheet .wx-day,
-  #sheet .day,
-  #sheet .daily,
-  #sheet .forecast-col,
-  .store-sheet .forecast-day,
-  .store-sheet .wx-day,
-  .store-sheet .day,
-  .store-sheet .daily,
-  .store-sheet .forecast-col {
-    min-width: 0 !important;
-    width: auto !important;
-    max-width: 100% !important;
-    padding: 4px 2px !important;
-    text-align: center !important;
-    overflow: hidden !important;
-  }
-
-  #sheet .forecast-day img,
-  #sheet .wx-day img,
-  #sheet .day img,
-  #sheet .forecast-col img,
-  .store-sheet .forecast-day img,
-  .store-sheet .wx-day img,
-  .store-sheet .day img,
-  .store-sheet .forecast-col img {
-    max-width: 31px !important;
-    max-height: 31px !important;
-    object-fit: contain !important;
-  }
-
-  #sheet .forecast-day *,
-  #sheet .wx-day *,
-  #sheet .day *,
-  #sheet .forecast-col *,
-  .store-sheet .forecast-day *,
-  .store-sheet .wx-day *,
-  .store-sheet .day *,
-  .store-sheet .forecast-col * {
-    max-width: 100% !important;
-    overflow: hidden !important;
-    text-overflow: clip !important;
-  }
-
-  /* Readable stat cards: no clipping of FROM YOU / DRIVE TIME / WEATHER NOW / WIND */
-  #sheet .stats,
-  #sheet .stat-grid,
-  #sheet .facts,
-  #sheet .facts-grid,
-  #sheet .metrics,
-  #sheet .metric-grid,
-  #sheet .store-stats,
-  .store-sheet .stats,
-  .store-sheet .stat-grid,
-  .store-sheet .facts,
-  .store-sheet .facts-grid,
-  .store-sheet .metrics,
-  .store-sheet .metric-grid,
-  .store-sheet .store-stats {
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
-
-  #sheet .stat,
-  #sheet .fact,
-  #sheet .metric,
-  #sheet .stat-card,
-  #sheet .fact-card,
-  #sheet .metric-card,
-  #sheet .info-card,
-  .store-sheet .stat,
-  .store-sheet .fact,
-  .store-sheet .metric,
-  .store-sheet .stat-card,
-  .store-sheet .fact-card,
-  .store-sheet .metric-card,
-  .store-sheet .info-card {
-    min-width: 0 !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 82px !important;
-    padding: 9px 7px !important;
-    overflow: visible !important;
-    box-sizing: border-box !important;
-  }
-
-  #sheet .stat .value,
-  #sheet .fact .value,
-  #sheet .metric .value,
-  #sheet .stat-card .value,
-  #sheet .fact-card .value,
-  #sheet .metric-card .value,
-  #sheet .info-card .value,
-  .store-sheet .stat .value,
-  .store-sheet .fact .value,
-  .store-sheet .metric .value,
-  .store-sheet .stat-card .value,
-  .store-sheet .fact-card .value,
-  .store-sheet .metric-card .value,
-  .store-sheet .info-card .value {
-    display: block !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    font-size: clamp(19px, 4.5vw, 24px) !important;
-    line-height: 1.05 !important;
-    letter-spacing: .01em !important;
-  }
-
-  #sheet .stat .label,
-  #sheet .fact .label,
-  #sheet .metric .label,
-  #sheet .stat-card .label,
-  #sheet .fact-card .label,
-  #sheet .metric-card .label,
-  #sheet .info-card .label,
-  .store-sheet .stat .label,
-  .store-sheet .fact .label,
-  .store-sheet .metric .label,
-  .store-sheet .stat-card .label,
-  .store-sheet .fact-card .label,
-  .store-sheet .metric-card .label,
-  .store-sheet .info-card .label {
-    display: block !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    word-break: normal !important;
-    font-size: 10px !important;
-    line-height: 1.15 !important;
-    letter-spacing: .07em !important;
-  }
-
-  @media (max-width: 760px) {
-    #sheet .forecast,
-    #sheet .forecast-box,
-    #sheet .forecast-card,
-    #sheet .wx-forecast,
-    #sheet .store-forecast,
-    #sheet .location-forecast,
-    #sheet .weather-panel,
-    .store-sheet .forecast,
-    .store-sheet .forecast-box,
-    .store-sheet .forecast-card,
-    .store-sheet .wx-forecast,
-    .store-sheet .store-forecast,
-    .store-sheet .location-forecast,
-    .store-sheet .weather-panel {
-      padding: 9px 8px !important;
-    }
-
-    #sheet .forecast-day,
-    #sheet .wx-day,
-    #sheet .day,
-    #sheet .daily,
-    #sheet .forecast-col,
-    .store-sheet .forecast-day,
-    .store-sheet .wx-day,
-    .store-sheet .day,
-    .store-sheet .daily,
-    .store-sheet .forecast-col {
-      padding: 3px 1px !important;
-      font-size: 12px !important;
-    }
-
-    #sheet .forecast-day img,
-    #sheet .wx-day img,
-    #sheet .day img,
-    #sheet .forecast-col img,
-    .store-sheet .forecast-day img,
-    .store-sheet .wx-day img,
-    .store-sheet .day img,
-    .store-sheet .forecast-col img {
-      max-width: 27px !important;
-      max-height: 27px !important;
-    }
-
-    #sheet .stats,
-    #sheet .stat-grid,
-    #sheet .facts,
-    #sheet .facts-grid,
-    #sheet .metrics,
-    #sheet .metric-grid,
-    #sheet .store-stats,
-    .store-sheet .stats,
-    .store-sheet .stat-grid,
-    .store-sheet .facts,
-    .store-sheet .facts-grid,
-    .store-sheet .metrics,
-    .store-sheet .metric-grid,
-    .store-sheet .store-stats {
-      gap: 6px !important;
-    }
-
-    #sheet .stat,
-    #sheet .fact,
-    #sheet .metric,
-    #sheet .stat-card,
-    #sheet .fact-card,
-    #sheet .metric-card,
-    #sheet .info-card,
-    .store-sheet .stat,
-    .store-sheet .fact,
-    .store-sheet .metric,
-    .store-sheet .stat-card,
-    .store-sheet .fact-card,
-    .store-sheet .metric-card,
-    .store-sheet .info-card {
-      min-height: 76px !important;
-      padding: 8px 5px !important;
-    }
-
-    #sheet .stat .value,
-    #sheet .fact .value,
-    #sheet .metric .value,
-    #sheet .stat-card .value,
-    #sheet .fact-card .value,
-    #sheet .metric-card .value,
-    #sheet .info-card .value,
-    .store-sheet .stat .value,
-    .store-sheet .fact .value,
-    .store-sheet .metric .value,
-    .store-sheet .stat-card .value,
-    .store-sheet .fact-card .value,
-    .store-sheet .metric-card .value,
-    .store-sheet .info-card .value {
-      font-size: 20px !important;
-    }
-
-    #sheet .stat .label,
-    #sheet .fact .label,
-    #sheet .metric .label,
-    #sheet .stat-card .label,
-    #sheet .fact-card .label,
-    #sheet .metric-card .label,
-    #sheet .info-card .label,
-    .store-sheet .stat .label,
-    .store-sheet .fact .label,
-    .store-sheet .metric .label,
-    .store-sheet .stat-card .label,
-    .store-sheet .fact-card .label,
-    .store-sheet .metric-card .label,
-    .store-sheet .info-card .label {
-      font-size: 9px !important;
-      letter-spacing: .05em !important;
-    }
-  }
-</style>
-
-<script id="panelWeatherReadableScript">
-(function(){
-  function textOf(el){
-    return (el && el.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
-  }
-
-  function removeNearbyBlocks(root){
-    root = root || document;
-    const candidates = root.querySelectorAll ? root.querySelectorAll('#sheet section, #sheet .section, #sheet .card, #sheet .panel, #sheet .block, .store-sheet section, .store-sheet .section, .store-sheet .card, .store-sheet .panel, .store-sheet .block') : [];
-    candidates.forEach(el => {
-      const t = textOf(el);
-      if (t.startsWith('nearby') || /^nearby\b/.test(t)) {
-        el.style.display = 'none';
-        el.setAttribute('data-hidden-nearby','1');
-      }
-    });
-
-    root.querySelectorAll && root.querySelectorAll('#sheet h1,#sheet h2,#sheet h3,#sheet h4,#sheet .heading,#sheet .section-title,.store-sheet h1,.store-sheet h2,.store-sheet h3,.store-sheet h4,.store-sheet .heading,.store-sheet .section-title').forEach(h => {
-      if (textOf(h) === 'nearby') {
-        let el = h.parentElement;
-        while (el && el !== document.body) {
-          const cls = el.className ? String(el.className).toLowerCase() : '';
-          if (/section|card|panel|block|nearby/.test(cls) || el.tagName === 'SECTION') {
-            el.style.display = 'none';
-            el.setAttribute('data-hidden-nearby','1');
-            return;
-          }
-          el = el.parentElement;
-        }
-        h.style.display = 'none';
-      }
-    });
-  }
-
-  function fixMetricText(root){
-    root = root || document;
-
-    // Expand common truncated labels.
-    root.querySelectorAll && root.querySelectorAll('#sheet *, .store-sheet *').forEach(el => {
-      const t = (el.textContent || '').trim();
-      if (t === 'FROM YOU') el.innerHTML = 'FROM<br>YOU';
-      if (t === 'DRIVE TIME') el.innerHTML = 'DRIVE<br>TIME';
-      if (t === 'WEATHER NOW') el.innerHTML = 'WEATHER<br>NOW';
-      if (t === 'WIND') el.textContent = 'WIND';
-    });
-
-    // If metric values were visibly truncated with ellipses, remove CSS truncation inline.
-    root.querySelectorAll && root.querySelectorAll('#sheet .stat, #sheet .fact, #sheet .metric, #sheet .stat-card, #sheet .fact-card, #sheet .metric-card, #sheet .info-card, .store-sheet .stat, .store-sheet .fact, .store-sheet .metric, .store-sheet .stat-card, .store-sheet .fact-card, .store-sheet .metric-card, .store-sheet .info-card').forEach(card => {
-      card.style.overflow = 'visible';
-      card.style.height = 'auto';
-      card.style.minHeight = window.innerWidth < 760 ? '76px' : '82px';
-      card.querySelectorAll('*').forEach(child => {
-        child.style.overflow = 'visible';
-        child.style.textOverflow = 'clip';
-      });
-    });
-  }
-
-  function run(){
-    removeNearbyBlocks(document);
-    fixMetricText(document);
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-
-  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(run, ms));
-
-  const mo = new MutationObserver(() => run());
-  if (document.documentElement) {
-    mo.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
-
-
-<style id="bannerGarageViewportFinalPatch">
-  /*
-    Final banner/garage fixes:
-    - Market tabs stay hard-left.
-    - Choose location is compact, only text-sized.
-    - Action icons stay hard-right.
-    - Garage is detached/centered to viewport, not the toolbar.
-    - Header weather/time boxes stay transparent.
-  */
-
-  .controls,
-  .filterbar {
-    box-sizing: border-box !important;
-  }
-
-  .controls .filterbar,
-  .filterbar {
-    display: grid !important;
-    grid-template-columns: max-content 190px minmax(0, 1fr) !important;
-    align-items: center !important;
-    gap: 12px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  .filterbar .pillrow,
-  #filterRow {
-    grid-column: 1 !important;
-    justify-self: start !important;
-    justify-content: flex-start !important;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-    max-width: none !important;
-    width: max-content !important;
-    overflow: visible !important;
-  }
-
-  .filterbar .searchbox {
-    grid-column: 2 !important;
-    justify-self: start !important;
-    width: 190px !important;
-    min-width: 190px !important;
-    max-width: 190px !important;
-    flex: 0 0 190px !important;
-  }
-
-  .filterbar .searchbox select,
-  .filterbar .searchbox input,
-  #locPicker,
-  .loc-select {
-    width: 190px !important;
-    min-width: 190px !important;
-    max-width: 190px !important;
-    box-sizing: border-box !important;
-  }
-
-  .filterbar .quick-actions,
-  .quick-actions {
-    grid-column: 3 !important;
-    justify-self: end !important;
-    margin-left: auto !important;
-    display: flex !important;
-    justify-content: flex-end !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: auto !important;
-    min-width: max-content !important;
-  }
-
-  .quick-actions .iconbtn {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  @media(max-width: 980px) {
-    .controls .filterbar,
-    .filterbar {
-      grid-template-columns: max-content 168px minmax(0, 1fr) !important;
-      gap: 8px !important;
-      padding-left: 0 !important;
-    }
-
-    .filterbar .pillrow,
-    #filterRow {
-      width: max-content !important;
-      max-width: none !important;
-      overflow: visible !important;
-    }
-
-    .filterbar .searchbox,
-    .filterbar .searchbox select,
-    .filterbar .searchbox input,
-    #locPicker,
-    .loc-select {
-      width: 168px !important;
-      min-width: 168px !important;
-      max-width: 168px !important;
-      flex-basis: 168px !important;
-      font-size: 14px !important;
-    }
-
-    .filterbar .quick-actions,
-    .quick-actions {
-      justify-self: end !important;
-      margin-left: auto !important;
-      gap: 8px !important;
-    }
-  }
-
-  @media(max-width: 620px) {
-    .controls .filterbar,
-    .filterbar {
-      grid-template-columns: max-content 154px minmax(0, 1fr) !important;
-      gap: 6px !important;
-    }
-
-    .filterbar .searchbox,
-    .filterbar .searchbox select,
-    .filterbar .searchbox input,
-    #locPicker,
-    .loc-select {
-      width: 154px !important;
-      min-width: 154px !important;
-      max-width: 154px !important;
-      flex-basis: 154px !important;
-      font-size: 13px !important;
-    }
-
-    #filterRow .pill,
-    .pillrow .pill {
-      padding-left: 8px !important;
-      padding-right: 8px !important;
-    }
-
-    .filterbar .quick-actions,
-    .quick-actions {
-      gap: 5px !important;
-    }
-  }
-
-  /* Garage must center to viewport after JS moves it under body */
-  @media(max-width: 1100px) {
-    body > #garagePanel,
-    body > .garage-panel#garagePanel,
-    #garagePanel.viewport-centered-garage {
-      position: fixed !important;
-      left: 50vw !important;
-      right: auto !important;
-      top: var(--garage-fixed-top, 320px) !important;
-      width: min(760px, calc(100dvw - 12px)) !important;
-      max-width: calc(100dvw - 12px) !important;
-      min-width: 0 !important;
-      margin: 0 !important;
-      transform: translate3d(-50%, 0, 0) !important;
-      box-sizing: border-box !important;
-      z-index: 999999 !important;
-      overflow: hidden !important;
-      inset-inline-start: 50vw !important;
-      inset-inline-end: auto !important;
-    }
-
-    body > #garagePanel .garage-strip,
-    body > #garagePanel #garageStrip,
-    #garagePanel.viewport-centered-garage .garage-strip,
-    #garagePanel.viewport-centered-garage #garageStrip {
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      justify-content: flex-start !important;
-      scrollbar-width: none !important;
-      -webkit-overflow-scrolling: touch !important;
-    }
-
-    body > #garagePanel .garage-strip::-webkit-scrollbar,
-    body > #garagePanel #garageStrip::-webkit-scrollbar {
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-    }
-  }
-
-  @media(max-width: 560px) {
-    body > #garagePanel,
-    body > .garage-panel#GaragePanel,
-    #garagePanel.viewport-centered-garage {
-      width: calc(100dvw - 10px) !important;
-      max-width: calc(100dvw - 10px) !important;
-      left: 50vw !important;
-      transform: translate3d(-50%, 0, 0) !important;
-    }
-  }
-
-  /* Remove colored boxes behind time/date/current weather/forecast */
+<style id="transparentHeaderInfoPatch">
+  /* Remove boxes behind top time, temperature, and forecast info */
   .wxnow,
   #wxNow,
   .weather-now,
   .timebox,
+  .time-temp,
   .nowbox,
   .clockbox,
-  .time-temp,
   .header-time,
   .current-weather,
-  .current-wx,
-  .currentWx,
   .fcstrip,
   #fcStrip,
-  .header-forecast,
-  .forecast-strip,
-  .forecast-top,
-  .forecast-head,
-  .top-forecast {
+  .header-forecast {
     background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
@@ -14256,2774 +14268,81 @@ if ('serviceWorker' in navigator) {
   #wxNow *,
   .weather-now *,
   .timebox *,
-  .nowbox *,
-  .clockbox *,
   .fcstrip *,
   #fcStrip *,
   .header-forecast * {
-    background: transparent !important;
     background-color: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
   }
+
+  /* Keep the separator line only if the layout already uses it */
+  .wxnow,
+  #wxNow,
+  .weather-now,
+  .timebox {
+    color: inherit !important;
+  }
+
+  @media (max-width: 980px) {
+    .wxnow,
+    #wxNow,
+    .weather-now,
+    .timebox,
+    .fcstrip,
+    #fcStrip,
+    .header-forecast {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+  }
 </style>
 
-<script id="bannerGarageViewportFinalScript">
+<script id="transparentHeaderInfoScript">
 (function(){
-  let suppressMapMoveUntil = 0;
-  let rememberedCenter = null;
-  let rememberedZoom = null;
-
-  function isMobileish(){
-    return window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
-  }
-
-  function mapObj(){
-    return (typeof window.map !== 'undefined' && window.map) ? window.map : null;
-  }
-
-  function rememberMap(){
-    const m = mapObj();
-    if(!m || !m.getCenter) return;
-    try {
-      rememberedCenter = m.getCenter();
-      rememberedZoom = m.getZoom ? m.getZoom() : null;
-    } catch(e){}
-  }
-
-  function restoreMap(){
-    const m = mapObj();
-    if(!m || !rememberedCenter || !m.setView) return;
-    try {
-      m.setView(rememberedCenter, rememberedZoom == null ? m.getZoom() : rememberedZoom, {animate:false, pan:false});
-    } catch(e){}
-  }
-
-  function preventMapShift(){
-    suppressMapMoveUntil = Date.now() + 1400;
-    rememberMap();
-    [50, 150, 360, 720].forEach(ms => setTimeout(restoreMap, ms));
-  }
-
-  function patchMapMethods(){
-    const m = mapObj();
-    if(!m || m.__noStoreClickShiftFinal) return;
-    m.__noStoreClickShiftFinal = true;
-
-    ['setView','panTo','flyTo','fitBounds','panInsideBounds','panBy'].forEach(name => {
-      if(typeof m[name] !== 'function') return;
-      const original = m[name].bind(m);
-      m['__original_' + name + '_noShiftFinal'] = original;
-      m[name] = function(){
-        if(Date.now() < suppressMapMoveUntil) return this;
-        return original.apply(this, arguments);
-      };
-    });
-  }
-
-  function controlsBottom(){
-    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
-    let bottom = 0;
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        const r = el.getBoundingClientRect();
-        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 70) bottom = r.bottom;
-      });
-    });
-    return Math.max(90, Math.round((bottom || 250) + 8));
-  }
-
-  function detachGarageToBody(){
-    const panel = document.getElementById('garagePanel');
-    if(!panel) return null;
-
-    if(panel.parentElement !== document.body){
-      document.body.appendChild(panel);
-    }
-    panel.classList.add('viewport-centered-garage');
-    return panel;
-  }
-
-  function forceGarageCenter(resetScroll){
-    const panel = detachGarageToBody();
-    if(!panel || !isMobileish()) return;
-
-    document.documentElement.style.setProperty('--garage-fixed-top', controlsBottom() + 'px');
-
-    panel.style.setProperty('position', 'fixed', 'important');
-    panel.style.setProperty('left', '50vw', 'important');
-    panel.style.setProperty('right', 'auto', 'important');
-    panel.style.setProperty('inset-inline-start', '50vw', 'important');
-    panel.style.setProperty('inset-inline-end', 'auto', 'important');
-    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100dvw - 10px)' : 'min(760px, calc(100dvw - 12px))', 'important');
-    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100dvw - 10px)' : 'calc(100dvw - 12px)', 'important');
-    panel.style.setProperty('min-width', '0', 'important');
-    panel.style.setProperty('margin', '0', 'important');
-    panel.style.setProperty('transform', 'translate3d(-50%, 0, 0)', 'important');
-    panel.style.setProperty('box-sizing', 'border-box', 'important');
-    panel.style.setProperty('z-index', '999999', 'important');
-    panel.style.setProperty('overflow', 'hidden', 'important');
-
-    const strip = panel.querySelector('#garageStrip,.garage-strip,.garage-grid');
-    if(strip){
-      strip.style.setProperty('width', '100%', 'important');
-      strip.style.setProperty('max-width', '100%', 'important');
-      strip.style.setProperty('overflow-x', 'auto', 'important');
-      strip.style.setProperty('overflow-y', 'hidden', 'important');
-      strip.style.setProperty('justify-content', 'flex-start', 'important');
-      if(resetScroll) strip.scrollLeft = 0;
-    }
-
-    requestAnimationFrame(() => {
-      const r = panel.getBoundingClientRect();
-      if(!r.width) return;
-      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
-      if(Math.abs(r.left - targetLeft) > 2){
-        panel.style.setProperty('left', targetLeft + 'px', 'important');
-        panel.style.setProperty('transform', 'none', 'important');
-      }
-    });
-  }
-
-  function forceBannerLayout(){
-    const filterbar = document.querySelector('.filterbar');
-    const pillrow = document.getElementById('filterRow') || document.querySelector('.filterbar .pillrow');
-    const searchbox = document.querySelector('.filterbar .searchbox');
-    const select = document.getElementById('locPicker') || document.querySelector('.filterbar select');
-    const actions = document.querySelector('.filterbar .quick-actions,.quick-actions');
-
-    if(filterbar){
-      filterbar.style.setProperty('display', 'grid', 'important');
-      filterbar.style.setProperty('grid-template-columns', window.innerWidth <= 620 ? 'max-content 154px minmax(0, 1fr)' : (window.innerWidth <= 980 ? 'max-content 168px minmax(0, 1fr)' : 'max-content 190px minmax(0, 1fr)'), 'important');
-      filterbar.style.setProperty('align-items', 'center', 'important');
-      filterbar.style.setProperty('width', '100%', 'important');
-      filterbar.style.setProperty('gap', window.innerWidth <= 620 ? '6px' : '12px', 'important');
-    }
-
-    if(pillrow){
-      pillrow.style.setProperty('grid-column', '1', 'important');
-      pillrow.style.setProperty('justify-self', 'start', 'important');
-      pillrow.style.setProperty('justify-content', 'flex-start', 'important');
-      pillrow.style.setProperty('margin-left', '0', 'important');
-      pillrow.style.setProperty('padding-left', '0', 'important');
-      pillrow.style.setProperty('width', 'max-content', 'important');
-      pillrow.style.setProperty('max-width', 'none', 'important');
-      pillrow.style.setProperty('overflow', 'visible', 'important');
-    }
-
-    const w = window.innerWidth <= 620 ? '154px' : (window.innerWidth <= 980 ? '168px' : '190px');
-    if(searchbox){
-      searchbox.style.setProperty('grid-column', '2', 'important');
-      searchbox.style.setProperty('justify-self', 'start', 'important');
-      searchbox.style.setProperty('width', w, 'important');
-      searchbox.style.setProperty('min-width', w, 'important');
-      searchbox.style.setProperty('max-width', w, 'important');
-      searchbox.style.setProperty('flex', '0 0 ' + w, 'important');
-    }
-    if(select){
-      select.style.setProperty('width', w, 'important');
-      select.style.setProperty('min-width', w, 'important');
-      select.style.setProperty('max-width', w, 'important');
-      select.style.setProperty('box-sizing', 'border-box', 'important');
-    }
-
-    if(actions){
-      actions.style.setProperty('grid-column', '3', 'important');
-      actions.style.setProperty('justify-self', 'end', 'important');
-      actions.style.setProperty('margin-left', 'auto', 'important');
-      actions.style.setProperty('display', 'flex', 'important');
-      actions.style.setProperty('justify-content', 'flex-end', 'important');
-      actions.style.setProperty('align-items', 'center', 'important');
-      actions.style.setProperty('width', 'auto', 'important');
-      actions.style.setProperty('min-width', 'max-content', 'important');
-    }
-  }
-
   function clearHeaderBoxes(){
     const selectors = [
-      '.wxnow','#wxNow','.weather-now','.timebox','.nowbox','.clockbox','.time-temp','.header-time','.current-weather',
-      '.fcstrip','#fcStrip','.header-forecast','.forecast-strip','.forecast-top','.forecast-head','.top-forecast'
+      '.wxnow',
+      '#wxNow',
+      '.weather-now',
+      '.timebox',
+      '.time-temp',
+      '.nowbox',
+      '.clockbox',
+      '.header-time',
+      '.current-weather',
+      '.fcstrip',
+      '#fcStrip',
+      '.header-forecast'
     ];
+
     document.querySelectorAll(selectors.join(',')).forEach(el => {
-      el.style.setProperty('background', 'transparent', 'important');
-      el.style.setProperty('background-color', 'transparent', 'important');
-      el.style.setProperty('background-image', 'none', 'important');
-      el.style.setProperty('border', '0', 'important');
-      el.style.setProperty('box-shadow', 'none', 'important');
-      el.style.setProperty('backdrop-filter', 'none', 'important');
-      el.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+      el.style.background = 'transparent';
+      el.style.backgroundColor = 'transparent';
+      el.style.backgroundImage = 'none';
+      el.style.border = '0';
+      el.style.boxShadow = 'none';
+      el.style.backdropFilter = 'none';
+      el.style.webkitBackdropFilter = 'none';
+    });
+
+    document.querySelectorAll('.wxnow *, #wxNow *, .weather-now *, .timebox *, .fcstrip *, #fcStrip *, .header-forecast *').forEach(el => {
+      el.style.backgroundColor = 'transparent';
+      el.style.backgroundImage = 'none';
+      el.style.boxShadow = 'none';
     });
   }
 
-  function locationInteraction(e){
-    const t = e.target;
-    if(!t || !t.closest) return;
-    if(t.closest('#garageBtn,#garagePanel')){
-      setTimeout(() => forceGarageCenter(true), 20);
-      setTimeout(() => forceGarageCenter(false), 160);
-      setTimeout(() => forceGarageCenter(false), 480);
-      return;
-    }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', clearHeaderBoxes);
+  else clearHeaderBoxes();
 
-    if(t.closest('.leaflet-marker-icon,.pin,.store-pin,.loc-pin,[data-store],[data-location],.store-row,.location-row,#locPicker,.loc-select')){
-      preventMapShift();
-    }
-  }
-
-  function applyAll(){
-    patchMapMethods();
-    forceBannerLayout();
-    clearHeaderBoxes();
-    forceGarageCenter(false);
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
-  else applyAll();
-
-  window.addEventListener('resize', applyAll, {passive:true});
-  window.addEventListener('orientationchange', () => {
-    setTimeout(applyAll, 120);
-    setTimeout(() => forceGarageCenter(true), 250);
-  }, {passive:true});
-
-  document.addEventListener('pointerdown', locationInteraction, true);
-  document.addEventListener('click', locationInteraction, true);
-  document.addEventListener('change', locationInteraction, true);
-
-  [80, 240, 600, 1200, 2500, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
-
-  const mo = new MutationObserver(() => {
-    forceBannerLayout();
-    clearHeaderBoxes();
-    forceGarageCenter(false);
-    patchMapMethods();
-  });
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="hardFinalBannerGarageLayoutPatch">
-  /*
-    HARD FINAL layout:
-    - Market tabs begin at the far left of the banner.
-    - Choose location is compact and immediately after markets.
-    - Icons are pinned to the far right.
-    - Garage is centered to the viewport at every screen width.
-  */
-
-  .controls,
-  .filterbar,
-  .marketbar,
-  .top-controls {
-    box-sizing: border-box !important;
-  }
-
-  .filterbar,
-  .controls .filterbar,
-  .marketbar,
-  .top-controls {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 16px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 12px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  #filterRow,
-  .filterbar .pillrow,
-  .pillrow,
-  .market-tabs,
-  .markets {
-    order: 1 !important;
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    overflow: visible !important;
-  }
-
-  .filterbar .searchbox,
-  .controls .searchbox,
-  .marketbar .searchbox,
-  .top-controls .searchbox {
-    order: 2 !important;
-    flex: 0 0 220px !important;
-    width: 220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    justify-self: start !important;
-  }
-
-  #locPicker,
-  .loc-select,
-  #storeSelect,
-  #locationSelect,
-  #storePicker,
-  #locationPicker,
-  .filterbar select,
-  .filterbar .searchbox select,
-  .filterbar .searchbox input {
-    width: 220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
-    box-sizing: border-box !important;
-  }
-
-  .quick-actions,
-  .filterbar .quick-actions,
-  .controls .quick-actions,
-  .marketbar .quick-actions,
-  .top-controls .quick-actions {
-    order: 3 !important;
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: max-content !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-    justify-content: flex-end !important;
-    justify-self: end !important;
-    align-items: center !important;
-    display: flex !important;
-    gap: 12px !important;
-  }
-
-  .quick-actions .iconbtn,
-  .quick-actions button,
-  .filterbar .quick-actions .iconbtn,
-  .filterbar .quick-actions button {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  @media (max-width: 1200px) {
-    .filterbar,
-    .controls .filterbar,
-    .marketbar,
-    .top-controls {
-      gap: 10px !important;
-      padding-right: 8px !important;
-    }
-
-    .filterbar .searchbox,
-    .controls .searchbox,
-    .marketbar .searchbox,
-    .top-controls .searchbox,
-    #locPicker,
-    .loc-select,
-    #storeSelect,
-    #locationSelect,
-    #storePicker,
-    #locationPicker,
-    .filterbar select,
-    .filterbar .searchbox select,
-    .filterbar .searchbox input {
-      flex-basis: 185px !important;
-      width: 185px !important;
-      min-width: 185px !important;
-      max-width: 185px !important;
-    }
-
-    #filterRow .pill,
-    .pillrow .pill {
-      padding-left: 9px !important;
-      padding-right: 9px !important;
-    }
-
-    .quick-actions,
-    .filterbar .quick-actions {
-      gap: 8px !important;
-    }
-  }
-
-  @media (max-width: 760px) {
-    .filterbar,
-    .controls .filterbar,
-    .marketbar,
-    .top-controls {
-      gap: 6px !important;
-      padding-right: 4px !important;
-    }
-
-    .filterbar .searchbox,
-    .controls .searchbox,
-    .marketbar .searchbox,
-    .top-controls .searchbox,
-    #locPicker,
-    .loc-select,
-    #storeSelect,
-    #locationSelect,
-    #storePicker,
-    #locationPicker,
-    .filterbar select,
-    .filterbar .searchbox select,
-    .filterbar .searchbox input {
-      flex-basis: 160px !important;
-      width: 160px !important;
-      min-width: 160px !important;
-      max-width: 160px !important;
-      font-size: 13px !important;
-    }
-
-    #filterRow .pill,
-    .pillrow .pill {
-      padding-left: 6px !important;
-      padding-right: 6px !important;
-    }
-  }
-
-  /* Garage must be viewport-centered on desktop, tablet, and phone. */
-  #garagePanel,
-  body #garagePanel,
-  body > #garagePanel,
-  .garage-panel#garagePanel,
-  #garagePanel.viewport-centered-garage-final {
-    position: fixed !important;
-    left: 50vw !important;
-    right: auto !important;
-    top: var(--garage-viewport-top, 224px) !important;
-    width: min(760px, calc(100vw - 16px)) !important;
-    max-width: calc(100vw - 16px) !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    transform: translate3d(-50%, 0, 0) !important;
-    box-sizing: border-box !important;
-    z-index: 999999 !important;
-    overflow: hidden !important;
-    inset-inline-start: 50vw !important;
-    inset-inline-end: auto !important;
-  }
-
-  #garagePanel .garage-strip,
-  #garagePanel #garageStrip {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    justify-content: flex-start !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  #garagePanel .garage-strip::-webkit-scrollbar,
-  #garagePanel #garageStrip::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  @media (max-width: 560px) {
-    #garagePanel,
-    body #garagePanel,
-    body > #garagePanel,
-    .garage-panel#garagePanel,
-    #garagePanel.viewport-centered-garage-final {
-      width: calc(100vw - 10px) !important;
-      max-width: calc(100vw - 10px) !important;
-      left: 50vw !important;
-      transform: translate3d(-50%, 0, 0) !important;
-    }
-  }
-</style>
-
-<script id="hardFinalBannerGarageLayoutScript">
-(function(){
-  function viewportTop(){
-    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
-    let bottom = 0;
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        const r = el.getBoundingClientRect();
-        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 60) bottom = r.bottom;
-      });
-    });
-    return Math.max(120, Math.round((bottom || 210) + 8));
-  }
-
-  function forceBanner(){
-    const filterbar = document.querySelector('.filterbar');
-    const pillrow = document.getElementById('filterRow') || document.querySelector('.pillrow,.market-tabs,.markets');
-    const searchbox = document.querySelector('.filterbar .searchbox,.controls .searchbox,.marketbar .searchbox,.top-controls .searchbox');
-    const select = document.getElementById('locPicker') || document.querySelector('.filterbar select,.loc-select,#storeSelect,#locationSelect,#storePicker,#locationPicker');
-    const actions = document.querySelector('.filterbar .quick-actions,.controls .quick-actions,.quick-actions');
-
-    if(filterbar){
-      filterbar.style.setProperty('display','flex','important');
-      filterbar.style.setProperty('flex-direction','row','important');
-      filterbar.style.setProperty('align-items','center','important');
-      filterbar.style.setProperty('justify-content','flex-start','important');
-      filterbar.style.setProperty('width','100%','important');
-      filterbar.style.setProperty('max-width','100%','important');
-      filterbar.style.setProperty('gap', window.innerWidth <= 760 ? '6px' : (window.innerWidth <= 1200 ? '10px' : '16px'), 'important');
-      filterbar.style.setProperty('padding-left','0','important');
-      filterbar.style.setProperty('margin-left','0','important');
-    }
-
-    if(pillrow){
-      pillrow.style.setProperty('order','1','important');
-      pillrow.style.setProperty('flex','0 0 auto','important');
-      pillrow.style.setProperty('width','auto','important');
-      pillrow.style.setProperty('max-width','none','important');
-      pillrow.style.setProperty('margin-left','0','important');
-      pillrow.style.setProperty('padding-left','0','important');
-      pillrow.style.setProperty('justify-content','flex-start','important');
-      pillrow.style.setProperty('overflow','visible','important');
-    }
-
-    const w = window.innerWidth <= 760 ? '160px' : (window.innerWidth <= 1200 ? '185px' : '220px');
-    if(searchbox){
-      searchbox.style.setProperty('order','2','important');
-      searchbox.style.setProperty('flex','0 0 ' + w,'important');
-      searchbox.style.setProperty('width',w,'important');
-      searchbox.style.setProperty('min-width',w,'important');
-      searchbox.style.setProperty('max-width',w,'important');
-      searchbox.style.setProperty('margin-left','0','important');
-      searchbox.style.setProperty('margin-right','0','important');
-    }
-
-    if(select){
-      select.style.setProperty('width',w,'important');
-      select.style.setProperty('min-width',w,'important');
-      select.style.setProperty('max-width',w,'important');
-      select.style.setProperty('box-sizing','border-box','important');
-    }
-
-    if(actions){
-      actions.style.setProperty('order','3','important');
-      actions.style.setProperty('flex','0 0 auto','important');
-      actions.style.setProperty('margin-left','auto','important');
-      actions.style.setProperty('margin-right','0','important');
-      actions.style.setProperty('display','flex','important');
-      actions.style.setProperty('justify-content','flex-end','important');
-      actions.style.setProperty('align-items','center','important');
-      actions.style.setProperty('width','auto','important');
-      actions.style.setProperty('min-width','max-content','important');
-    }
-  }
-
-  function moveGarageToBody(){
-    const panel = document.getElementById('garagePanel');
-    if(!panel) return null;
-    if(panel.parentElement !== document.body) document.body.appendChild(panel);
-    panel.classList.add('viewport-centered-garage-final');
-    return panel;
-  }
-
-  function forceGarage(resetScroll){
-    const panel = moveGarageToBody();
-    if(!panel) return;
-
-    document.documentElement.style.setProperty('--garage-viewport-top', viewportTop() + 'px');
-
-    panel.style.setProperty('position','fixed','important');
-    panel.style.setProperty('left','50vw','important');
-    panel.style.setProperty('right','auto','important');
-    panel.style.setProperty('inset-inline-start','50vw','important');
-    panel.style.setProperty('inset-inline-end','auto','important');
-    panel.style.setProperty('top','var(--garage-viewport-top)','important');
-    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(760px, calc(100vw - 16px))','important');
-    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'calc(100vw - 16px)','important');
-    panel.style.setProperty('min-width','0','important');
-    panel.style.setProperty('margin','0','important');
-    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
-    panel.style.setProperty('box-sizing','border-box','important');
-    panel.style.setProperty('z-index','999999','important');
-    panel.style.setProperty('overflow','hidden','important');
-
-    const strip = panel.querySelector('#garageStrip,.garage-strip');
-    if(strip){
-      strip.style.setProperty('width','100%','important');
-      strip.style.setProperty('max-width','100%','important');
-      strip.style.setProperty('overflow-x','auto','important');
-      strip.style.setProperty('overflow-y','hidden','important');
-      strip.style.setProperty('justify-content','flex-start','important');
-      if(resetScroll) strip.scrollLeft = 0;
-    }
-
-    requestAnimationFrame(() => {
-      const r = panel.getBoundingClientRect();
-      if(!r.width) return;
-      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
-      if(Math.abs(r.left - targetLeft) > 2){
-        panel.style.setProperty('left', targetLeft + 'px', 'important');
-        panel.style.setProperty('transform', 'none', 'important');
-      }
-    });
-  }
-
-  function openGarageCenteredWatcher(e){
-    const t = e.target;
-    if(t && t.closest && t.closest('#garageBtn,#garagePanel')){
-      setTimeout(() => forceGarage(true), 20);
-      setTimeout(() => forceGarage(false), 120);
-      setTimeout(() => forceGarage(false), 360);
-      setTimeout(() => forceGarage(false), 800);
-    }
-  }
-
-  function applyAll(){
-    forceBanner();
-    forceGarage(false);
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
-  else applyAll();
-
-  window.addEventListener('resize', applyAll, {passive:true});
-  window.addEventListener('orientationchange', () => {
-    setTimeout(applyAll, 120);
-    setTimeout(() => forceGarage(true), 300);
-  }, {passive:true});
-
-  document.addEventListener('pointerdown', openGarageCenteredWatcher, true);
-  document.addEventListener('click', openGarageCenteredWatcher, true);
-
-  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
-
-  const mo = new MutationObserver(() => applyAll());
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="marketGarageTightFinalPatch">
-  /*
-    Final tight layout:
-    - Market tabs start at far left.
-    - Choose location is much narrower and vertically centered/lowered.
-    - Icons are pinned to the far right on desktop and mobile.
-    - Garage is narrower, centered, horizontally swipeable, with options close together.
-    - Vehicle images are not clipped at the top.
-  */
-
-  .controls {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  .controls .filterbar,
-  .filterbar {
-    position: relative !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 12px 0 0 !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-flow: row nowrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    transform: none !important;
-  }
-
-  #filterRow,
-  .filterbar .pillrow,
-  .pillrow {
-    order: 1 !important;
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: max-content !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    overflow: visible !important;
-    transform: none !important;
-  }
-
-  #filterRow .pill,
-  .pillrow .pill {
-    flex: 0 0 auto !important;
-  }
-
-  .filterbar .searchbox,
-  .controls .searchbox {
-    order: 2 !important;
-    flex: 0 0 185px !important;
-    width: 185px !important;
-    min-width: 185px !important;
-    max-width: 185px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: translateY(4px) !important;
-    align-self: center !important;
-  }
-
-  #locPicker,
-  .loc-select,
-  .filterbar .searchbox select,
-  .filterbar select {
-    width: 185px !important;
-    min-width: 185px !important;
-    max-width: 185px !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
-    line-height: 38px !important;
-    box-sizing: border-box !important;
-    font-size: 15px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    transform: none !important;
-  }
-
-  .quick-actions,
-  .filterbar .quick-actions,
-  .controls .quick-actions {
-    order: 3 !important;
-    flex: 0 0 auto !important;
-    width: auto !important;
-    min-width: max-content !important;
-    max-width: none !important;
-    margin-left: auto !important;
-    margin-right: 0 !important;
-    padding-right: 0 !important;
-    display: flex !important;
-    flex-flow: row nowrap !important;
-    justify-content: flex-end !important;
-    align-items: center !important;
-    gap: 12px !important;
-    transform: none !important;
-  }
-
-  .quick-actions .iconbtn,
-  .quick-actions button {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  @media (max-width: 1100px) {
-    .controls .filterbar,
-    .filterbar {
-      gap: 8px !important;
-      padding-right: 6px !important;
-    }
-
-    .filterbar .searchbox,
-    .controls .searchbox,
-    #locPicker,
-    .loc-select,
-    .filterbar .searchbox select,
-    .filterbar select {
-      flex-basis: 150px !important;
-      width: 150px !important;
-      min-width: 150px !important;
-      max-width: 150px !important;
-      height: 38px !important;
-      min-height: 38px !important;
-      max-height: 38px !important;
-      line-height: 38px !important;
-      font-size: 13px !important;
-    }
-
-    .filterbar .searchbox,
-    .controls .searchbox {
-      transform: translateY(3px) !important;
-    }
-
-    #filterRow .pill,
-    .pillrow .pill {
-      padding-left: 7px !important;
-      padding-right: 7px !important;
-    }
-
-    .quick-actions,
-    .filterbar .quick-actions {
-      gap: 7px !important;
-    }
-  }
-
-  /* Narrow centered garage. Extra vehicles are browsed by horizontal swipe. */
-  #garagePanel,
-  body #garagePanel,
-  body > #garagePanel,
-  .garage-panel#garagePanel,
-  #garagePanel.viewport-centered-garage-tight {
-    position: fixed !important;
-    left: 50vw !important;
-    right: auto !important;
-    top: var(--garage-tight-top, 292px) !important;
-    width: min(610px, calc(100vw - 16px)) !important;
-    max-width: min(610px, calc(100vw - 16px)) !important;
-    min-width: 0 !important;
-    height: 160px !important;
-    min-height: 160px !important;
-    max-height: 160px !important;
-    margin: 0 !important;
-    padding: 7px 10px 8px !important;
-    transform: translate3d(-50%, 0, 0) !important;
-    box-sizing: border-box !important;
-    z-index: 999999 !important;
-    overflow: hidden !important;
-    inset-inline-start: 50vw !important;
-    inset-inline-end: auto !important;
-  }
-
-  #garagePanel .garage-title {
-    height: 21px !important;
-    line-height: 21px !important;
-    margin: 0 !important;
-    padding-left: 3px !important;
-  }
-
-  #garagePanel .garage-strip,
-  #garagePanel #garageStrip {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: 124px !important;
-    min-height: 124px !important;
-    max-height: 124px !important;
-    display: flex !important;
-    flex-flow: row nowrap !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    gap: 0 !important;
-    column-gap: 0 !important;
-    padding: 0 2px !important;
-    margin: 0 !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x !important;
-  }
-
-  #garagePanel .garage-strip::-webkit-scrollbar,
-  #garagePanel #garageStrip::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  #garagePanel .garage-opt {
-    flex: 0 0 84px !important;
-    width: 84px !important;
-    min-width: 84px !important;
-    max-width: 84px !important;
-    height: 122px !important;
-    min-height: 122px !important;
-    max-height: 122px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    scroll-snap-align: start !important;
-  }
-
-  #garagePanel .garage-opt + .garage-opt {
-    margin-left: -2px !important;
-  }
-
-  #garagePanel .garage-opt .veh-box {
-    width: 84px !important;
-    height: 98px !important;
-    min-height: 98px !important;
-    max-height: 98px !important;
-    overflow: visible !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    display: flex !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
-  }
-
-  #garagePanel .garage-opt img,
-  #garagePanel .garage-opt[data-vehicle="corvette"] img,
-  #garagePanel .garage-opt[data-vehicle="delorean"] img {
-    width: 100px !important;
-    height: 100px !important;
-    max-width: 100px !important;
-    max-height: 100px !important;
-    transform: translateY(0) !important;
-    object-fit: contain !important;
-  }
-
-  #garagePanel .garage-opt .veh-label {
-    width: 84px !important;
-    max-width: 84px !important;
-    font-size: 12px !important;
-    line-height: 20px !important;
-    height: 20px !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-  }
-
-  #garagePanel .garage-opt[data-vehicle="default"],
-  #garagePanel .garage-opt[data-vehicle="dot"] {
-    flex-basis: 72px !important;
-    width: 72px !important;
-    min-width: 72px !important;
-    max-width: 72px !important;
-  }
-
-  #garagePanel .garage-opt[data-vehicle="default"] .veh-box,
-  #garagePanel .garage-opt[data-vehicle="dot"] .veh-box,
-  #garagePanel .garage-opt[data-vehicle="default"] .veh-label,
-  #garagePanel .garage-opt[data-vehicle="dot"] .veh-label {
-    width: 72px !important;
-    max-width: 72px !important;
-  }
-
-  @media (max-width: 560px) {
-    #garagePanel,
-    body #garagePanel,
-    body > #garagePanel,
-    .garage-panel#garagePanel,
-    #garagePanel.viewport-centered-garage-tight {
-      width: calc(100vw - 10px) !important;
-      max-width: calc(100vw - 10px) !important;
-      left: 50vw !important;
-      transform: translate3d(-50%, 0, 0) !important;
-    }
-  }
-</style>
-
-<script id="marketGarageTightFinalScript">
-(function(){
-  function controlsBottom(){
-    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
-    let bottom = 0;
-    selectors.forEach(sel => {
-      document.querySelectorAll(sel).forEach(el => {
-        const r = el.getBoundingClientRect();
-        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 60) bottom = r.bottom;
-      });
-    });
-    return Math.max(120, Math.round((bottom || 210) + 8));
-  }
-
-  function forceMarketBanner(){
-    const filterbar = document.querySelector('.filterbar');
-    const pillrow = document.getElementById('filterRow') || document.querySelector('.filterbar .pillrow,.pillrow');
-    const searchbox = document.querySelector('.filterbar .searchbox,.controls .searchbox');
-    const select = document.getElementById('locPicker') || document.querySelector('.filterbar select,.loc-select');
-    const actions = document.querySelector('.filterbar .quick-actions,.controls .quick-actions,.quick-actions');
-
-    if(filterbar){
-      filterbar.style.setProperty('display','flex','important');
-      filterbar.style.setProperty('flex-flow','row nowrap','important');
-      filterbar.style.setProperty('align-items','center','important');
-      filterbar.style.setProperty('justify-content','flex-start','important');
-      filterbar.style.setProperty('width','100%','important');
-      filterbar.style.setProperty('max-width','100%','important');
-      filterbar.style.setProperty('margin','0','important');
-      filterbar.style.setProperty('padding-left','0','important');
-      filterbar.style.setProperty('padding-right', window.innerWidth <= 1100 ? '6px' : '12px','important');
-      filterbar.style.setProperty('gap', window.innerWidth <= 1100 ? '8px' : '10px','important');
-      filterbar.style.setProperty('transform','none','important');
-    }
-
-    if(pillrow){
-      pillrow.style.setProperty('order','1','important');
-      pillrow.style.setProperty('flex','0 0 auto','important');
-      pillrow.style.setProperty('width','auto','important');
-      pillrow.style.setProperty('min-width','max-content','important');
-      pillrow.style.setProperty('max-width','none','important');
-      pillrow.style.setProperty('margin','0','important');
-      pillrow.style.setProperty('padding','0','important');
-      pillrow.style.setProperty('justify-content','flex-start','important');
-      pillrow.style.setProperty('overflow','visible','important');
-    }
-
-    const w = window.innerWidth <= 1100 ? '150px' : '185px';
-    if(searchbox){
-      searchbox.style.setProperty('order','2','important');
-      searchbox.style.setProperty('flex','0 0 '+w,'important');
-      searchbox.style.setProperty('width',w,'important');
-      searchbox.style.setProperty('min-width',w,'important');
-      searchbox.style.setProperty('max-width',w,'important');
-      searchbox.style.setProperty('margin','0','important');
-      searchbox.style.setProperty('padding','0','important');
-      searchbox.style.setProperty('align-self','center','important');
-      searchbox.style.setProperty('transform', window.innerWidth <= 1100 ? 'translateY(3px)' : 'translateY(4px)','important');
-    }
-
-    if(select){
-      select.style.setProperty('width',w,'important');
-      select.style.setProperty('min-width',w,'important');
-      select.style.setProperty('max-width',w,'important');
-      select.style.setProperty('height','38px','important');
-      select.style.setProperty('line-height','38px','important');
-      select.style.setProperty('box-sizing','border-box','important');
-      select.style.setProperty('font-size', window.innerWidth <= 1100 ? '13px' : '15px','important');
-    }
-
-    if(actions){
-      actions.style.setProperty('order','3','important');
-      actions.style.setProperty('flex','0 0 auto','important');
-      actions.style.setProperty('width','auto','important');
-      actions.style.setProperty('min-width','max-content','important');
-      actions.style.setProperty('margin-left','auto','important');
-      actions.style.setProperty('margin-right','0','important');
-      actions.style.setProperty('display','flex','important');
-      actions.style.setProperty('justify-content','flex-end','important');
-      actions.style.setProperty('align-items','center','important');
-      actions.style.setProperty('gap', window.innerWidth <= 1100 ? '7px' : '12px','important');
-    }
-  }
-
-  function moveGarageToBody(){
-    const panel = document.getElementById('garagePanel');
-    if(!panel) return null;
-    if(panel.parentElement !== document.body) document.body.appendChild(panel);
-    panel.classList.add('viewport-centered-garage-tight');
-    return panel;
-  }
-
-  function forceGarage(resetScroll){
-    const panel = moveGarageToBody();
-    if(!panel) return;
-
-    document.documentElement.style.setProperty('--garage-tight-top', controlsBottom() + 'px');
-
-    panel.style.setProperty('position','fixed','important');
-    panel.style.setProperty('left','50vw','important');
-    panel.style.setProperty('right','auto','important');
-    panel.style.setProperty('top','var(--garage-tight-top)','important');
-    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(610px, calc(100vw - 16px))','important');
-    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(610px, calc(100vw - 16px))','important');
-    panel.style.setProperty('min-width','0','important');
-    panel.style.setProperty('height','160px','important');
-    panel.style.setProperty('min-height','160px','important');
-    panel.style.setProperty('max-height','160px','important');
-    panel.style.setProperty('margin','0','important');
-    panel.style.setProperty('padding','7px 10px 8px','important');
-    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
-    panel.style.setProperty('box-sizing','border-box','important');
-    panel.style.setProperty('z-index','999999','important');
-    panel.style.setProperty('overflow','hidden','important');
-
-    const strip = panel.querySelector('#garageStrip,.garage-strip');
-    if(strip){
-      strip.style.setProperty('width','100%','important');
-      strip.style.setProperty('max-width','100%','important');
-      strip.style.setProperty('display','flex','important');
-      strip.style.setProperty('flex-flow','row nowrap','important');
-      strip.style.setProperty('justify-content','flex-start','important');
-      strip.style.setProperty('gap','0','important');
-      strip.style.setProperty('overflow-x','auto','important');
-      strip.style.setProperty('overflow-y','hidden','important');
-      if(resetScroll) strip.scrollLeft = 0;
-    }
-
-    requestAnimationFrame(() => {
-      const r = panel.getBoundingClientRect();
-      if(!r.width) return;
-      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
-      if(Math.abs(r.left - targetLeft) > 2){
-        panel.style.setProperty('left', targetLeft + 'px', 'important');
-        panel.style.setProperty('transform', 'none', 'important');
-      }
-    });
-  }
-
-  function openGarageWatcher(e){
-    const t = e.target;
-    if(t && t.closest && t.closest('#garageBtn,#garagePanel')){
-      setTimeout(() => forceGarage(true), 20);
-      setTimeout(() => forceGarage(false), 120);
-      setTimeout(() => forceGarage(false), 360);
-      setTimeout(() => forceGarage(false), 800);
-    }
-  }
-
-  function applyAll(){
-    forceMarketBanner();
-    forceGarage(false);
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
-  else applyAll();
-
-  window.addEventListener('resize', applyAll, {passive:true});
-  window.addEventListener('orientationchange', () => {
-    setTimeout(applyAll, 120);
-    setTimeout(() => forceGarage(true), 300);
-  }, {passive:true});
-
-  document.addEventListener('pointerdown', openGarageWatcher, true);
-  document.addEventListener('click', openGarageWatcher, true);
-
-  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
-
-  const mo = new MutationObserver(() => applyAll());
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="panelWeatherNearbyFinalPatch">
-  /* Remove Nearby from the store/details panel */
-  #sheet .nearby,
-  #sheet .nearby-section,
-  #sheet .nearby-panel,
-  #sheet .nearby-wrap,
-  #sheet .nearby-box,
-  #sheet .nearby-card,
-  #sheet .nearby-row,
-  #sheet .places,
-  #sheet .places-row,
-  #sheet [data-section="nearby"],
-  .sheet .nearby,
-  .sheet .nearby-section,
-  .sheet .nearby-panel,
-  .sheet .nearby-wrap,
-  .sheet .nearby-box,
-  .sheet .nearby-card,
-  .sheet .nearby-row,
-  .sheet .places,
-  .sheet .places-row,
-  .sheet [data-section="nearby"],
-  .store-sheet .nearby,
-  .store-sheet .nearby-section,
-  .store-sheet .nearby-panel,
-  .store-sheet .nearby-wrap,
-  .store-sheet .nearby-box,
-  .store-sheet .nearby-card,
-  .store-sheet .nearby-row,
-  .store-sheet .places,
-  .store-sheet .places-row,
-  .store-sheet [data-section="nearby"],
-  [data-hidden-nearby="1"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-  }
-
-  /* Forecast stays inside the detail panel */
-  #sheet .forecast,
-  #sheet .forecast-box,
-  #sheet .forecast-card,
-  #sheet .wx-forecast,
-  #sheet .store-forecast,
-  #sheet .location-forecast,
-  #sheet .weather-panel,
-  .sheet .forecast,
-  .sheet .forecast-box,
-  .sheet .forecast-card,
-  .sheet .wx-forecast,
-  .sheet .store-forecast,
-  .sheet .location-forecast,
-  .sheet .weather-panel,
-  .store-sheet .forecast,
-  .store-sheet .forecast-box,
-  .store-sheet .forecast-card,
-  .store-sheet .wx-forecast,
-  .store-sheet .store-forecast,
-  .store-sheet .location-forecast,
-  .store-sheet .weather-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-  }
-
-  #sheet .forecast-grid,
-  #sheet .wx-grid,
-  #sheet .weather-grid,
-  #sheet .daily-grid,
-  #sheet .days,
-  #sheet .forecast-days,
-  .sheet .forecast-grid,
-  .sheet .wx-grid,
-  .sheet .weather-grid,
-  .sheet .daily-grid,
-  .sheet .days,
-  .sheet .forecast-days,
-  .store-sheet .forecast-grid,
-  .store-sheet .wx-grid,
-  .store-sheet .weather-grid,
-  .store-sheet .daily-grid,
-  .store-sheet .days,
-  .store-sheet .forecast-days {
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* The four info/weather cards are readable now: two across instead of squeezed four across */
-  #sheet .stats,
-  #sheet .stat-grid,
-  #sheet .facts,
-  #sheet .facts-grid,
-  #sheet .metrics,
-  #sheet .metric-grid,
-  #sheet .store-stats,
-  .sheet .stats,
-  .sheet .stat-grid,
-  .sheet .facts,
-  .sheet .facts-grid,
-  .sheet .metrics,
-  .sheet .metric-grid,
-  .sheet .store-stats,
-  .store-sheet .stats,
-  .store-sheet .stat-grid,
-  .store-sheet .facts,
-  .store-sheet .facts-grid,
-  .store-sheet .metrics,
-  .store-sheet .metric-grid,
-  .store-sheet .store-stats {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 9px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
-
-  #sheet .stat,
-  #sheet .fact,
-  #sheet .metric,
-  #sheet .stat-card,
-  #sheet .fact-card,
-  #sheet .metric-card,
-  #sheet .info-card,
-  .sheet .stat,
-  .sheet .fact,
-  .sheet .metric,
-  .sheet .stat-card,
-  .sheet .fact-card,
-  .sheet .metric-card,
-  .sheet .info-card,
-  .store-sheet .stat,
-  .store-sheet .fact,
-  .store-sheet .metric,
-  .store-sheet .stat-card,
-  .store-sheet .fact-card,
-  .store-sheet .metric-card,
-  .store-sheet .info-card {
-    min-width: 0 !important;
-    width: auto !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 76px !important;
-    padding: 10px 10px !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;
-  }
-
-  #sheet .stat *,
-  #sheet .fact *,
-  #sheet .metric *,
-  #sheet .stat-card *,
-  #sheet .fact-card *,
-  #sheet .metric-card *,
-  #sheet .info-card *,
-  .sheet .stat *,
-  .sheet .fact *,
-  .sheet .metric *,
-  .sheet .stat-card *,
-  .sheet .fact-card *,
-  .sheet .metric-card *,
-  .sheet .info-card *,
-  .store-sheet .stat *,
-  .store-sheet .fact *,
-  .store-sheet .metric *,
-  .store-sheet .stat-card *,
-  .store-sheet .fact-card *,
-  .store-sheet .metric-card *,
-  .store-sheet .info-card * {
-    overflow: visible !important;
-    text-overflow: clip !important;
-  }
-
-  #sheet .stat .value,
-  #sheet .fact .value,
-  #sheet .metric .value,
-  #sheet .stat-card .value,
-  #sheet .fact-card .value,
-  #sheet .metric-card .value,
-  #sheet .info-card .value,
-  .sheet .stat .value,
-  .sheet .fact .value,
-  .sheet .metric .value,
-  .sheet .stat-card .value,
-  .sheet .fact-card .value,
-  .sheet .metric-card .value,
-  .sheet .info-card .value,
-  .store-sheet .stat .value,
-  .store-sheet .fact .value,
-  .store-sheet .metric .value,
-  .store-sheet .stat-card .value,
-  .store-sheet .fact-card .value,
-  .store-sheet .metric-card .value,
-  .store-sheet .info-card .value {
-    display: block !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-    font-size: clamp(19px, 4.2vw, 25px) !important;
-    line-height: 1.05 !important;
-  }
-
-  #sheet .stat .label,
-  #sheet .fact .label,
-  #sheet .metric .label,
-  #sheet .stat-card .label,
-  #sheet .fact-card .label,
-  #sheet .metric-card .label,
-  #sheet .info-card .label,
-  .sheet .stat .label,
-  .sheet .fact .label,
-  .sheet .metric .label,
-  .sheet .stat-card .label,
-  .sheet .fact-card .label,
-  .sheet .metric-card .label,
-  .sheet .info-card .label,
-  .store-sheet .stat .label,
-  .store-sheet .fact .label,
-  .store-sheet .metric .label,
-  .store-sheet .stat-card .label,
-  .store-sheet .fact-card .label,
-  .store-sheet .metric-card .label,
-  .store-sheet .info-card .label {
-    display: block !important;
-    white-space: normal !important;
-    overflow-wrap: normal !important;
-    word-break: normal !important;
-    font-size: 10px !important;
-    line-height: 1.15 !important;
-    letter-spacing: .06em !important;
-  }
-</style>
-
-<script id="panelWeatherNearbyFinalScript">
-(function(){
-  function normText(el){
-    return (el && el.textContent || '').replace(/\s+/g, ' ').trim();
-  }
-
-  function hideNearby(root){
-    root = root || document;
-    const scope = root.querySelectorAll ? root : document;
-
-    scope.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
-      const txt = normText(el).toLowerCase();
-
-      if (txt === 'nearby') {
-        let block = el;
-        for (let i = 0; i < 6 && block && block !== document.body; i++) {
-          const cls = String(block.className || '').toLowerCase();
-          const tag = String(block.tagName || '').toLowerCase();
-          if (/section|card|panel|block|nearby|places|row|wrap/.test(cls) || tag === 'section') break;
-          block = block.parentElement;
-        }
-        if (block && block !== document.body) {
-          block.dataset.hiddenNearby = '1';
-          block.style.display = 'none';
-          block.style.visibility = 'hidden';
-          block.style.height = '0';
-          block.style.margin = '0';
-          block.style.padding = '0';
-          block.style.overflow = 'hidden';
-        } else {
-          el.dataset.hiddenNearby = '1';
-          el.style.display = 'none';
-        }
-      }
-
-      if (/^nearby\b/i.test(normText(el))) {
-        const maybe = el.closest('.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.places,.places-row,.card,.section,section,.panel,.block') || el;
-        maybe.dataset.hiddenNearby = '1';
-        maybe.style.display = 'none';
-        maybe.style.visibility = 'hidden';
-        maybe.style.height = '0';
-        maybe.style.margin = '0';
-        maybe.style.padding = '0';
-        maybe.style.overflow = 'hidden';
-      }
-    });
-  }
-
-  function fixMetricCards(root){
-    root = root || document;
-
-    root.querySelectorAll && root.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
-      const t = normText(el);
-      if (t === 'FROM YOU') el.innerHTML = 'FROM<br>YOU';
-      if (t === 'DRIVE TIME') el.innerHTML = 'DRIVE<br>TIME';
-      if (t === 'WEATHER NOW') el.innerHTML = 'WEATHER<br>NOW';
-      if (t === 'WIND') el.textContent = 'WIND';
-    });
-
-    root.querySelectorAll && root.querySelectorAll('#sheet .stats,#sheet .stat-grid,#sheet .facts,#sheet .facts-grid,#sheet .metrics,#sheet .metric-grid,#sheet .store-stats,.sheet .stats,.sheet .stat-grid,.sheet .facts,.sheet .facts-grid,.sheet .metrics,.sheet .metric-grid,.sheet .store-stats,.store-sheet .stats,.store-sheet .stat-grid,.store-sheet .facts,.store-sheet .facts-grid,.store-sheet .metrics,.store-sheet .metric-grid,.store-sheet .store-stats').forEach(grid => {
-      grid.style.display = 'grid';
-      grid.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
-      grid.style.gap = '9px';
-      grid.style.width = '100%';
-      grid.style.maxWidth = '100%';
-      grid.style.overflow = 'visible';
-    });
-
-    root.querySelectorAll && root.querySelectorAll('#sheet .stat,#sheet .fact,#sheet .metric,#sheet .stat-card,#sheet .fact-card,#sheet .metric-card,#sheet .info-card,.sheet .stat,.sheet .fact,.sheet .metric,.sheet .stat-card,.sheet .fact-card,.sheet .metric-card,.sheet .info-card,.store-sheet .stat,.store-sheet .fact,.store-sheet .metric,.store-sheet .stat-card,.store-sheet .fact-card,.store-sheet .metric-card,.store-sheet .info-card').forEach(card => {
-      card.style.overflow = 'visible';
-      card.style.height = 'auto';
-      card.style.minHeight = '76px';
-      card.style.padding = '10px';
-      card.querySelectorAll('*').forEach(child => {
-        child.style.overflow = 'visible';
-        child.style.textOverflow = 'clip';
-      });
-    });
-  }
-
-  function run(){
-    hideNearby(document);
-    fixMetricCards(document);
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-
-  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(run, ms));
-
-  const mo = new MutationObserver(() => run());
-  if (document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="crvGarageVehiclePatch">
-  /* CRV garage selection sizing */
-  #garagePanel .garage-opt[data-vehicle="crv"] img {
-    width: 100px !important;
-    height: 100px !important;
-    max-width: 100px !important;
-    max-height: 100px !important;
-    object-fit: contain !important;
-    transform: translateY(0) !important;
-  }
-</style>
-
-<script id="crvGarageVehicleScript">
-(function(){
-  const CRV_ID = 'crv';
-  const CRV_LABEL = 'CRV';
-  const CRV_SRC = 'assets/vehicle-crv.webp';
-
-  function labelFor(id){
-    const labels = {
-      f150:'F-150',
-      ram:'Ram',
-      lightning:'Lightning',
-      corvette:'Corvette',
-      delorean:'DeLorean',
-      default:'Default',
-      dot:'Default',
-      crv:'CRV'
-    };
-    return labels[id] || id;
-  }
-
-  function findGarageStrip(){
-    return document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
-  }
-
-  function makeCrvButton(){
-    const btn = document.createElement('button');
-    btn.className = 'garage-opt';
-    btn.dataset.vehicle = CRV_ID;
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'CRV marker');
-    btn.innerHTML = '<div class="veh-box"><img src="' + CRV_SRC + '" alt="CRV" draggable="false"></div><div class="veh-label">CRV</div>';
-    return btn;
-  }
-
-  function injectCrv(){
-    const strip = findGarageStrip();
-    if(!strip) return;
-
-    let existing = strip.querySelector('.garage-opt[data-vehicle="crv"]');
-    if(!existing){
-      const crvBtn = makeCrvButton();
-
-      // Place CRV after DeLorean when possible; otherwise append.
-      const delorean = strip.querySelector('.garage-opt[data-vehicle="delorean"]');
-      if(delorean && delorean.nextSibling) strip.insertBefore(crvBtn, delorean.nextSibling);
-      else strip.appendChild(crvBtn);
-      existing = crvBtn;
-    }
-
-    const img = existing.querySelector('img');
-    if(img){
-      img.src = CRV_SRC;
-      img.alt = 'CRV';
-      img.draggable = false;
-    }
-
-    const label = existing.querySelector('.veh-label');
-    if(label) label.textContent = 'CRV';
+  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(clearHeaderBoxes, ms));
 
-    // Keep the tight/swipe layout after adding the extra vehicle.
-    strip.style.setProperty('overflow-x', 'auto', 'important');
-    strip.style.setProperty('overflow-y', 'hidden', 'important');
-    strip.style.setProperty('justify-content', 'flex-start', 'important');
-    strip.style.setProperty('gap', '0', 'important');
-
-    existing.style.setProperty('flex', '0 0 84px', 'important');
-    existing.style.setProperty('width', '84px', 'important');
-    existing.style.setProperty('min-width', '84px', 'important');
-    existing.style.setProperty('max-width', '84px', 'important');
-  }
-
-  function currentVehicle(){
-    return localStorage.getItem('f54_vehicle_choice_hardfix') ||
-           localStorage.getItem('f54_vehicle_choice_final_v3') ||
-           localStorage.getItem('f54_vehicle_choice_final_v2') ||
-           localStorage.getItem('f54_vehicle_choice_final') ||
-           localStorage.getItem('f54_vehicle_choice_v4') ||
-           localStorage.getItem('f54_vehicle_choice_v3') ||
-           localStorage.getItem('f54_vehicle_choice_v2') ||
-           localStorage.getItem('f54_vehicle_choice') ||
-           'f150';
-  }
-
-  function saveVehicle(id){
-    ['f54_vehicle_choice_hardfix','f54_vehicle_choice_final_v3','f54_vehicle_choice_final_v2','f54_vehicle_choice_final','f54_vehicle_choice_v4','f54_vehicle_choice_v3','f54_vehicle_choice_v2','f54_vehicle_choice'].forEach(k => {
-      try { localStorage.setItem(k, id); } catch(e) {}
-    });
-  }
-
-  function syncCrvSelection(){
-    const active = currentVehicle();
-    document.querySelectorAll('#garagePanel .garage-opt').forEach(btn => {
-      const id = btn.dataset.vehicle === 'dot' ? 'default' : btn.dataset.vehicle;
-      const on = id === active;
-      btn.classList.toggle('on', on);
-      btn.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-  }
-
-  function getExistingVehicleSrc(kind){
-    if(kind === 'crv') return CRV_SRC;
-    const img = document.querySelector('#garagePanel .garage-opt[data-vehicle="' + kind + '"] img');
-    return img ? img.src : '';
-  }
-
-  function markerSize(kind){
-    if(kind === 'default') return [34,34];
-    const z = (typeof map !== 'undefined' && map && map.getZoom) ? map.getZoom() : 10;
-    const h = Math.max(96, Math.min(164, Math.round(96 + (z - 7) * 8)));
-    const w = Math.round(h * .64);
-    return [w,h];
-  }
-
-  function patchMarkerForCrv(){
-    if(typeof L === 'undefined') return;
-
-    const previousSetUserTruckMarker = window.setUserTruckMarker;
-    if(window.__crvSetUserTruckMarkerPatched) return;
-    window.__crvSetUserTruckMarkerPatched = true;
-
-    window.setUserTruckMarker = function(latlng){
-      const active = currentVehicle();
-
-      if(active !== 'crv'){
-        if(typeof previousSetUserTruckMarker === 'function') return previousSetUserTruckMarker(latlng);
-        return;
-      }
-
-      if(typeof map === 'undefined' || !map || !latlng) return;
-      const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
-      const s = markerSize('crv'), w = s[0], h = s[1];
-
-      const icon = L.divIcon({
-        className: 'user-vehicle-marker',
-        html: '<img src="' + CRV_SRC + '" alt="CRV">',
-        iconSize: [w,h],
-        iconAnchor: [Math.round(w/2), Math.round(h/2)]
-      });
-
-      try {
-        if(typeof userMarker === 'undefined' || !userMarker || !userMarker.setIcon){
-          if(typeof userMarker !== 'undefined' && userMarker){
-            try { map.removeLayer(userMarker); } catch(e) {}
-          }
-          userMarker = L.marker(ll, {icon:icon, interactive:false, keyboard:false, zIndexOffset:1500}).addTo(map);
-        } else {
-          userMarker.setLatLng(ll);
-          userMarker.setIcon(icon);
-        }
-      } catch(e) {}
-    };
-  }
-
-  function wireCrvClick(){
-    const panel = document.getElementById('garagePanel');
-    if(!panel || panel.__crvClickWired) return;
-    panel.__crvClickWired = true;
-
-    panel.addEventListener('pointerup', function(e){
-      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
-      if(!opt) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-      saveVehicle('crv');
-      syncCrvSelection();
-
-      if(typeof userPos !== 'undefined' && userPos && typeof window.setUserTruckMarker === 'function') window.setUserTruckMarker(userPos);
-      else if(typeof locateMe === 'function') locateMe(false);
-      if(typeof toast === 'function') toast('CRV selected');
-    }, true);
-
-    panel.addEventListener('click', function(e){
-      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
-      if(opt){
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    }, true);
-  }
-
-  function apply(){
-    injectCrv();
-    patchMarkerForCrv();
-    wireCrvClick();
-    syncCrvSelection();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
-  else apply();
-
-  [100, 300, 700, 1200, 2500, 5000, 8000].forEach(ms => setTimeout(apply, ms));
-
-  document.addEventListener('click', function(e){
-    if(e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))){
-      setTimeout(apply, 50);
-      setTimeout(apply, 220);
-      setTimeout(apply, 600);
-    }
-  }, true);
-
-  const mo = new MutationObserver(() => apply());
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="crvMobileGarageRouteFinalPatch">
-  /*
-    Mobile garage + route final:
-    - CRV visible/reliable in garage.
-    - Garage options align cleanly and swipe horizontally.
-    - Vehicle images are not clipped.
-    - Route buttons remain same size but sit together in one row.
-  */
-
-  #garagePanel,
-  body #garagePanel,
-  body > #garagePanel,
-  .garage-panel#garagePanel,
-  #garagePanel.viewport-centered-garage-tight,
-  #garagePanel.crv-mobile-garage-fixed {
-    width: min(650px, calc(100vw - 12px)) !important;
-    max-width: min(650px, calc(100vw - 12px)) !important;
-    height: 166px !important;
-    min-height: 166px !important;
-    max-height: 166px !important;
-    padding: 8px 10px 8px !important;
-    overflow: hidden !important;
-    left: 50vw !important;
-    right: auto !important;
-    transform: translate3d(-50%, 0, 0) !important;
-    box-sizing: border-box !important;
-  }
-
-  #garagePanel .garage-title {
-    height: 22px !important;
-    line-height: 22px !important;
-    margin: 0 !important;
-    padding-left: 2px !important;
-  }
-
-  #garagePanel .garage-strip,
-  #garagePanel #garageStrip {
-    display: flex !important;
-    flex-flow: row nowrap !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    gap: 0 !important;
-    column-gap: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 128px !important;
-    min-height: 128px !important;
-    max-height: 128px !important;
-    padding: 0 2px !important;
-    margin: 0 !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-x !important;
-    scroll-snap-type: x proximity !important;
-  }
-
-  #garagePanel .garage-strip::-webkit-scrollbar,
-  #garagePanel #garageStrip::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
-
-  #garagePanel .garage-opt {
-    flex: 0 0 82px !important;
-    width: 82px !important;
-    min-width: 82px !important;
-    max-width: 82px !important;
-    height: 126px !important;
-    min-height: 126px !important;
-    max-height: 126px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    scroll-snap-align: start !important;
-  }
-
-  #garagePanel .garage-opt .veh-box {
-    width: 82px !important;
-    height: 101px !important;
-    min-height: 101px !important;
-    max-height: 101px !important;
-    overflow: visible !important;
-    display: flex !important;
-    align-items: flex-start !important;
-    justify-content: center !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-
-  #garagePanel .garage-opt img,
-  #garagePanel .garage-opt[data-vehicle="corvette"] img,
-  #garagePanel .garage-opt[data-vehicle="delorean"] img,
-  #garagePanel .garage-opt[data-vehicle="crv"] img {
-    width: 98px !important;
-    height: 98px !important;
-    max-width: 98px !important;
-    max-height: 98px !important;
-    object-fit: contain !important;
-    transform: translateY(2px) !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  #garagePanel .garage-opt .veh-label {
-    width: 82px !important;
-    max-width: 82px !important;
-    height: 21px !important;
-    line-height: 21px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 12px !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    text-align: center !important;
-  }
-
-  #garagePanel .garage-opt[data-vehicle="default"],
-  #garagePanel .garage-opt[data-vehicle="dot"] {
-    flex-basis: 72px !important;
-    width: 72px !important;
-    min-width: 72px !important;
-    max-width: 72px !important;
-  }
-
-  #garagePanel .garage-opt[data-vehicle="default"] .veh-box,
-  #garagePanel .garage-opt[data-vehicle="dot"] .veh-box,
-  #garagePanel .garage-opt[data-vehicle="default"] .veh-label,
-  #garagePanel .garage-opt[data-vehicle="dot"] .veh-label {
-    width: 72px !important;
-    max-width: 72px !important;
-  }
-
-  @media (max-width: 560px) {
-    #garagePanel,
-    body #garagePanel,
-    body > #garagePanel,
-    .garage-panel#garagePanel,
-    #garagePanel.viewport-centered-garage-tight,
-    #garagePanel.crv-mobile-garage-fixed {
-      width: calc(100vw - 10px) !important;
-      max-width: calc(100vw - 10px) !important;
-    }
-
-    #garagePanel .garage-opt {
-      flex-basis: 80px !important;
-      width: 80px !important;
-      min-width: 80px !important;
-      max-width: 80px !important;
-    }
-
-    #garagePanel .garage-opt .veh-box,
-    #garagePanel .garage-opt .veh-label {
-      width: 80px !important;
-      max-width: 80px !important;
-    }
-  }
-
-  /* Route panel: keep current button size, but force the three main buttons together in one row */
-  #routePanel .route-actions,
-  #routeHud .route-actions,
-  .route-panel .route-actions,
-  .route-actions,
-  #routePanel .route-buttons,
-  #routeHud .route-buttons,
-  .route-panel .route-buttons,
-  .route-buttons {
-    display: flex !important;
-    flex-flow: row nowrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    scrollbar-width: none !important;
-  }
-
-  #routePanel .route-actions::-webkit-scrollbar,
-  #routeHud .route-actions::-webkit-scrollbar,
-  .route-panel .route-actions::-webkit-scrollbar,
-  .route-actions::-webkit-scrollbar,
-  #routePanel .route-buttons::-webkit-scrollbar,
-  #routeHud .route-buttons::-webkit-scrollbar,
-  .route-panel .route-buttons::-webkit-scrollbar,
-  .route-buttons::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  #routePanel .route-actions button,
-  #routeHud .route-actions button,
-  .route-panel .route-actions button,
-  .route-actions button,
-  #routePanel .route-buttons button,
-  #routeHud .route-buttons button,
-  .route-panel .route-buttons button,
-  .route-buttons button {
-    flex: 0 0 auto !important;
-  }
-
-  /* Keep Clear route on the next line if it is disabled/secondary, without changing the three main buttons */
-  #routePanel button.clear,
-  #routePanel button[data-action="clear"],
-  #routePanel .clear-route,
-  #routeHud button.clear,
-  #routeHud button[data-action="clear"],
-  #routeHud .clear-route,
-  .route-panel button.clear,
-  .route-panel button[data-action="clear"],
-  .route-panel .clear-route {
-    order: 10 !important;
-  }
-</style>
-
-<script id="crvMobileGarageRouteFinalScript">
-(function(){
-  const CRV_ID = 'crv';
-  const CRV_LABEL = 'CRV';
-  const CRV_SRC = 'assets/vehicle-crv.webp';
-
-  function garageStrip(){
-    return document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
-  }
-
-  function makeOpt(id, label, src){
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'garage-opt';
-    btn.dataset.vehicle = id;
-    btn.setAttribute('aria-label', label + ' marker');
-    btn.innerHTML = '<div class="veh-box"><img src="' + src + '" alt="' + label + '" draggable="false"></div><div class="veh-label">' + label + '</div>';
-    return btn;
-  }
-
-  function addCrv(){
-    const strip = garageStrip();
-    if(!strip) return;
-
-    let crv = strip.querySelector('.garage-opt[data-vehicle="crv"]');
-    if(!crv){
-      crv = makeOpt(CRV_ID, CRV_LABEL, CRV_SRC);
-
-      // Put CRV right after DeLorean, or append if DeLorean is not found.
-      const delorean = strip.querySelector('.garage-opt[data-vehicle="delorean"]');
-      if(delorean) delorean.insertAdjacentElement('afterend', crv);
-      else strip.appendChild(crv);
-    }
-
-    const img = crv.querySelector('img');
-    if(img){
-      img.src = CRV_SRC;
-      img.alt = CRV_LABEL;
-      img.draggable = false;
-    }
-
-    const label = crv.querySelector('.veh-label');
-    if(label) label.textContent = CRV_LABEL;
-  }
-
-  function layoutGarage(reset){
-    const panel = document.getElementById('garagePanel');
-    const strip = garageStrip();
-    if(!panel || !strip) return;
-
-    panel.classList.add('crv-mobile-garage-fixed');
-    if(panel.parentElement !== document.body) document.body.appendChild(panel);
-
-    panel.style.setProperty('position','fixed','important');
-    panel.style.setProperty('left','50vw','important');
-    panel.style.setProperty('right','auto','important');
-    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(650px, calc(100vw - 12px))','important');
-    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(650px, calc(100vw - 12px))','important');
-    panel.style.setProperty('height','166px','important');
-    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
-    panel.style.setProperty('overflow','hidden','important');
-
-    strip.style.setProperty('display','flex','important');
-    strip.style.setProperty('flex-flow','row nowrap','important');
-    strip.style.setProperty('justify-content','flex-start','important');
-    strip.style.setProperty('align-items','flex-start','important');
-    strip.style.setProperty('gap','0','important');
-    strip.style.setProperty('overflow-x','auto','important');
-    strip.style.setProperty('overflow-y','hidden','important');
-    strip.style.setProperty('-webkit-overflow-scrolling','touch','important');
-    if(reset) strip.scrollLeft = 0;
-
-    strip.querySelectorAll('.garage-opt').forEach(opt => {
-      const isDefault = opt.dataset.vehicle === 'default' || opt.dataset.vehicle === 'dot';
-      const w = isDefault ? (window.innerWidth <= 560 ? '72px' : '72px') : (window.innerWidth <= 560 ? '80px' : '82px');
-      opt.style.setProperty('flex','0 0 ' + w,'important');
-      opt.style.setProperty('width',w,'important');
-      opt.style.setProperty('min-width',w,'important');
-      opt.style.setProperty('max-width',w,'important');
-      opt.style.setProperty('overflow','visible','important');
-    });
-  }
-
-  function selectedVehicle(){
-    return localStorage.getItem('f54_vehicle_choice_hardfix') ||
-      localStorage.getItem('f54_vehicle_choice_final_v3') ||
-      localStorage.getItem('f54_vehicle_choice_final_v2') ||
-      localStorage.getItem('f54_vehicle_choice_final') ||
-      localStorage.getItem('f54_vehicle_choice_v4') ||
-      localStorage.getItem('f54_vehicle_choice_v3') ||
-      localStorage.getItem('f54_vehicle_choice_v2') ||
-      localStorage.getItem('f54_vehicle_choice') ||
-      'f150';
-  }
-
-  function saveVehicle(id){
-    ['f54_vehicle_choice_hardfix','f54_vehicle_choice_final_v3','f54_vehicle_choice_final_v2','f54_vehicle_choice_final','f54_vehicle_choice_v4','f54_vehicle_choice_v3','f54_vehicle_choice_v2','f54_vehicle_choice'].forEach(k => {
-      try { localStorage.setItem(k, id); } catch(e){}
-    });
-  }
-
-  function syncOn(){
-    const active = selectedVehicle();
-    document.querySelectorAll('#garagePanel .garage-opt').forEach(btn => {
-      const id = btn.dataset.vehicle === 'dot' ? 'default' : btn.dataset.vehicle;
-      btn.classList.toggle('on', id === active);
-      btn.setAttribute('aria-selected', id === active ? 'true' : 'false');
-    });
-  }
-
-  function patchCrvMarker(){
-    if(window.__crvMarkerPatchFinal) return;
-    window.__crvMarkerPatchFinal = true;
-    const old = window.setUserTruckMarker;
-
-    window.setUserTruckMarker = function(latlng){
-      if(selectedVehicle() !== 'crv'){
-        if(typeof old === 'function') return old.apply(this, arguments);
-        return;
-      }
-
-      if(typeof L === 'undefined' || typeof map === 'undefined' || !map || !latlng) return;
-      const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
-      const h = 118, w = 76;
-      const icon = L.divIcon({
-        className: 'user-vehicle-marker',
-        html: '<img src="' + CRV_SRC + '" alt="CRV">',
-        iconSize: [w,h],
-        iconAnchor: [Math.round(w/2), Math.round(h/2)]
-      });
-
-      try {
-        if(typeof userMarker === 'undefined' || !userMarker || !userMarker.setIcon){
-          userMarker = L.marker(ll, {icon:icon, interactive:false, keyboard:false, zIndexOffset:1500}).addTo(map);
-        } else {
-          userMarker.setLatLng(ll);
-          userMarker.setIcon(icon);
-        }
-      } catch(e){}
-    };
-  }
-
-  function wireCrv(){
-    const panel = document.getElementById('garagePanel');
-    if(!panel || panel.__crvFinalWired) return;
-    panel.__crvFinalWired = true;
-
-    panel.addEventListener('click', function(e){
-      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
-      if(!opt) return;
-      e.preventDefault();
-      e.stopPropagation();
-      saveVehicle('crv');
-      syncOn();
-      if(typeof userPos !== 'undefined' && userPos && typeof window.setUserTruckMarker === 'function') window.setUserTruckMarker(userPos);
-      if(typeof toast === 'function') toast('CRV selected');
-    }, true);
-  }
-
-  function fixRouteButtons(){
-    const panels = document.querySelectorAll('#routePanel,#routeHud,.route-panel');
-    panels.forEach(panel => {
-      const buttons = Array.from(panel.querySelectorAll('button')).filter(btn => {
-        const t = (btn.textContent || '').trim().toLowerCase();
-        return t === 'my location' || t === 'start here' || t === 'navigate';
-      });
-      if(buttons.length < 3) return;
-
-      let row = panel.querySelector('.route-main-buttons-final');
-      if(!row){
-        row = document.createElement('div');
-        row.className = 'route-main-buttons-final route-actions route-buttons';
-        buttons[0].parentElement.insertBefore(row, buttons[0]);
-      }
-
-      buttons.forEach(btn => row.appendChild(btn));
-      row.style.setProperty('display','flex','important');
-      row.style.setProperty('flex-flow','row nowrap','important');
-      row.style.setProperty('align-items','center','important');
-      row.style.setProperty('justify-content','flex-start','important');
-      row.style.setProperty('gap','10px','important');
-      row.style.setProperty('overflow-x','auto','important');
-
-      buttons.forEach(btn => {
-        btn.style.setProperty('flex','0 0 auto','important');
-      });
-    });
-  }
-
-  function apply(resetGarage){
-    addCrv();
-    layoutGarage(resetGarage);
-    patchCrvMarker();
-    wireCrv();
-    syncOn();
-    fixRouteButtons();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => apply(false));
-  else apply(false);
-
-  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(() => apply(false), ms));
-
-  document.addEventListener('click', function(e){
-    if(e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))){
-      setTimeout(() => apply(true), 40);
-      setTimeout(() => apply(false), 160);
-      setTimeout(() => apply(false), 500);
-    }
-  }, true);
-
-  const mo = new MutationObserver(() => apply(false));
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
-})();
-</script>
-
-
-<style id="nearbyTemplateRemovedFinalPatch">
-  /* Nearby is removed from the template; this is a backup for any cached/legacy rendered block. */
-  .inline-nearby-card,
-  #nearbyScroll,
-  #infoNearbyPlaces,
-  [data-remove-nearby-final="1"],
-  [data-hidden-nearby="1"],
-  #sheet .nearby,
-  #sheet .nearby-section,
-  #sheet .nearby-panel,
-  #sheet .nearby-wrap,
-  #sheet .nearby-box,
-  #sheet .nearby-card,
-  #sheet .nearby-row,
-  #sheet .places,
-  #sheet .places-row,
-  #sheet [data-section="nearby"],
-  .sheet .nearby,
-  .sheet .nearby-section,
-  .sheet .nearby-panel,
-  .sheet .nearby-wrap,
-  .sheet .nearby-box,
-  .sheet .nearby-card,
-  .sheet .nearby-row,
-  .sheet .places,
-  .sheet .places-row,
-  .sheet [data-section="nearby"],
-  .store-sheet .nearby,
-  .store-sheet .nearby-section,
-  .store-sheet .nearby-panel,
-  .store-sheet .nearby-wrap,
-  .store-sheet .nearby-box,
-  .store-sheet .nearby-card,
-  .store-sheet .nearby-row,
-  .store-sheet .places,
-  .store-sheet .places-row,
-  .store-sheet [data-section="nearby"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-    overflow: hidden !important;
-    pointer-events: none !important;
-  }
-
-  /* Make the travel/weather info readable: 2x2, not squeezed four across. */
-  .inline-travel-stats,
-  #sheet .inline-travel-stats,
-  .sheet .inline-travel-stats,
-  .store-sheet .inline-travel-stats {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 9px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 10px 0 12px !important;
-    overflow: visible !important;
-  }
-
-  .inline-travel-stats .stat,
-  #sheet .inline-travel-stats .stat,
-  .sheet .inline-travel-stats .stat,
-  .store-sheet .inline-travel-stats .stat {
-    min-width: 0 !important;
-    width: auto !important;
-    max-width: 100% !important;
-    min-height: 76px !important;
-    height: auto !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;
-  }
-
-  .inline-travel-stats .stat .n,
-  #sheet .inline-travel-stats .stat .n,
-  .sheet .inline-travel-stats .stat .n,
-  .store-sheet .inline-travel-stats .stat .n {
-    display: block !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-    font-size: clamp(19px, 4.4vw, 25px) !important;
-    line-height: 1.05 !important;
-  }
-
-  .inline-travel-stats .stat .l,
-  #sheet .inline-travel-stats .stat .l,
-  .sheet .inline-travel-stats .stat .l,
-  .store-sheet .inline-travel-stats .stat .l {
-    display: block !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    font-size: 10px !important;
-    line-height: 1.15 !important;
-    letter-spacing: .06em !important;
-  }
-
-  .inline-forecast-card,
-  #sheet .inline-forecast-card,
-  .sheet .inline-forecast-card,
-  .store-sheet .inline-forecast-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important;
-  }
-</style>
-
-<script id="nearbyTemplateRemovedFinalScript">
-(function(){
-  function text(el){
-    return (el && el.textContent || '').replace(/\s+/g,' ').trim();
-  }
-
-  function kill(el){
-    if(!el || el === document.body || el === document.documentElement) return;
-    el.dataset.removeNearbyFinal = '1';
-    el.dataset.hiddenNearby = '1';
-    el.style.setProperty('display','none','important');
-    el.style.setProperty('visibility','hidden','important');
-    el.style.setProperty('height','0','important');
-    el.style.setProperty('min-height','0','important');
-    el.style.setProperty('max-height','0','important');
-    el.style.setProperty('padding','0','important');
-    el.style.setProperty('margin','0','important');
-    el.style.setProperty('border','0','important');
-    el.style.setProperty('overflow','hidden','important');
-    el.style.setProperty('pointer-events','none','important');
-  }
-
-  function removeNearby(){
-    document.querySelectorAll('.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.nearby-card,.nearby-row,.places,.places-row,[data-section="nearby"]').forEach(kill);
-
-    document.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
-      const t = text(el).toLowerCase();
-
-      if(t === 'nearby'){
-        let block = el.closest('.inline-nearby-card,.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.nearby-card,.section,.card,.panel,section,div') || el;
-        // Prefer the block that contains the nearby buttons if present.
-        let cur = el;
-        for(let i=0;i<6 && cur && cur !== document.body;i++,cur=cur.parentElement){
-          if(cur.querySelector && (cur.querySelector('#nearbyScroll') || cur.querySelector('[data-nearby-q]') || /hotels|hilton/i.test(text(cur)))) {
-            block = cur;
-            break;
-          }
-        }
-        kill(block);
-      }
-
-      if(el.hasAttribute && el.hasAttribute('data-nearby-q')){
-        let block = el.closest('.inline-nearby-card,.nearby-scroll,.nearby-quick,.nearby,.places-row,.card,.section,section,div') || el.parentElement || el;
-        kill(block);
-      }
-    });
-
-    // If only the Hotels/Hilton chip row remains, remove its row/container.
-    document.querySelectorAll('button,a,.btn,.chip,.pill,div').forEach(el => {
-      const t = text(el).toLowerCase();
-      if(t === 'hotels' || t === 'hilton'){
-        let row = el.parentElement || el;
-        for(let i=0;i<5 && row && row !== document.body;i++,row=row.parentElement){
-          if(/hotels|hilton/i.test(text(row))) {
-            kill(row);
-            break;
-          }
-        }
-      }
-    });
-  }
-
-  function fixTravelStats(){
-    document.querySelectorAll('.inline-travel-stats').forEach(grid => {
-      grid.style.setProperty('display','grid','important');
-      grid.style.setProperty('grid-template-columns','repeat(2, minmax(0, 1fr))','important');
-      grid.style.setProperty('gap','9px','important');
-      grid.style.setProperty('width','100%','important');
-      grid.style.setProperty('max-width','100%','important');
-      grid.querySelectorAll('.stat').forEach(card => {
-        card.style.setProperty('min-height','76px','important');
-        card.style.setProperty('height','auto','important');
-        card.style.setProperty('overflow','visible','important');
-      });
-      grid.querySelectorAll('.stat .n,.stat .l').forEach(el => {
-        el.style.setProperty('white-space','normal','important');
-        el.style.setProperty('overflow','visible','important');
-        el.style.setProperty('text-overflow','clip','important');
-      });
-    });
-  }
-
-  function run(){
-    removeNearby();
-    fixTravelStats();
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-
-  [50,150,300,700,1200,2200,5000,8000].forEach(ms => setTimeout(run, ms));
-  document.addEventListener('click', () => {
-    setTimeout(run, 50);
-    setTimeout(run, 180);
-    setTimeout(run, 450);
-  }, true);
-
-  const mo = new MutationObserver(run);
-  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true, characterData:true});
-})();
-</script>
-
-
-<style id="iTravelGithubWorkingCss">
-  /* Header: weather cannot sit behind logo. On mobile, forecast moves below logo/time. */
-  header .h-main{
-    display:grid!important;
-    grid-template-columns:clamp(180px,24vw,320px) minmax(0,1fr) auto!important;
-    grid-template-areas:"logo forecast time"!important;
-    align-items:center!important;
-    gap:12px!important;
-    overflow:hidden!important;
-  }
-  .logo-brand{
-    grid-area:logo!important;
-    width:100%!important;
-    max-width:320px!important;
-    min-width:0!important;
-    height:68px!important;
-    overflow:hidden!important;
-    z-index:2!important;
-  }
-  .logo-brand img{
-    width:100%!important;
-    height:100%!important;
-    object-fit:contain!important;
-    object-position:left center!important;
-  }
-  #fcStrip,.header-forecast{
-    grid-area:forecast!important;
-    min-width:0!important;
-    max-width:100%!important;
-    width:100%!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-    backdrop-filter:none!important;
-    position:relative!important;
-    z-index:1!important;
+  const mo = new MutationObserver(() => clearHeaderBoxes());
+  if (document.documentElement) {
+    mo.observe(document.documentElement, {childList:true, subtree:true});
   }
-  .wxnow{
-    grid-area:time!important;
-    justify-self:end!important;
-    min-width:max-content!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-  }
-  #fcStrip .fc-day,.header-forecast .fc-day,
-  #fcStrip .fc-loc,.header-forecast .fc-loc{
-    background:transparent!important;
-    box-shadow:none!important;
-  }
-  @media(max-width:720px){
-    header .h-main{
-      grid-template-columns:150px minmax(0,1fr)!important;
-      grid-template-areas:"logo time" "forecast forecast"!important;
-      gap:4px 8px!important;
-      padding:7px 10px!important;
-      min-height:82px!important;
-    }
-    .logo-brand{height:42px!important;max-width:150px!important}
-    #fcStrip,.header-forecast{
-      padding:2px 0!important;
-      min-height:26px!important;
-      gap:10px!important;
-    }
-    #fcStrip .fc-loc,.header-forecast .fc-loc{font-size:11px!important}
-    #fcStrip .fc-day,.header-forecast .fc-day{font-size:11px!important;padding:0 6px!important}
-    .wxnow .clock{font-size:17px!important}
-    .wxnow .tnow{font-size:13px!important}
-  }
-
-  /* Banner: markets left, compact location, icons right. */
-  .controls .filterbar,.filterbar{
-    display:grid!important;
-    grid-template-columns:max-content 170px minmax(0,1fr)!important;
-    grid-template-areas:"markets search actions"!important;
-    align-items:center!important;
-    gap:10px!important;
-    width:100%!important;
-    max-width:100%!important;
-    margin:0!important;
-    padding:0 10px 0 0!important;
-    box-sizing:border-box!important;
-  }
-  #filterRow,.pillrow{
-    grid-area:markets!important;
-    justify-self:start!important;
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    gap:6px!important;
-    width:auto!important;
-    min-width:max-content!important;
-    max-width:none!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:visible!important;
-  }
-  .filterbar>.searchbox{
-    grid-area:search!important;
-    justify-self:start!important;
-    width:170px!important;
-    min-width:170px!important;
-    max-width:170px!important;
-    margin:0!important;
-    padding:0!important;
-    transform:translateY(2px)!important;
-  }
-  #locPicker,.loc-select,.filterbar>.searchbox select{
-    width:170px!important;
-    min-width:170px!important;
-    max-width:170px!important;
-    height:38px!important;
-    font-size:14px!important;
-    box-sizing:border-box!important;
-  }
-  .quick-actions{
-    grid-area:actions!important;
-    justify-self:end!important;
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    align-items:center!important;
-    justify-content:flex-end!important;
-    gap:10px!important;
-    width:auto!important;
-    min-width:max-content!important;
-    margin-left:auto!important;
-    margin-right:0!important;
-    overflow:visible!important;
-  }
-  @media(max-width:720px){
-    .controls .filterbar,.filterbar{
-      grid-template-columns:max-content 145px minmax(0,1fr)!important;
-      gap:6px!important;
-      padding-right:5px!important;
-    }
-    .filterbar>.searchbox,#locPicker,.loc-select,.filterbar>.searchbox select{
-      width:145px!important;
-      min-width:145px!important;
-      max-width:145px!important;
-      font-size:13px!important;
-    }
-    #filterRow .pill,.pillrow .pill{padding-left:6px!important;padding-right:6px!important}
-    .quick-actions{gap:7px!important}
-  }
-
-  /* Make pins tappable on mobile. */
-  .leaflet-marker-icon,.leaflet-marker-icon *,.pin,.pin *{
-    pointer-events:auto!important;
-    touch-action:manipulation!important;
-  }
-  .pin{
-    min-width:34px!important;
-    min-height:34px!important;
-  }
-
-  /* Garage: keep image/background, align all selections same size, scroll horizontally. */
-  #garagePanel{
-    position:fixed!important;
-    left:50vw!important;
-    right:auto!important;
-    top:var(--garage-working-top,152px)!important;
-    transform:translateX(-50%)!important;
-    width:min(650px,calc(100vw - 12px))!important;
-    max-width:min(650px,calc(100vw - 12px))!important;
-    height:166px!important;
-    min-height:166px!important;
-    max-height:166px!important;
-    padding:8px 12px!important;
-    margin:0!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-    z-index:999999!important;
-    background-image:url("assets/asset-029.webp")!important;
-    background-size:100% 100%!important;
-    background-position:center center!important;
-    background-repeat:no-repeat!important;
-  }
-  #garagePanel .garage-close,#garagePanel .garage-sub{display:none!important}
-  #garagePanel .garage-title{
-    font-family:Georgia,"Times New Roman",serif!important;
-    font-size:18px!important;
-    line-height:22px!important;
-    height:22px!important;
-    margin:0 0 2px!important;
-    padding-left:3px!important;
-    color:#fff!important;
-    text-shadow:0 2px 4px rgba(0,0,0,.8)!important;
-  }
-  #garagePanel .garage-grid,#garagePanel .garage-strip,#garageStrip{
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    align-items:flex-start!important;
-    justify-content:flex-start!important;
-    gap:0!important;
-    width:100%!important;
-    max-width:100%!important;
-    height:128px!important;
-    padding:0 2px!important;
-    margin:0!important;
-    overflow-x:auto!important;
-    overflow-y:hidden!important;
-    scrollbar-width:none!important;
-    -webkit-overflow-scrolling:touch!important;
-    touch-action:pan-x!important;
-  }
-  #garagePanel .garage-grid::-webkit-scrollbar,#garagePanel .garage-strip::-webkit-scrollbar,#garageStrip::-webkit-scrollbar{display:none!important}
-  #garagePanel .garage-opt{
-    flex:0 0 82px!important;
-    width:82px!important;
-    min-width:82px!important;
-    max-width:82px!important;
-    height:126px!important;
-    min-height:126px!important;
-    max-height:126px!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:visible!important;
-    display:flex!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    background:transparent!important;
-    border:0!important;
-    box-shadow:none!important;
-  }
-  #garagePanel .garage-opt .veh-box{
-    width:82px!important;
-    height:101px!important;
-    display:flex!important;
-    align-items:flex-start!important;
-    justify-content:center!important;
-    overflow:visible!important;
-    background:transparent!important;
-  }
-  #garagePanel .garage-opt img{
-    width:98px!important;
-    height:98px!important;
-    max-width:98px!important;
-    max-height:98px!important;
-    object-fit:contain!important;
-    transform:translateY(2px)!important;
-    background:transparent!important;
-  }
-  #garagePanel .garage-opt .veh-label,#garagePanel .garage-opt>span{
-    width:82px!important;
-    max-width:82px!important;
-    height:21px!important;
-    line-height:21px!important;
-    margin:0!important;
-    padding:0!important;
-    font-size:12px!important;
-    color:#fff!important;
-    text-align:center!important;
-    white-space:nowrap!important;
-    overflow:visible!important;
-    text-shadow:0 2px 4px rgba(0,0,0,.9)!important;
-  }
-  #garagePanel .garage-opt.on{filter:drop-shadow(0 0 7px rgba(255,222,126,.95))!important}
-  .garage-dot-preview{
-    width:44px!important;
-    height:44px!important;
-    border-radius:50%!important;
-    background:#b5121b!important;
-    color:#fff!important;
-    border:3px solid #fff!important;
-    display:grid!important;
-    place-items:center!important;
-    font-weight:900!important;
-    margin-top:28px!important;
-  }
-
-  /* Nearby fully removed. */
-  [data-tab="nearby"],#tabNearby,.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,[data-nearby-q]{
-    display:none!important;
-    visibility:hidden!important;
-    height:0!important;
-    min-height:0!important;
-    max-height:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-
-  /* Route buttons together, same size. */
-  .route-main-buttons-final{
-    display:flex!important;
-    flex-flow:row nowrap!important;
-    gap:10px!important;
-    align-items:center!important;
-    overflow-x:auto!important;
-    scrollbar-width:none!important;
-  }
-  .route-main-buttons-final::-webkit-scrollbar{display:none!important}
-  .route-main-buttons-final button{flex:0 0 auto!important}
-</style>
-
-
-<script id="iTravelGithubWorkingJs">
-(function(){
-  const DEFAULT_COORD={lat:39.9142,lng:-93.9622};
-  const DEFAULT_LABEL='Gallatin, MO';
-
-  function setHeaderDefault(){
-    const fc=document.getElementById('fcStrip');
-    if(fc && (/locating|forecast unavailable/i.test(fc.textContent||'') || !fc.textContent.trim())){
-      fc.innerHTML='<span class="fc-loc"><span class="fc-city">Gallatin, MO</span></span><span class="fc-day"><span class="d">Today</span> 🌤️ <span class="t">75°/69°</span></span><span class="fc-day"><span class="d">Sat</span> 🌤️ <span class="t">87°/68°</span></span><span class="fc-day"><span class="d">Sun</span> 🌤️ <span class="t">90°/77°</span></span><span class="fc-day"><span class="d">Mon</span> 🌤️ <span class="t">90°/77°</span></span>';
-    }
-    const wi=document.getElementById('wxIcon'), wt=document.getElementById('wxTemp');
-    if(wi && (!wi.textContent || wi.textContent.trim()==='·')) wi.textContent='🌤️';
-    if(wt && /--/.test(wt.textContent||'')) wt.textContent='70°';
-  }
-
-  function fixSatx(){
-    document.querySelectorAll('#filterRow .pill,.pillrow .pill').forEach(p=>{
-      p.childNodes.forEach(n=>{ if(n.nodeType===3) n.nodeValue=n.nodeValue.replace(/\bSAT\b/g,'SATX'); });
-    });
-  }
-
-  function garageTop(){
-    const controls=document.querySelector('.controls');
-    const top=controls?Math.round(controls.getBoundingClientRect().bottom+8):152;
-    document.documentElement.style.setProperty('--garage-working-top',Math.max(120,top)+'px');
-  }
-
-  function fixGarage(){
-    const panel=document.getElementById('garagePanel');
-    const btn=document.getElementById('garageBtn');
-    if(!panel) return;
-    if(panel.parentElement!==document.body) document.body.appendChild(panel);
-    garageTop();
-
-    let strip=panel.querySelector('#garageStrip,.garage-strip,.garage-grid');
-    if(strip){
-      strip.id='garageStrip';
-      strip.className='garage-strip';
-      if(!strip.querySelector('[data-vehicle="crv"]')){
-        const crv=document.createElement('button');
-        crv.className='garage-opt';
-        crv.type='button';
-        crv.dataset.vehicle='crv';
-        crv.setAttribute('aria-label','CRV marker');
-        crv.innerHTML='<div class="veh-box"><img src="assets/vehicle-crv.webp" alt="" draggable="false"></div><div class="veh-label">CRV</div>';
-        const delorean=strip.querySelector('[data-vehicle="delorean"]');
-        if(delorean) delorean.insertAdjacentElement('afterend',crv); else strip.appendChild(crv);
-      }
-      const order=['default','dot','f150','ram','lightning','corvette','delorean','crv'];
-      Array.from(strip.querySelectorAll('.garage-opt')).sort((a,b)=>order.indexOf(a.dataset.vehicle)-order.indexOf(b.dataset.vehicle)).forEach(x=>strip.appendChild(x));
-    }
-
-    if(btn && !btn.dataset.finalGarageClick){
-      btn.dataset.finalGarageClick='1';
-      btn.addEventListener('click',function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        garageTop();
-        if(panel.hasAttribute('hidden')) panel.removeAttribute('hidden');
-        else panel.setAttribute('hidden','hidden');
-      },true);
-    }
-  }
-
-  function makeLocationsTouchable(){
-    document.querySelectorAll('.pin[data-loc-id]').forEach(pin=>{
-      if(pin.dataset.touchReady) return;
-      pin.dataset.touchReady='1';
-      const open=ev=>{
-        const id=pin.dataset.locId;
-        if(!id) return;
-        ev.preventDefault();
-        ev.stopPropagation();
-        if(typeof window.openLocation==='function') window.openLocation(id);
-        else if(typeof openLocation==='function') openLocation(id);
-      };
-      pin.addEventListener('touchend',open,{passive:false});
-      pin.addEventListener('pointerup',open);
-    });
-  }
-
-  function removeNearby(){
-    document.querySelectorAll('[data-tab="nearby"],#tabNearby,.inline-nearby-card,#nearbyScroll,#infoNearbyPlaces,[data-nearby-q]').forEach(el=>{
-      const block=el.closest('.inline-nearby-card')||el;
-      block.style.setProperty('display','none','important');
-      block.style.setProperty('visibility','hidden','important');
-      block.style.setProperty('height','0','important');
-      block.style.setProperty('margin','0','important');
-      block.style.setProperty('padding','0','important');
-    });
-  }
-
-  function routeButtons(){
-    document.querySelectorAll('#routeHud,.route-hud,#routePanel,.route-panel').forEach(panel=>{
-      const btns=Array.from(panel.querySelectorAll('button')).filter(b=>/^(my location|start here|navigate)$/i.test((b.textContent||'').trim()));
-      if(btns.length<3) return;
-      let row=panel.querySelector('.route-main-buttons-final');
-      if(!row){
-        row=document.createElement('div');
-        row.className='route-main-buttons-final';
-        btns[0].parentElement.insertBefore(row,btns[0]);
-      }
-      btns.forEach(b=>row.appendChild(b));
-    });
-  }
-
-  function run(){
-    setHeaderDefault();
-    fixSatx();
-    fixGarage();
-    makeLocationsTouchable();
-    removeNearby();
-    routeButtons();
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run);
-  else run();
-
-  [80,200,500,1000,2000,5000,8000].forEach(ms=>setTimeout(run,ms));
-  window.addEventListener('resize',garageTop,{passive:true});
-  document.addEventListener('click',()=>setTimeout(run,60),true);
-  document.addEventListener('touchend',()=>setTimeout(run,60),true);
-  new MutationObserver(()=>{fixSatx();makeLocationsTouchable();removeNearby();routeButtons();}).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
