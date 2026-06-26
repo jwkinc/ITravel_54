@@ -15547,5 +15547,485 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="marketGarageTightFinalPatch">
+  /*
+    Final tight layout:
+    - Market tabs start at far left.
+    - Choose location is much narrower and vertically centered/lowered.
+    - Icons are pinned to the far right on desktop and mobile.
+    - Garage is narrower, centered, horizontally swipeable, with options close together.
+    - Vehicle images are not clipped at the top.
+  */
+
+  .controls {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .controls .filterbar,
+  .filterbar {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 12px 0 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    transform: none !important;
+  }
+
+  #filterRow,
+  .filterbar .pillrow,
+  .pillrow {
+    order: 1 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  #filterRow .pill,
+  .pillrow .pill {
+    flex: 0 0 auto !important;
+  }
+
+  .filterbar .searchbox,
+  .controls .searchbox {
+    order: 2 !important;
+    flex: 0 0 185px !important;
+    width: 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(4px) !important;
+    align-self: center !important;
+  }
+
+  #locPicker,
+  .loc-select,
+  .filterbar .searchbox select,
+  .filterbar select {
+    width: 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    line-height: 38px !important;
+    box-sizing: border-box !important;
+    font-size: 15px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    transform: none !important;
+  }
+
+  .quick-actions,
+  .filterbar .quick-actions,
+  .controls .quick-actions {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 12px !important;
+    transform: none !important;
+  }
+
+  .quick-actions .iconbtn,
+  .quick-actions button {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  @media (max-width: 1100px) {
+    .controls .filterbar,
+    .filterbar {
+      gap: 8px !important;
+      padding-right: 6px !important;
+    }
+
+    .filterbar .searchbox,
+    .controls .searchbox,
+    #locPicker,
+    .loc-select,
+    .filterbar .searchbox select,
+    .filterbar select {
+      flex-basis: 150px !important;
+      width: 150px !important;
+      min-width: 150px !important;
+      max-width: 150px !important;
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      line-height: 38px !important;
+      font-size: 13px !important;
+    }
+
+    .filterbar .searchbox,
+    .controls .searchbox {
+      transform: translateY(3px) !important;
+    }
+
+    #filterRow .pill,
+    .pillrow .pill {
+      padding-left: 7px !important;
+      padding-right: 7px !important;
+    }
+
+    .quick-actions,
+    .filterbar .quick-actions {
+      gap: 7px !important;
+    }
+  }
+
+  /* Narrow centered garage. Extra vehicles are browsed by horizontal swipe. */
+  #garagePanel,
+  body #garagePanel,
+  body > #garagePanel,
+  .garage-panel#garagePanel,
+  #garagePanel.viewport-centered-garage-tight {
+    position: fixed !important;
+    left: 50vw !important;
+    right: auto !important;
+    top: var(--garage-tight-top, 292px) !important;
+    width: min(610px, calc(100vw - 16px)) !important;
+    max-width: min(610px, calc(100vw - 16px)) !important;
+    min-width: 0 !important;
+    height: 160px !important;
+    min-height: 160px !important;
+    max-height: 160px !important;
+    margin: 0 !important;
+    padding: 7px 10px 8px !important;
+    transform: translate3d(-50%, 0, 0) !important;
+    box-sizing: border-box !important;
+    z-index: 999999 !important;
+    overflow: hidden !important;
+    inset-inline-start: 50vw !important;
+    inset-inline-end: auto !important;
+  }
+
+  #garagePanel .garage-title {
+    height: 21px !important;
+    line-height: 21px !important;
+    margin: 0 !important;
+    padding-left: 3px !important;
+  }
+
+  #garagePanel .garage-strip,
+  #garagePanel #garageStrip {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    height: 124px !important;
+    min-height: 124px !important;
+    max-height: 124px !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    column-gap: 0 !important;
+    padding: 0 2px !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+  }
+
+  #garagePanel .garage-strip::-webkit-scrollbar,
+  #garagePanel #garageStrip::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  #garagePanel .garage-opt {
+    flex: 0 0 84px !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
+    height: 122px !important;
+    min-height: 122px !important;
+    max-height: 122px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    scroll-snap-align: start !important;
+  }
+
+  #garagePanel .garage-opt + .garage-opt {
+    margin-left: -2px !important;
+  }
+
+  #garagePanel .garage-opt .veh-box {
+    width: 84px !important;
+    height: 98px !important;
+    min-height: 98px !important;
+    max-height: 98px !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+  }
+
+  #garagePanel .garage-opt img,
+  #garagePanel .garage-opt[data-vehicle="corvette"] img,
+  #garagePanel .garage-opt[data-vehicle="delorean"] img {
+    width: 100px !important;
+    height: 100px !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+    transform: translateY(0) !important;
+    object-fit: contain !important;
+  }
+
+  #garagePanel .garage-opt .veh-label {
+    width: 84px !important;
+    max-width: 84px !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+    height: 20px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  #garagePanel .garage-opt[data-vehicle="default"],
+  #garagePanel .garage-opt[data-vehicle="dot"] {
+    flex-basis: 72px !important;
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  #garagePanel .garage-opt[data-vehicle="default"] .veh-box,
+  #garagePanel .garage-opt[data-vehicle="dot"] .veh-box,
+  #garagePanel .garage-opt[data-vehicle="default"] .veh-label,
+  #garagePanel .garage-opt[data-vehicle="dot"] .veh-label {
+    width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    body #garagePanel,
+    body > #garagePanel,
+    .garage-panel#garagePanel,
+    #garagePanel.viewport-centered-garage-tight {
+      width: calc(100vw - 10px) !important;
+      max-width: calc(100vw - 10px) !important;
+      left: 50vw !important;
+      transform: translate3d(-50%, 0, 0) !important;
+    }
+  }
+</style>
+
+<script id="marketGarageTightFinalScript">
+(function(){
+  function controlsBottom(){
+    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
+    let bottom = 0;
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 60) bottom = r.bottom;
+      });
+    });
+    return Math.max(120, Math.round((bottom || 210) + 8));
+  }
+
+  function forceMarketBanner(){
+    const filterbar = document.querySelector('.filterbar');
+    const pillrow = document.getElementById('filterRow') || document.querySelector('.filterbar .pillrow,.pillrow');
+    const searchbox = document.querySelector('.filterbar .searchbox,.controls .searchbox');
+    const select = document.getElementById('locPicker') || document.querySelector('.filterbar select,.loc-select');
+    const actions = document.querySelector('.filterbar .quick-actions,.controls .quick-actions,.quick-actions');
+
+    if(filterbar){
+      filterbar.style.setProperty('display','flex','important');
+      filterbar.style.setProperty('flex-flow','row nowrap','important');
+      filterbar.style.setProperty('align-items','center','important');
+      filterbar.style.setProperty('justify-content','flex-start','important');
+      filterbar.style.setProperty('width','100%','important');
+      filterbar.style.setProperty('max-width','100%','important');
+      filterbar.style.setProperty('margin','0','important');
+      filterbar.style.setProperty('padding-left','0','important');
+      filterbar.style.setProperty('padding-right', window.innerWidth <= 1100 ? '6px' : '12px','important');
+      filterbar.style.setProperty('gap', window.innerWidth <= 1100 ? '8px' : '10px','important');
+      filterbar.style.setProperty('transform','none','important');
+    }
+
+    if(pillrow){
+      pillrow.style.setProperty('order','1','important');
+      pillrow.style.setProperty('flex','0 0 auto','important');
+      pillrow.style.setProperty('width','auto','important');
+      pillrow.style.setProperty('min-width','max-content','important');
+      pillrow.style.setProperty('max-width','none','important');
+      pillrow.style.setProperty('margin','0','important');
+      pillrow.style.setProperty('padding','0','important');
+      pillrow.style.setProperty('justify-content','flex-start','important');
+      pillrow.style.setProperty('overflow','visible','important');
+    }
+
+    const w = window.innerWidth <= 1100 ? '150px' : '185px';
+    if(searchbox){
+      searchbox.style.setProperty('order','2','important');
+      searchbox.style.setProperty('flex','0 0 '+w,'important');
+      searchbox.style.setProperty('width',w,'important');
+      searchbox.style.setProperty('min-width',w,'important');
+      searchbox.style.setProperty('max-width',w,'important');
+      searchbox.style.setProperty('margin','0','important');
+      searchbox.style.setProperty('padding','0','important');
+      searchbox.style.setProperty('align-self','center','important');
+      searchbox.style.setProperty('transform', window.innerWidth <= 1100 ? 'translateY(3px)' : 'translateY(4px)','important');
+    }
+
+    if(select){
+      select.style.setProperty('width',w,'important');
+      select.style.setProperty('min-width',w,'important');
+      select.style.setProperty('max-width',w,'important');
+      select.style.setProperty('height','38px','important');
+      select.style.setProperty('line-height','38px','important');
+      select.style.setProperty('box-sizing','border-box','important');
+      select.style.setProperty('font-size', window.innerWidth <= 1100 ? '13px' : '15px','important');
+    }
+
+    if(actions){
+      actions.style.setProperty('order','3','important');
+      actions.style.setProperty('flex','0 0 auto','important');
+      actions.style.setProperty('width','auto','important');
+      actions.style.setProperty('min-width','max-content','important');
+      actions.style.setProperty('margin-left','auto','important');
+      actions.style.setProperty('margin-right','0','important');
+      actions.style.setProperty('display','flex','important');
+      actions.style.setProperty('justify-content','flex-end','important');
+      actions.style.setProperty('align-items','center','important');
+      actions.style.setProperty('gap', window.innerWidth <= 1100 ? '7px' : '12px','important');
+    }
+  }
+
+  function moveGarageToBody(){
+    const panel = document.getElementById('garagePanel');
+    if(!panel) return null;
+    if(panel.parentElement !== document.body) document.body.appendChild(panel);
+    panel.classList.add('viewport-centered-garage-tight');
+    return panel;
+  }
+
+  function forceGarage(resetScroll){
+    const panel = moveGarageToBody();
+    if(!panel) return;
+
+    document.documentElement.style.setProperty('--garage-tight-top', controlsBottom() + 'px');
+
+    panel.style.setProperty('position','fixed','important');
+    panel.style.setProperty('left','50vw','important');
+    panel.style.setProperty('right','auto','important');
+    panel.style.setProperty('top','var(--garage-tight-top)','important');
+    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(610px, calc(100vw - 16px))','important');
+    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(610px, calc(100vw - 16px))','important');
+    panel.style.setProperty('min-width','0','important');
+    panel.style.setProperty('height','160px','important');
+    panel.style.setProperty('min-height','160px','important');
+    panel.style.setProperty('max-height','160px','important');
+    panel.style.setProperty('margin','0','important');
+    panel.style.setProperty('padding','7px 10px 8px','important');
+    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
+    panel.style.setProperty('box-sizing','border-box','important');
+    panel.style.setProperty('z-index','999999','important');
+    panel.style.setProperty('overflow','hidden','important');
+
+    const strip = panel.querySelector('#garageStrip,.garage-strip');
+    if(strip){
+      strip.style.setProperty('width','100%','important');
+      strip.style.setProperty('max-width','100%','important');
+      strip.style.setProperty('display','flex','important');
+      strip.style.setProperty('flex-flow','row nowrap','important');
+      strip.style.setProperty('justify-content','flex-start','important');
+      strip.style.setProperty('gap','0','important');
+      strip.style.setProperty('overflow-x','auto','important');
+      strip.style.setProperty('overflow-y','hidden','important');
+      if(resetScroll) strip.scrollLeft = 0;
+    }
+
+    requestAnimationFrame(() => {
+      const r = panel.getBoundingClientRect();
+      if(!r.width) return;
+      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
+      if(Math.abs(r.left - targetLeft) > 2){
+        panel.style.setProperty('left', targetLeft + 'px', 'important');
+        panel.style.setProperty('transform', 'none', 'important');
+      }
+    });
+  }
+
+  function openGarageWatcher(e){
+    const t = e.target;
+    if(t && t.closest && t.closest('#garageBtn,#garagePanel')){
+      setTimeout(() => forceGarage(true), 20);
+      setTimeout(() => forceGarage(false), 120);
+      setTimeout(() => forceGarage(false), 360);
+      setTimeout(() => forceGarage(false), 800);
+    }
+  }
+
+  function applyAll(){
+    forceMarketBanner();
+    forceGarage(false);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
+  else applyAll();
+
+  window.addEventListener('resize', applyAll, {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(applyAll, 120);
+    setTimeout(() => forceGarage(true), 300);
+  }, {passive:true});
+
+  document.addEventListener('pointerdown', openGarageWatcher, true);
+  document.addEventListener('click', openGarageWatcher, true);
+
+  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
+
+  const mo = new MutationObserver(() => applyAll());
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
 </body>
 </html>

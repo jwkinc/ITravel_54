@@ -1,10 +1,12 @@
-# ITravel_54 — Banner and Garage Layout Fixed
+# ITravel_54 — Market and Garage Tight Final
 
-This build force-corrects the market banner and garage layout:
-- Market tabs start on the far left of the banner.
-- Choose location is compact and immediately after the markets.
-- Icons are pinned to the right side of the banner.
-- Garage panel is moved under body and centered to the viewport at all screen widths.
+This build fixes the banner and garage layout:
+- Market tabs start at the far left.
+- Choose location is narrower and vertically centered/lowered.
+- Icons are pinned to the right side.
+- Garage panel is narrower.
+- Garage selections sit next to each other, with horizontal swipe for extra cars.
+- Vehicle images are no longer clipped at the top.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.
