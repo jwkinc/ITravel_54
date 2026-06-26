@@ -7,11 +7,11 @@ self.addEventListener('activate', event => {
     try {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));
-    } catch(e) {}
-    try { await self.clients.claim(); } catch(e) {}
+    } catch (e) {}
+    try { await self.clients.claim(); } catch (e) {}
   })());
 });
 
 self.addEventListener('fetch', event => {
-  // No caching and no redirect/reload. Browser should use normal network.
+  // Pass-through: no respondWith, no cache, no redirect, no reload.
 });

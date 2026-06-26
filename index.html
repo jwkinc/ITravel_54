@@ -13603,7 +13603,10 @@ startSevereWeatherPolling();
 
 
 <script>
-/* Service worker disabled in safe recovery build. */);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(console.warn);
+  });
 }
 </script>
 
@@ -17166,27 +17169,9 @@ startSevereWeatherPolling();
 </script>
 
 
-<div id="itravelBuildBadge" style="position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(20,95,180,.96);color:#fff;font:800 11px/1.2 system-ui,sans-serif;padding:5px 7px;border-radius:5px;pointer-events:none;letter-spacing:.02em;">
-  ITravel_54 SAFE BUILD
+<div id="itravelBuildBadge" style="position:fixed;left:8px;bottom:8px;z-index:2147483647;background:rgba(0,92,190,.96);color:#fff;font:800 11px/1.2 system-ui,sans-serif;padding:5px 7px;border-radius:5px;pointer-events:none;letter-spacing:.02em;">
+  ITravel_54 CLEAN RESTORE
 </div>
-<script id="safeNoSwCleanup">
-(function(){
-  window.ITRAVEL_54_BUILD = 'ITravel_54 SAFE BUILD';
-  // Quiet cleanup only. No forced reload, so the site will not spin.
-  window.addEventListener('load', function(){
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations()
-        .then(function(regs){ return Promise.all(regs.map(function(r){ return r.unregister(); })); })
-        .catch(function(){});
-    }
-    if ('caches' in window) {
-      caches.keys()
-        .then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); })
-        .catch(function(){});
-    }
-  });
-})();
-</script>
 
 </body>
 </html>

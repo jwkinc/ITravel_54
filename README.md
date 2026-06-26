@@ -1,20 +1,20 @@
-# ITravel_54 — Safe Recovery No-Service-Worker Build
+# ITravel_54 — Clean Restore
 
-Use this build to recover from the spinning/loading issue.
+This build restores the app from the last full working app package and only replaces `sw.js` with a safe pass-through worker.
 
-It:
-- removes service-worker registration from the page
-- uses a quiet pass-through sw.js
-- clears old caches without forcing reloads
-- shows a blue badge: `ITravel_54 SAFE BUILD`
-- keeps the latest app fixes, including CRV and Nearby template removal
+It includes:
+- CRV garage option
+- Nearby removed from the actual store-panel template
+- Route button row fix
+- Garage/mobile patches
+- Safe non-caching `sw.js`
+- Blue badge: `ITravel_54 CLEAN RESTORE`
 
 ## Upload
 Upload the CONTENTS of this ZIP to the repo root.
 
-## Open
-After GitHub Pages deploys, open:
+## Test
+Open:
+https://jwkinc.github.io/ITravel_54/
 
-https://jwkinc.github.io/ITravel_54/index.html?safe=1
-
-Hard refresh once on PC with Ctrl+F5.
+Hard refresh on PC with Ctrl+F5.
