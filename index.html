@@ -15147,5 +15147,405 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="hardFinalBannerGarageLayoutPatch">
+  /*
+    HARD FINAL layout:
+    - Market tabs begin at the far left of the banner.
+    - Choose location is compact and immediately after markets.
+    - Icons are pinned to the far right.
+    - Garage is centered to the viewport at every screen width.
+  */
+
+  .controls,
+  .filterbar,
+  .marketbar,
+  .top-controls {
+    box-sizing: border-box !important;
+  }
+
+  .filterbar,
+  .controls .filterbar,
+  .marketbar,
+  .top-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  #filterRow,
+  .filterbar .pillrow,
+  .pillrow,
+  .market-tabs,
+  .markets {
+    order: 1 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    overflow: visible !important;
+  }
+
+  .filterbar .searchbox,
+  .controls .searchbox,
+  .marketbar .searchbox,
+  .top-controls .searchbox {
+    order: 2 !important;
+    flex: 0 0 220px !important;
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    justify-self: start !important;
+  }
+
+  #locPicker,
+  .loc-select,
+  #storeSelect,
+  #locationSelect,
+  #storePicker,
+  #locationPicker,
+  .filterbar select,
+  .filterbar .searchbox select,
+  .filterbar .searchbox input {
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    box-sizing: border-box !important;
+  }
+
+  .quick-actions,
+  .filterbar .quick-actions,
+  .controls .quick-actions,
+  .marketbar .quick-actions,
+  .top-controls .quick-actions {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    justify-content: flex-end !important;
+    justify-self: end !important;
+    align-items: center !important;
+    display: flex !important;
+    gap: 12px !important;
+  }
+
+  .quick-actions .iconbtn,
+  .quick-actions button,
+  .filterbar .quick-actions .iconbtn,
+  .filterbar .quick-actions button {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  @media (max-width: 1200px) {
+    .filterbar,
+    .controls .filterbar,
+    .marketbar,
+    .top-controls {
+      gap: 10px !important;
+      padding-right: 8px !important;
+    }
+
+    .filterbar .searchbox,
+    .controls .searchbox,
+    .marketbar .searchbox,
+    .top-controls .searchbox,
+    #locPicker,
+    .loc-select,
+    #storeSelect,
+    #locationSelect,
+    #storePicker,
+    #locationPicker,
+    .filterbar select,
+    .filterbar .searchbox select,
+    .filterbar .searchbox input {
+      flex-basis: 185px !important;
+      width: 185px !important;
+      min-width: 185px !important;
+      max-width: 185px !important;
+    }
+
+    #filterRow .pill,
+    .pillrow .pill {
+      padding-left: 9px !important;
+      padding-right: 9px !important;
+    }
+
+    .quick-actions,
+    .filterbar .quick-actions {
+      gap: 8px !important;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .filterbar,
+    .controls .filterbar,
+    .marketbar,
+    .top-controls {
+      gap: 6px !important;
+      padding-right: 4px !important;
+    }
+
+    .filterbar .searchbox,
+    .controls .searchbox,
+    .marketbar .searchbox,
+    .top-controls .searchbox,
+    #locPicker,
+    .loc-select,
+    #storeSelect,
+    #locationSelect,
+    #storePicker,
+    #locationPicker,
+    .filterbar select,
+    .filterbar .searchbox select,
+    .filterbar .searchbox input {
+      flex-basis: 160px !important;
+      width: 160px !important;
+      min-width: 160px !important;
+      max-width: 160px !important;
+      font-size: 13px !important;
+    }
+
+    #filterRow .pill,
+    .pillrow .pill {
+      padding-left: 6px !important;
+      padding-right: 6px !important;
+    }
+  }
+
+  /* Garage must be viewport-centered on desktop, tablet, and phone. */
+  #garagePanel,
+  body #garagePanel,
+  body > #garagePanel,
+  .garage-panel#garagePanel,
+  #garagePanel.viewport-centered-garage-final {
+    position: fixed !important;
+    left: 50vw !important;
+    right: auto !important;
+    top: var(--garage-viewport-top, 224px) !important;
+    width: min(760px, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    transform: translate3d(-50%, 0, 0) !important;
+    box-sizing: border-box !important;
+    z-index: 999999 !important;
+    overflow: hidden !important;
+    inset-inline-start: 50vw !important;
+    inset-inline-end: auto !important;
+  }
+
+  #garagePanel .garage-strip,
+  #garagePanel #garageStrip {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    justify-content: flex-start !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #garagePanel .garage-strip::-webkit-scrollbar,
+  #garagePanel #garageStrip::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    body #garagePanel,
+    body > #garagePanel,
+    .garage-panel#garagePanel,
+    #garagePanel.viewport-centered-garage-final {
+      width: calc(100vw - 10px) !important;
+      max-width: calc(100vw - 10px) !important;
+      left: 50vw !important;
+      transform: translate3d(-50%, 0, 0) !important;
+    }
+  }
+</style>
+
+<script id="hardFinalBannerGarageLayoutScript">
+(function(){
+  function viewportTop(){
+    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
+    let bottom = 0;
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if(r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 60) bottom = r.bottom;
+      });
+    });
+    return Math.max(120, Math.round((bottom || 210) + 8));
+  }
+
+  function forceBanner(){
+    const filterbar = document.querySelector('.filterbar');
+    const pillrow = document.getElementById('filterRow') || document.querySelector('.pillrow,.market-tabs,.markets');
+    const searchbox = document.querySelector('.filterbar .searchbox,.controls .searchbox,.marketbar .searchbox,.top-controls .searchbox');
+    const select = document.getElementById('locPicker') || document.querySelector('.filterbar select,.loc-select,#storeSelect,#locationSelect,#storePicker,#locationPicker');
+    const actions = document.querySelector('.filterbar .quick-actions,.controls .quick-actions,.quick-actions');
+
+    if(filterbar){
+      filterbar.style.setProperty('display','flex','important');
+      filterbar.style.setProperty('flex-direction','row','important');
+      filterbar.style.setProperty('align-items','center','important');
+      filterbar.style.setProperty('justify-content','flex-start','important');
+      filterbar.style.setProperty('width','100%','important');
+      filterbar.style.setProperty('max-width','100%','important');
+      filterbar.style.setProperty('gap', window.innerWidth <= 760 ? '6px' : (window.innerWidth <= 1200 ? '10px' : '16px'), 'important');
+      filterbar.style.setProperty('padding-left','0','important');
+      filterbar.style.setProperty('margin-left','0','important');
+    }
+
+    if(pillrow){
+      pillrow.style.setProperty('order','1','important');
+      pillrow.style.setProperty('flex','0 0 auto','important');
+      pillrow.style.setProperty('width','auto','important');
+      pillrow.style.setProperty('max-width','none','important');
+      pillrow.style.setProperty('margin-left','0','important');
+      pillrow.style.setProperty('padding-left','0','important');
+      pillrow.style.setProperty('justify-content','flex-start','important');
+      pillrow.style.setProperty('overflow','visible','important');
+    }
+
+    const w = window.innerWidth <= 760 ? '160px' : (window.innerWidth <= 1200 ? '185px' : '220px');
+    if(searchbox){
+      searchbox.style.setProperty('order','2','important');
+      searchbox.style.setProperty('flex','0 0 ' + w,'important');
+      searchbox.style.setProperty('width',w,'important');
+      searchbox.style.setProperty('min-width',w,'important');
+      searchbox.style.setProperty('max-width',w,'important');
+      searchbox.style.setProperty('margin-left','0','important');
+      searchbox.style.setProperty('margin-right','0','important');
+    }
+
+    if(select){
+      select.style.setProperty('width',w,'important');
+      select.style.setProperty('min-width',w,'important');
+      select.style.setProperty('max-width',w,'important');
+      select.style.setProperty('box-sizing','border-box','important');
+    }
+
+    if(actions){
+      actions.style.setProperty('order','3','important');
+      actions.style.setProperty('flex','0 0 auto','important');
+      actions.style.setProperty('margin-left','auto','important');
+      actions.style.setProperty('margin-right','0','important');
+      actions.style.setProperty('display','flex','important');
+      actions.style.setProperty('justify-content','flex-end','important');
+      actions.style.setProperty('align-items','center','important');
+      actions.style.setProperty('width','auto','important');
+      actions.style.setProperty('min-width','max-content','important');
+    }
+  }
+
+  function moveGarageToBody(){
+    const panel = document.getElementById('garagePanel');
+    if(!panel) return null;
+    if(panel.parentElement !== document.body) document.body.appendChild(panel);
+    panel.classList.add('viewport-centered-garage-final');
+    return panel;
+  }
+
+  function forceGarage(resetScroll){
+    const panel = moveGarageToBody();
+    if(!panel) return;
+
+    document.documentElement.style.setProperty('--garage-viewport-top', viewportTop() + 'px');
+
+    panel.style.setProperty('position','fixed','important');
+    panel.style.setProperty('left','50vw','important');
+    panel.style.setProperty('right','auto','important');
+    panel.style.setProperty('inset-inline-start','50vw','important');
+    panel.style.setProperty('inset-inline-end','auto','important');
+    panel.style.setProperty('top','var(--garage-viewport-top)','important');
+    panel.style.setProperty('width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(760px, calc(100vw - 16px))','important');
+    panel.style.setProperty('max-width', window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'calc(100vw - 16px)','important');
+    panel.style.setProperty('min-width','0','important');
+    panel.style.setProperty('margin','0','important');
+    panel.style.setProperty('transform','translate3d(-50%, 0, 0)','important');
+    panel.style.setProperty('box-sizing','border-box','important');
+    panel.style.setProperty('z-index','999999','important');
+    panel.style.setProperty('overflow','hidden','important');
+
+    const strip = panel.querySelector('#garageStrip,.garage-strip');
+    if(strip){
+      strip.style.setProperty('width','100%','important');
+      strip.style.setProperty('max-width','100%','important');
+      strip.style.setProperty('overflow-x','auto','important');
+      strip.style.setProperty('overflow-y','hidden','important');
+      strip.style.setProperty('justify-content','flex-start','important');
+      if(resetScroll) strip.scrollLeft = 0;
+    }
+
+    requestAnimationFrame(() => {
+      const r = panel.getBoundingClientRect();
+      if(!r.width) return;
+      const targetLeft = Math.round((window.innerWidth - r.width) / 2);
+      if(Math.abs(r.left - targetLeft) > 2){
+        panel.style.setProperty('left', targetLeft + 'px', 'important');
+        panel.style.setProperty('transform', 'none', 'important');
+      }
+    });
+  }
+
+  function openGarageCenteredWatcher(e){
+    const t = e.target;
+    if(t && t.closest && t.closest('#garageBtn,#garagePanel')){
+      setTimeout(() => forceGarage(true), 20);
+      setTimeout(() => forceGarage(false), 120);
+      setTimeout(() => forceGarage(false), 360);
+      setTimeout(() => forceGarage(false), 800);
+    }
+  }
+
+  function applyAll(){
+    forceBanner();
+    forceGarage(false);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
+  else applyAll();
+
+  window.addEventListener('resize', applyAll, {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(applyAll, 120);
+    setTimeout(() => forceGarage(true), 300);
+  }, {passive:true});
+
+  document.addEventListener('pointerdown', openGarageCenteredWatcher, true);
+  document.addEventListener('click', openGarageCenteredWatcher, true);
+
+  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
+
+  const mo = new MutationObserver(() => applyAll());
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
 </body>
 </html>
