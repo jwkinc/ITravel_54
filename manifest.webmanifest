@@ -1,13 +1,13 @@
 {
   "name": "ITravel_54",
   "short_name": "ITravel_54",
-  "description": "ITravel_54 store travel map, routes, weather, notes, and action items.",
+  "description": "ITravel_54 store travel map, routes, weather, notes, garage, and action items.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#211714",
-  "theme_color": "#211714",
+  "background_color": "#21120f",
+  "theme_color": "#21120f",
   "categories": [
     "navigation",
     "business",

@@ -1,20 +1,39 @@
-# ITravel_54 — Clean Restore
+# ITravel_54 — GitHub Ready App
 
-This build restores the app from the last full working app package and only replaces `sw.js` with a safe pass-through worker.
+This is the clean production package for GitHub Pages.
 
-It includes:
-- CRV garage option
-- Nearby removed from the actual store-panel template
-- Route button row fix
-- Garage/mobile patches
-- Safe non-caching `sw.js`
-- Blue badge: `ITravel_54 CLEAN RESTORE`
+Included fixes:
+- App name is `ITravel_54`
+- CRV garage option included
+- Mobile garage alignment and swipe behavior retained
+- Route buttons stay together in one row
+- Nearby section removed from the store panel template
+- Travel/weather cards use the readable fixed layout
+- Safe service worker without forced reload loops
 
-## Upload
-Upload the CONTENTS of this ZIP to the repo root.
+## Upload to GitHub
 
-## Test
-Open:
+Upload the **contents** of this ZIP to the repository root:
+
+- `index.html`
+- `sw.js`
+- `manifest.webmanifest`
+- `README.md`
+- `.nojekyll`
+- icons
+- `assets/`
+
+Do not upload the ZIP file itself.
+
+## GitHub Pages
+
+Settings → Pages → Deploy from a branch → `main` → `/root`.
+
+Site URL:
 https://jwkinc.github.io/ITravel_54/
 
-Hard refresh on PC with Ctrl+F5.
+## After Upload
+
+On PC, open the site and press Ctrl + F5 once.
+
+On mobile, remove the old installed app icon first, clear site data for `jwkinc.github.io` if needed, then open the site in Chrome and install again.
