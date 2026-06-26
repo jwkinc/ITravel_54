@@ -13814,5 +13814,409 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="mobileWeatherHeaderFitPatch">
+  /* Mobile header: give forecast the full open space between logo and time */
+  @media (max-width: 980px) {
+    .brandbar,
+    .topbar,
+    .app-header,
+    header .brandrow,
+    header .toprow {
+      box-sizing: border-box !important;
+    }
+
+    .brandbar,
+    .topbar,
+    .app-header {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      align-items: center !important;
+      column-gap: 12px !important;
+    }
+
+    .brand,
+    .logo-wrap,
+    .header-logo,
+    .brand-logo {
+      justify-self: start !important;
+      min-width: 0 !important;
+    }
+
+    .fcstrip,
+    .header-forecast,
+    #fcStrip {
+      grid-column: 2 !important;
+      justify-self: center !important;
+      align-self: center !important;
+      width: min(100%, 470px) !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 auto !important;
+      padding: 0 2px !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 12px !important;
+      overflow: hidden !important;
+      white-space: nowrap !important;
+    }
+
+    .fcstrip > *,
+    .header-forecast > *,
+    #fcStrip > * {
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+    }
+
+    .fcstrip .fc-day,
+    .header-forecast .fc-day,
+    #fcStrip .fc-day,
+    .fcstrip .fcitem,
+    .header-forecast .fcitem,
+    #fcStrip .fcitem {
+      width: auto !important;
+      min-width: 54px !important;
+      max-width: 66px !important;
+      padding: 0 1px !important;
+      text-align: center !important;
+      flex: 0 1 62px !important;
+    }
+
+    .fcstrip .fc-loc,
+    .header-forecast .fc-loc,
+    #fcStrip .fc-loc {
+      max-width: 110px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      flex: 0 1 110px !important;
+    }
+
+    .wxnow,
+    .weather-now,
+    .timebox,
+    #wxNow {
+      grid-column: 3 !important;
+      justify-self: end !important;
+      min-width: 220px !important;
+      margin-left: 0 !important;
+    }
+
+    .fcstrip .precip,
+    .header-forecast .precip,
+    #fcStrip .precip,
+    .fcstrip [class*="pop"],
+    .header-forecast [class*="pop"],
+    #fcStrip [class*="pop"] {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .brandbar,
+    .topbar,
+    .app-header {
+      column-gap: 8px !important;
+      grid-template-columns: auto minmax(150px, 1fr) auto !important;
+    }
+
+    .fcstrip,
+    .header-forecast,
+    #fcStrip {
+      width: min(100%, 410px) !important;
+      gap: 9px !important;
+      transform: none !important;
+    }
+
+    .fcstrip .fc-day,
+    .header-forecast .fc-day,
+    #fcStrip .fc-day,
+    .fcstrip .fcitem,
+    .header-forecast .fcitem,
+    #fcStrip .fcitem {
+      min-width: 48px !important;
+      max-width: 58px !important;
+      flex-basis: 54px !important;
+      font-size: 12px !important;
+    }
+
+    .wxnow,
+    .weather-now,
+    .timebox,
+    #wxNow {
+      min-width: 185px !important;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .fcstrip,
+    .header-forecast,
+    #fcStrip {
+      width: min(100%, 310px) !important;
+      gap: 6px !important;
+    }
+
+    .fcstrip .fc-day,
+    .header-forecast .fc-day,
+    #fcStrip .fc-day,
+    .fcstrip .fcitem,
+    .header-forecast .fcitem,
+    #fcStrip .fcitem {
+      min-width: 43px !important;
+      max-width: 50px !important;
+      flex-basis: 47px !important;
+      font-size: 11px !important;
+    }
+  }
+</style>
+
+<script id="mobileWeatherHeaderFitScript">
+(function(){
+  function bestHeader(){
+    const fc = document.getElementById('fcStrip') || document.querySelector('.header-forecast,.fcstrip');
+    if(!fc) return null;
+    return fc.closest('.brandbar,.topbar,.app-header,header') || fc.parentElement;
+  }
+
+  function fitForecast(){
+    const fc = document.getElementById('fcStrip') || document.querySelector('.header-forecast,.fcstrip');
+    const header = bestHeader();
+    if(!fc || !header) return;
+
+    if(!(window.matchMedia && window.matchMedia('(max-width: 980px)').matches)) return;
+
+    const headerRect = header.getBoundingClientRect();
+    const logo = document.querySelector('.brand img,.logo-wrap img,.header-logo img,.brand-logo img,.brand,.logo-wrap,.header-logo,.brand-logo');
+    const time = document.querySelector('.wxnow,.weather-now,.timebox,#wxNow');
+
+    let leftEdge = headerRect.left + 8;
+    let rightEdge = headerRect.right - 8;
+
+    if(logo){
+      const r = logo.getBoundingClientRect();
+      if(r.width > 0) leftEdge = Math.max(leftEdge, r.right + 10);
+    }
+
+    if(time){
+      const r = time.getBoundingClientRect();
+      if(r.width > 0) rightEdge = Math.min(rightEdge, r.left - 10);
+    }
+
+    const available = Math.max(150, Math.floor(rightEdge - leftEdge));
+    fc.style.width = available + 'px';
+    fc.style.maxWidth = available + 'px';
+    fc.style.marginLeft = 'auto';
+    fc.style.marginRight = 'auto';
+    fc.style.justifyContent = 'center';
+    fc.style.overflow = 'hidden';
+
+    // Hide any leftover percentage/precip nodes if the data renderer adds them later.
+    fc.querySelectorAll('.precip,[class*="pop"]').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // If the strip still overflows, slightly tighten gaps but do not push it off center.
+    if(fc.scrollWidth > fc.clientWidth + 4){
+      fc.style.gap = window.innerWidth < 720 ? '6px' : '8px';
+    }
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fitForecast);
+  else fitForecast();
+
+  window.addEventListener('resize', fitForecast, {passive:true});
+  window.addEventListener('orientationchange', () => setTimeout(fitForecast, 150), {passive:true});
+  [150, 500, 1100, 2500, 5000].forEach(ms => setTimeout(fitForecast, ms));
+})();
+</script>
+
+
+<style id="garageCenteredMobilePatch">
+  /* Center garage horizontally in the screen on mobile/tablet */
+  @media (max-width: 980px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      position: fixed !important;
+      left: 50% !important;
+      right: auto !important;
+      top: var(--garage-mobile-top, 342px) !important;
+      width: min(760px, calc(100vw - 16px)) !important;
+      min-width: 0 !important;
+      max-width: calc(100vw - 16px) !important;
+      transform: translateX(-50%) !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      z-index: 6000 !important;
+      overflow: hidden !important;
+    }
+
+    #garagePanel .garage-strip,
+    #garagePanel #garageStrip {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      justify-content: flex-start !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    #garagePanel .garage-strip::-webkit-scrollbar,
+    #garagePanel #garageStrip::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      width: calc(100vw - 12px) !important;
+      max-width: calc(100vw - 12px) !important;
+      top: var(--garage-mobile-top, 330px) !important;
+    }
+  }
+</style>
+
+<script id="garageCenteredMobileScript">
+(function(){
+  function toolbarBottom(){
+    const candidates = [
+      '.controls',
+      '.filterbar',
+      '.marketbar',
+      '.market-row',
+      '.top-controls',
+      '.quick-actions',
+      '#controls'
+    ];
+
+    let bottom = 0;
+    candidates.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0 && r.bottom > bottom && r.bottom < window.innerHeight - 80) {
+          bottom = r.bottom;
+        }
+      });
+    });
+
+    return Math.max(92, Math.round((bottom || 250) + 8));
+  }
+
+  function centerGarage(){
+    const panel = document.getElementById('garagePanel');
+    if (!panel) return;
+
+    if (window.matchMedia && window.matchMedia('(max-width: 980px)').matches) {
+      document.documentElement.style.setProperty('--garage-mobile-top', toolbarBottom() + 'px');
+
+      panel.style.position = 'fixed';
+      panel.style.left = '50%';
+      panel.style.right = 'auto';
+      panel.style.width = window.innerWidth <= 560 ? 'calc(100vw - 12px)' : 'min(760px, calc(100vw - 16px))';
+      panel.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 12px)' : 'calc(100vw - 16px)';
+      panel.style.minWidth = '0';
+      panel.style.transform = 'translateX(-50%)';
+      panel.style.margin = '0';
+      panel.style.zIndex = '6000';
+      panel.style.boxSizing = 'border-box';
+      panel.style.overflow = 'hidden';
+
+      const strip = panel.querySelector('#garageStrip,.garage-strip');
+      if (strip) {
+        strip.style.width = '100%';
+        strip.style.maxWidth = '100%';
+        strip.style.overflowX = 'auto';
+        strip.style.overflowY = 'hidden';
+        strip.style.justifyContent = 'flex-start';
+      }
+    }
+  }
+
+  function centerAndReset(){
+    centerGarage();
+    const strip = document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
+    if (strip && window.matchMedia && window.matchMedia('(max-width: 980px)').matches) {
+      strip.scrollLeft = 0;
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', centerGarage);
+  else centerGarage();
+
+  window.addEventListener('resize', centerGarage, {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(centerAndReset, 120);
+    setTimeout(centerGarage, 300);
+  }, {passive:true});
+
+  [80, 240, 600, 1200, 2500, 5000].forEach(ms => setTimeout(centerGarage, ms));
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))) {
+      setTimeout(centerAndReset, 30);
+      setTimeout(centerGarage, 180);
+      setTimeout(centerGarage, 500);
+    }
+  }, true);
+})();
+</script>
+
+
+<script id="satxMarketLabelPatch">
+(function(){
+  function changeSatToSatx(root){
+    root = root || document;
+
+    // Market tabs/buttons keep data-market/value as SAT for filtering, only display SATX.
+    root.querySelectorAll('[data-market="SAT"], [data-value="SAT"], button, .market, .market-tab, .tab, option').forEach(el => {
+      const txt = (el.textContent || '').trim();
+      if (txt === 'SAT') el.textContent = 'SATX';
+
+      // Preserve any small store count spans, e.g. SAT 9 -> SATX 9.
+      el.childNodes && el.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() === 'SAT') {
+          node.nodeValue = node.nodeValue.replace('SAT', 'SATX');
+        }
+      });
+    });
+
+    // Fallback for compact market text with count: "SAT 9" -> "SATX 9"
+    root.querySelectorAll('.markets, .marketbar, .filterbar, .controls, header').forEach(el => {
+      el.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          node.nodeValue = node.nodeValue.replace(/\bSAT\b/g, 'SATX');
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => changeSatToSatx(document));
+  } else {
+    changeSatToSatx(document);
+  }
+
+  [150, 500, 1200, 2500, 5000].forEach(ms => setTimeout(() => changeSatToSatx(document), ms));
+
+  const mo = new MutationObserver(muts => {
+    for (const m of muts) {
+      m.addedNodes && m.addedNodes.forEach(n => {
+        if (n.nodeType === 1) changeSatToSatx(n);
+      });
+    }
+  });
+
+  if (document.documentElement) {
+    mo.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+
 </body>
 </html>

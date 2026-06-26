@@ -1,6 +1,6 @@
-# 54th Street Field Travel Map — Mobile Garage Fit PWA
+# 54th Street Field Travel Map — SATX Market PWA
 
-This GitHub Pages PWA version fixes the phone garage layout so the garage panel stays inside the viewport.
+This GitHub Pages PWA version centers the garage panel horizontally on phone/tablet screens and changes the San Antonio market label from SAT to SATX.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.
