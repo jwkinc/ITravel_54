@@ -1,12 +1,6 @@
-# ITravel_54 — Market and Garage Tight Final
+# ITravel_54 — CRV Garage Added
 
-This build fixes the banner and garage layout:
-- Market tabs start at the far left.
-- Choose location is narrower and vertically centered/lowered.
-- Icons are pinned to the right side.
-- Garage panel is narrower.
-- Garage selections sit next to each other, with horizontal swipe for extra cars.
-- Vehicle images are no longer clipped at the top.
+This build adds the uploaded **CRV** vehicle as a new garage selection.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.

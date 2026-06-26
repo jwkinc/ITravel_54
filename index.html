@@ -16027,5 +16027,562 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="panelWeatherNearbyFinalPatch">
+  /* Remove Nearby from the store/details panel */
+  #sheet .nearby,
+  #sheet .nearby-section,
+  #sheet .nearby-panel,
+  #sheet .nearby-wrap,
+  #sheet .nearby-box,
+  #sheet .nearby-card,
+  #sheet .nearby-row,
+  #sheet .places,
+  #sheet .places-row,
+  #sheet [data-section="nearby"],
+  .sheet .nearby,
+  .sheet .nearby-section,
+  .sheet .nearby-panel,
+  .sheet .nearby-wrap,
+  .sheet .nearby-box,
+  .sheet .nearby-card,
+  .sheet .nearby-row,
+  .sheet .places,
+  .sheet .places-row,
+  .sheet [data-section="nearby"],
+  .store-sheet .nearby,
+  .store-sheet .nearby-section,
+  .store-sheet .nearby-panel,
+  .store-sheet .nearby-wrap,
+  .store-sheet .nearby-box,
+  .store-sheet .nearby-card,
+  .store-sheet .nearby-row,
+  .store-sheet .places,
+  .store-sheet .places-row,
+  .store-sheet [data-section="nearby"],
+  [data-hidden-nearby="1"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Forecast stays inside the detail panel */
+  #sheet .forecast,
+  #sheet .forecast-box,
+  #sheet .forecast-card,
+  #sheet .wx-forecast,
+  #sheet .store-forecast,
+  #sheet .location-forecast,
+  #sheet .weather-panel,
+  .sheet .forecast,
+  .sheet .forecast-box,
+  .sheet .forecast-card,
+  .sheet .wx-forecast,
+  .sheet .store-forecast,
+  .sheet .location-forecast,
+  .sheet .weather-panel,
+  .store-sheet .forecast,
+  .store-sheet .forecast-box,
+  .store-sheet .forecast-card,
+  .store-sheet .wx-forecast,
+  .store-sheet .store-forecast,
+  .store-sheet .location-forecast,
+  .store-sheet .weather-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  #sheet .forecast-grid,
+  #sheet .wx-grid,
+  #sheet .weather-grid,
+  #sheet .daily-grid,
+  #sheet .days,
+  #sheet .forecast-days,
+  .sheet .forecast-grid,
+  .sheet .wx-grid,
+  .sheet .weather-grid,
+  .sheet .daily-grid,
+  .sheet .days,
+  .sheet .forecast-days,
+  .store-sheet .forecast-grid,
+  .store-sheet .wx-grid,
+  .store-sheet .weather-grid,
+  .store-sheet .daily-grid,
+  .store-sheet .days,
+  .store-sheet .forecast-days {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* The four info/weather cards are readable now: two across instead of squeezed four across */
+  #sheet .stats,
+  #sheet .stat-grid,
+  #sheet .facts,
+  #sheet .facts-grid,
+  #sheet .metrics,
+  #sheet .metric-grid,
+  #sheet .store-stats,
+  .sheet .stats,
+  .sheet .stat-grid,
+  .sheet .facts,
+  .sheet .facts-grid,
+  .sheet .metrics,
+  .sheet .metric-grid,
+  .sheet .store-stats,
+  .store-sheet .stats,
+  .store-sheet .stat-grid,
+  .store-sheet .facts,
+  .store-sheet .facts-grid,
+  .store-sheet .metrics,
+  .store-sheet .metric-grid,
+  .store-sheet .store-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  #sheet .stat,
+  #sheet .fact,
+  #sheet .metric,
+  #sheet .stat-card,
+  #sheet .fact-card,
+  #sheet .metric-card,
+  #sheet .info-card,
+  .sheet .stat,
+  .sheet .fact,
+  .sheet .metric,
+  .sheet .stat-card,
+  .sheet .fact-card,
+  .sheet .metric-card,
+  .sheet .info-card,
+  .store-sheet .stat,
+  .store-sheet .fact,
+  .store-sheet .metric,
+  .store-sheet .stat-card,
+  .store-sheet .fact-card,
+  .store-sheet .metric-card,
+  .store-sheet .info-card {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 76px !important;
+    padding: 10px 10px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  #sheet .stat *,
+  #sheet .fact *,
+  #sheet .metric *,
+  #sheet .stat-card *,
+  #sheet .fact-card *,
+  #sheet .metric-card *,
+  #sheet .info-card *,
+  .sheet .stat *,
+  .sheet .fact *,
+  .sheet .metric *,
+  .sheet .stat-card *,
+  .sheet .fact-card *,
+  .sheet .metric-card *,
+  .sheet .info-card *,
+  .store-sheet .stat *,
+  .store-sheet .fact *,
+  .store-sheet .metric *,
+  .store-sheet .stat-card *,
+  .store-sheet .fact-card *,
+  .store-sheet .metric-card *,
+  .store-sheet .info-card * {
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  #sheet .stat .value,
+  #sheet .fact .value,
+  #sheet .metric .value,
+  #sheet .stat-card .value,
+  #sheet .fact-card .value,
+  #sheet .metric-card .value,
+  #sheet .info-card .value,
+  .sheet .stat .value,
+  .sheet .fact .value,
+  .sheet .metric .value,
+  .sheet .stat-card .value,
+  .sheet .fact-card .value,
+  .sheet .metric-card .value,
+  .sheet .info-card .value,
+  .store-sheet .stat .value,
+  .store-sheet .fact .value,
+  .store-sheet .metric .value,
+  .store-sheet .stat-card .value,
+  .store-sheet .fact-card .value,
+  .store-sheet .metric-card .value,
+  .store-sheet .info-card .value {
+    display: block !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    font-size: clamp(19px, 4.2vw, 25px) !important;
+    line-height: 1.05 !important;
+  }
+
+  #sheet .stat .label,
+  #sheet .fact .label,
+  #sheet .metric .label,
+  #sheet .stat-card .label,
+  #sheet .fact-card .label,
+  #sheet .metric-card .label,
+  #sheet .info-card .label,
+  .sheet .stat .label,
+  .sheet .fact .label,
+  .sheet .metric .label,
+  .sheet .stat-card .label,
+  .sheet .fact-card .label,
+  .sheet .metric-card .label,
+  .sheet .info-card .label,
+  .store-sheet .stat .label,
+  .store-sheet .fact .label,
+  .store-sheet .metric .label,
+  .store-sheet .stat-card .label,
+  .store-sheet .fact-card .label,
+  .store-sheet .metric-card .label,
+  .store-sheet .info-card .label {
+    display: block !important;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .06em !important;
+  }
+</style>
+
+<script id="panelWeatherNearbyFinalScript">
+(function(){
+  function normText(el){
+    return (el && el.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function hideNearby(root){
+    root = root || document;
+    const scope = root.querySelectorAll ? root : document;
+
+    scope.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
+      const txt = normText(el).toLowerCase();
+
+      if (txt === 'nearby') {
+        let block = el;
+        for (let i = 0; i < 6 && block && block !== document.body; i++) {
+          const cls = String(block.className || '').toLowerCase();
+          const tag = String(block.tagName || '').toLowerCase();
+          if (/section|card|panel|block|nearby|places|row|wrap/.test(cls) || tag === 'section') break;
+          block = block.parentElement;
+        }
+        if (block && block !== document.body) {
+          block.dataset.hiddenNearby = '1';
+          block.style.display = 'none';
+          block.style.visibility = 'hidden';
+          block.style.height = '0';
+          block.style.margin = '0';
+          block.style.padding = '0';
+          block.style.overflow = 'hidden';
+        } else {
+          el.dataset.hiddenNearby = '1';
+          el.style.display = 'none';
+        }
+      }
+
+      if (/^nearby\b/i.test(normText(el))) {
+        const maybe = el.closest('.nearby,.nearby-section,.nearby-panel,.nearby-wrap,.nearby-box,.places,.places-row,.card,.section,section,.panel,.block') || el;
+        maybe.dataset.hiddenNearby = '1';
+        maybe.style.display = 'none';
+        maybe.style.visibility = 'hidden';
+        maybe.style.height = '0';
+        maybe.style.margin = '0';
+        maybe.style.padding = '0';
+        maybe.style.overflow = 'hidden';
+      }
+    });
+  }
+
+  function fixMetricCards(root){
+    root = root || document;
+
+    root.querySelectorAll && root.querySelectorAll('#sheet *, .sheet *, .store-sheet *').forEach(el => {
+      const t = normText(el);
+      if (t === 'FROM YOU') el.innerHTML = 'FROM<br>YOU';
+      if (t === 'DRIVE TIME') el.innerHTML = 'DRIVE<br>TIME';
+      if (t === 'WEATHER NOW') el.innerHTML = 'WEATHER<br>NOW';
+      if (t === 'WIND') el.textContent = 'WIND';
+    });
+
+    root.querySelectorAll && root.querySelectorAll('#sheet .stats,#sheet .stat-grid,#sheet .facts,#sheet .facts-grid,#sheet .metrics,#sheet .metric-grid,#sheet .store-stats,.sheet .stats,.sheet .stat-grid,.sheet .facts,.sheet .facts-grid,.sheet .metrics,.sheet .metric-grid,.sheet .store-stats,.store-sheet .stats,.store-sheet .stat-grid,.store-sheet .facts,.store-sheet .facts-grid,.store-sheet .metrics,.store-sheet .metric-grid,.store-sheet .store-stats').forEach(grid => {
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+      grid.style.gap = '9px';
+      grid.style.width = '100%';
+      grid.style.maxWidth = '100%';
+      grid.style.overflow = 'visible';
+    });
+
+    root.querySelectorAll && root.querySelectorAll('#sheet .stat,#sheet .fact,#sheet .metric,#sheet .stat-card,#sheet .fact-card,#sheet .metric-card,#sheet .info-card,.sheet .stat,.sheet .fact,.sheet .metric,.sheet .stat-card,.sheet .fact-card,.sheet .metric-card,.sheet .info-card,.store-sheet .stat,.store-sheet .fact,.store-sheet .metric,.store-sheet .stat-card,.store-sheet .fact-card,.store-sheet .metric-card,.store-sheet .info-card').forEach(card => {
+      card.style.overflow = 'visible';
+      card.style.height = 'auto';
+      card.style.minHeight = '76px';
+      card.style.padding = '10px';
+      card.querySelectorAll('*').forEach(child => {
+        child.style.overflow = 'visible';
+        child.style.textOverflow = 'clip';
+      });
+    });
+  }
+
+  function run(){
+    hideNearby(document);
+    fixMetricCards(document);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+
+  [80, 200, 500, 1000, 2000, 5000, 8000].forEach(ms => setTimeout(run, ms));
+
+  const mo = new MutationObserver(() => run());
+  if (document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+<style id="crvGarageVehiclePatch">
+  /* CRV garage selection sizing */
+  #garagePanel .garage-opt[data-vehicle="crv"] img {
+    width: 100px !important;
+    height: 100px !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+    object-fit: contain !important;
+    transform: translateY(0) !important;
+  }
+</style>
+
+<script id="crvGarageVehicleScript">
+(function(){
+  const CRV_ID = 'crv';
+  const CRV_LABEL = 'CRV';
+  const CRV_SRC = 'assets/vehicle-crv.webp';
+
+  function labelFor(id){
+    const labels = {
+      f150:'F-150',
+      ram:'Ram',
+      lightning:'Lightning',
+      corvette:'Corvette',
+      delorean:'DeLorean',
+      default:'Default',
+      dot:'Default',
+      crv:'CRV'
+    };
+    return labels[id] || id;
+  }
+
+  function findGarageStrip(){
+    return document.querySelector('#garagePanel #garageStrip, #garagePanel .garage-strip');
+  }
+
+  function makeCrvButton(){
+    const btn = document.createElement('button');
+    btn.className = 'garage-opt';
+    btn.dataset.vehicle = CRV_ID;
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'CRV marker');
+    btn.innerHTML = '<div class="veh-box"><img src="' + CRV_SRC + '" alt="CRV" draggable="false"></div><div class="veh-label">CRV</div>';
+    return btn;
+  }
+
+  function injectCrv(){
+    const strip = findGarageStrip();
+    if(!strip) return;
+
+    let existing = strip.querySelector('.garage-opt[data-vehicle="crv"]');
+    if(!existing){
+      const crvBtn = makeCrvButton();
+
+      // Place CRV after DeLorean when possible; otherwise append.
+      const delorean = strip.querySelector('.garage-opt[data-vehicle="delorean"]');
+      if(delorean && delorean.nextSibling) strip.insertBefore(crvBtn, delorean.nextSibling);
+      else strip.appendChild(crvBtn);
+      existing = crvBtn;
+    }
+
+    const img = existing.querySelector('img');
+    if(img){
+      img.src = CRV_SRC;
+      img.alt = 'CRV';
+      img.draggable = false;
+    }
+
+    const label = existing.querySelector('.veh-label');
+    if(label) label.textContent = 'CRV';
+
+    // Keep the tight/swipe layout after adding the extra vehicle.
+    strip.style.setProperty('overflow-x', 'auto', 'important');
+    strip.style.setProperty('overflow-y', 'hidden', 'important');
+    strip.style.setProperty('justify-content', 'flex-start', 'important');
+    strip.style.setProperty('gap', '0', 'important');
+
+    existing.style.setProperty('flex', '0 0 84px', 'important');
+    existing.style.setProperty('width', '84px', 'important');
+    existing.style.setProperty('min-width', '84px', 'important');
+    existing.style.setProperty('max-width', '84px', 'important');
+  }
+
+  function currentVehicle(){
+    return localStorage.getItem('f54_vehicle_choice_hardfix') ||
+           localStorage.getItem('f54_vehicle_choice_final_v3') ||
+           localStorage.getItem('f54_vehicle_choice_final_v2') ||
+           localStorage.getItem('f54_vehicle_choice_final') ||
+           localStorage.getItem('f54_vehicle_choice_v4') ||
+           localStorage.getItem('f54_vehicle_choice_v3') ||
+           localStorage.getItem('f54_vehicle_choice_v2') ||
+           localStorage.getItem('f54_vehicle_choice') ||
+           'f150';
+  }
+
+  function saveVehicle(id){
+    ['f54_vehicle_choice_hardfix','f54_vehicle_choice_final_v3','f54_vehicle_choice_final_v2','f54_vehicle_choice_final','f54_vehicle_choice_v4','f54_vehicle_choice_v3','f54_vehicle_choice_v2','f54_vehicle_choice'].forEach(k => {
+      try { localStorage.setItem(k, id); } catch(e) {}
+    });
+  }
+
+  function syncCrvSelection(){
+    const active = currentVehicle();
+    document.querySelectorAll('#garagePanel .garage-opt').forEach(btn => {
+      const id = btn.dataset.vehicle === 'dot' ? 'default' : btn.dataset.vehicle;
+      const on = id === active;
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+
+  function getExistingVehicleSrc(kind){
+    if(kind === 'crv') return CRV_SRC;
+    const img = document.querySelector('#garagePanel .garage-opt[data-vehicle="' + kind + '"] img');
+    return img ? img.src : '';
+  }
+
+  function markerSize(kind){
+    if(kind === 'default') return [34,34];
+    const z = (typeof map !== 'undefined' && map && map.getZoom) ? map.getZoom() : 10;
+    const h = Math.max(96, Math.min(164, Math.round(96 + (z - 7) * 8)));
+    const w = Math.round(h * .64);
+    return [w,h];
+  }
+
+  function patchMarkerForCrv(){
+    if(typeof L === 'undefined') return;
+
+    const previousSetUserTruckMarker = window.setUserTruckMarker;
+    if(window.__crvSetUserTruckMarkerPatched) return;
+    window.__crvSetUserTruckMarkerPatched = true;
+
+    window.setUserTruckMarker = function(latlng){
+      const active = currentVehicle();
+
+      if(active !== 'crv'){
+        if(typeof previousSetUserTruckMarker === 'function') return previousSetUserTruckMarker(latlng);
+        return;
+      }
+
+      if(typeof map === 'undefined' || !map || !latlng) return;
+      const ll = Array.isArray(latlng) ? latlng : [latlng.lat, latlng.lng];
+      const s = markerSize('crv'), w = s[0], h = s[1];
+
+      const icon = L.divIcon({
+        className: 'user-vehicle-marker',
+        html: '<img src="' + CRV_SRC + '" alt="CRV">',
+        iconSize: [w,h],
+        iconAnchor: [Math.round(w/2), Math.round(h/2)]
+      });
+
+      try {
+        if(typeof userMarker === 'undefined' || !userMarker || !userMarker.setIcon){
+          if(typeof userMarker !== 'undefined' && userMarker){
+            try { map.removeLayer(userMarker); } catch(e) {}
+          }
+          userMarker = L.marker(ll, {icon:icon, interactive:false, keyboard:false, zIndexOffset:1500}).addTo(map);
+        } else {
+          userMarker.setLatLng(ll);
+          userMarker.setIcon(icon);
+        }
+      } catch(e) {}
+    };
+  }
+
+  function wireCrvClick(){
+    const panel = document.getElementById('garagePanel');
+    if(!panel || panel.__crvClickWired) return;
+    panel.__crvClickWired = true;
+
+    panel.addEventListener('pointerup', function(e){
+      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
+      if(!opt) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      saveVehicle('crv');
+      syncCrvSelection();
+
+      if(typeof userPos !== 'undefined' && userPos && typeof window.setUserTruckMarker === 'function') window.setUserTruckMarker(userPos);
+      else if(typeof locateMe === 'function') locateMe(false);
+      if(typeof toast === 'function') toast('CRV selected');
+    }, true);
+
+    panel.addEventListener('click', function(e){
+      const opt = e.target.closest && e.target.closest('.garage-opt[data-vehicle="crv"]');
+      if(opt){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  }
+
+  function apply(){
+    injectCrv();
+    patchMarkerForCrv();
+    wireCrvClick();
+    syncCrvSelection();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+
+  [100, 300, 700, 1200, 2500, 5000, 8000].forEach(ms => setTimeout(apply, ms));
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))){
+      setTimeout(apply, 50);
+      setTimeout(apply, 220);
+      setTimeout(apply, 600);
+    }
+  }, true);
+
+  const mo = new MutationObserver(() => apply());
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
 </body>
 </html>
