@@ -1,0 +1,30 @@
+{
+  "name": "54th Street Field Travel Map",
+  "short_name": "54 Field Map",
+  "description": "54th Street store map, routes, weather, nearby places, notes, action items, and store photos.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#211714",
+  "theme_color": "#211714",
+  "categories": [
+    "navigation",
+    "business",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
