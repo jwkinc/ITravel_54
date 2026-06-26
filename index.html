@@ -2462,6 +2462,35 @@ header{
   <link rel="icon" type="image/png" sizes="64x64" href="assets/asset-003.webp">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#211714">
+
+<style id="transparentHeaderWeatherPatch">
+/* Transparent time/temp/forecast header treatment */
+.header-forecast, .fcstrip, #fcStrip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.header-forecast .fc-day, .fcstrip .fc-day, #fcStrip .fc-day,
+.header-forecast .fcitem, .fcstrip .fcitem, #fcStrip .fcitem {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.header-forecast .fc-loc, .fcstrip .fc-loc, #fcStrip .fc-loc {
+  border-right: none !important;
+  padding-right: 8px !important;
+}
+.wxnow, .weather-now, .timebox, #wxNow {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -14219,130 +14248,772 @@ if ('serviceWorker' in navigator) {
 </script>
 
 
-<style id="transparentHeaderInfoPatch">
-  /* Remove boxes behind top time, temperature, and forecast info */
-  .wxnow,
-  #wxNow,
-  .weather-now,
-  .timebox,
-  .time-temp,
-  .nowbox,
-  .clockbox,
-  .header-time,
-  .current-weather,
-  .fcstrip,
-  #fcStrip,
-  .header-forecast {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  .wxnow::before,
-  .wxnow::after,
-  #wxNow::before,
-  #wxNow::after,
-  .weather-now::before,
-  .weather-now::after,
-  .timebox::before,
-  .timebox::after,
-  .fcstrip::before,
-  .fcstrip::after,
-  #fcStrip::before,
-  #fcStrip::after,
-  .header-forecast::before,
-  .header-forecast::after {
+<style id="panelWeatherReadablePatch">
+  /* Store panel: make forecast fit, remove Nearby, and make stat cards readable */
+  #sheet .nearby,
+  #sheet [data-section="nearby"],
+  #sheet .nearby-section,
+  #sheet .nearby-panel,
+  #sheet .nearby-wrap,
+  #sheet .nearby-box,
+  #sheet .nearby-card,
+  #sheet .places,
+  #sheet .places-row,
+  #sheet .nearby-row,
+  .store-sheet .nearby,
+  .store-sheet [data-section="nearby"],
+  .store-sheet .nearby-section,
+  .store-sheet .nearby-panel,
+  .store-sheet .nearby-wrap,
+  .store-sheet .nearby-box,
+  .store-sheet .nearby-card,
+  .store-sheet .places,
+  .store-sheet .places-row,
+  .store-sheet .nearby-row {
     display: none !important;
-    content: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border: 0 !important;
   }
 
-  .wxnow *,
-  #wxNow *,
-  .weather-now *,
-  .timebox *,
-  .fcstrip *,
-  #fcStrip *,
-  .header-forecast * {
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
+  /* If the Nearby block is a generic section with a heading, JS removes it too. */
+  #sheet .detail-section:empty,
+  .store-sheet .detail-section:empty {
+    display: none !important;
   }
 
-  /* Keep the separator line only if the layout already uses it */
-  .wxnow,
-  #wxNow,
-  .weather-now,
-  .timebox {
-    color: inherit !important;
+  #sheet .forecast,
+  #sheet .forecast-box,
+  #sheet .forecast-card,
+  #sheet .wx-forecast,
+  #sheet .store-forecast,
+  #sheet .location-forecast,
+  #sheet .weather-panel,
+  .store-sheet .forecast,
+  .store-sheet .forecast-box,
+  .store-sheet .forecast-card,
+  .store-sheet .wx-forecast,
+  .store-sheet .store-forecast,
+  .store-sheet .location-forecast,
+  .store-sheet .weather-panel {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding: 11px 10px !important;
   }
 
-  @media (max-width: 980px) {
-    .wxnow,
-    #wxNow,
-    .weather-now,
-    .timebox,
-    .fcstrip,
-    #fcStrip,
-    .header-forecast {
-      background: transparent !important;
-      border: 0 !important;
-      box-shadow: none !important;
+  #sheet .forecast-grid,
+  #sheet .wx-grid,
+  #sheet .weather-grid,
+  #sheet .daily-grid,
+  #sheet .days,
+  #sheet .forecast-days,
+  #sheet .location-forecast-grid,
+  .store-sheet .forecast-grid,
+  .store-sheet .wx-grid,
+  .store-sheet .weather-grid,
+  .store-sheet .daily-grid,
+  .store-sheet .days,
+  .store-sheet .forecast-days,
+  .store-sheet .location-forecast-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  #sheet .forecast-day,
+  #sheet .wx-day,
+  #sheet .day,
+  #sheet .daily,
+  #sheet .forecast-col,
+  .store-sheet .forecast-day,
+  .store-sheet .wx-day,
+  .store-sheet .day,
+  .store-sheet .daily,
+  .store-sheet .forecast-col {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    padding: 4px 2px !important;
+    text-align: center !important;
+    overflow: hidden !important;
+  }
+
+  #sheet .forecast-day img,
+  #sheet .wx-day img,
+  #sheet .day img,
+  #sheet .forecast-col img,
+  .store-sheet .forecast-day img,
+  .store-sheet .wx-day img,
+  .store-sheet .day img,
+  .store-sheet .forecast-col img {
+    max-width: 31px !important;
+    max-height: 31px !important;
+    object-fit: contain !important;
+  }
+
+  #sheet .forecast-day *,
+  #sheet .wx-day *,
+  #sheet .day *,
+  #sheet .forecast-col *,
+  .store-sheet .forecast-day *,
+  .store-sheet .wx-day *,
+  .store-sheet .day *,
+  .store-sheet .forecast-col * {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+  }
+
+  /* Readable stat cards: no clipping of FROM YOU / DRIVE TIME / WEATHER NOW / WIND */
+  #sheet .stats,
+  #sheet .stat-grid,
+  #sheet .facts,
+  #sheet .facts-grid,
+  #sheet .metrics,
+  #sheet .metric-grid,
+  #sheet .store-stats,
+  .store-sheet .stats,
+  .store-sheet .stat-grid,
+  .store-sheet .facts,
+  .store-sheet .facts-grid,
+  .store-sheet .metrics,
+  .store-sheet .metric-grid,
+  .store-sheet .store-stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  #sheet .stat,
+  #sheet .fact,
+  #sheet .metric,
+  #sheet .stat-card,
+  #sheet .fact-card,
+  #sheet .metric-card,
+  #sheet .info-card,
+  .store-sheet .stat,
+  .store-sheet .fact,
+  .store-sheet .metric,
+  .store-sheet .stat-card,
+  .store-sheet .fact-card,
+  .store-sheet .metric-card,
+  .store-sheet .info-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 82px !important;
+    padding: 9px 7px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  #sheet .stat .value,
+  #sheet .fact .value,
+  #sheet .metric .value,
+  #sheet .stat-card .value,
+  #sheet .fact-card .value,
+  #sheet .metric-card .value,
+  #sheet .info-card .value,
+  .store-sheet .stat .value,
+  .store-sheet .fact .value,
+  .store-sheet .metric .value,
+  .store-sheet .stat-card .value,
+  .store-sheet .fact-card .value,
+  .store-sheet .metric-card .value,
+  .store-sheet .info-card .value {
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    font-size: clamp(19px, 4.5vw, 24px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: .01em !important;
+  }
+
+  #sheet .stat .label,
+  #sheet .fact .label,
+  #sheet .metric .label,
+  #sheet .stat-card .label,
+  #sheet .fact-card .label,
+  #sheet .metric-card .label,
+  #sheet .info-card .label,
+  .store-sheet .stat .label,
+  .store-sheet .fact .label,
+  .store-sheet .metric .label,
+  .store-sheet .stat-card .label,
+  .store-sheet .fact-card .label,
+  .store-sheet .metric-card .label,
+  .store-sheet .info-card .label {
+    display: block !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: normal !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    letter-spacing: .07em !important;
+  }
+
+  @media (max-width: 760px) {
+    #sheet .forecast,
+    #sheet .forecast-box,
+    #sheet .forecast-card,
+    #sheet .wx-forecast,
+    #sheet .store-forecast,
+    #sheet .location-forecast,
+    #sheet .weather-panel,
+    .store-sheet .forecast,
+    .store-sheet .forecast-box,
+    .store-sheet .forecast-card,
+    .store-sheet .wx-forecast,
+    .store-sheet .store-forecast,
+    .store-sheet .location-forecast,
+    .store-sheet .weather-panel {
+      padding: 9px 8px !important;
+    }
+
+    #sheet .forecast-day,
+    #sheet .wx-day,
+    #sheet .day,
+    #sheet .daily,
+    #sheet .forecast-col,
+    .store-sheet .forecast-day,
+    .store-sheet .wx-day,
+    .store-sheet .day,
+    .store-sheet .daily,
+    .store-sheet .forecast-col {
+      padding: 3px 1px !important;
+      font-size: 12px !important;
+    }
+
+    #sheet .forecast-day img,
+    #sheet .wx-day img,
+    #sheet .day img,
+    #sheet .forecast-col img,
+    .store-sheet .forecast-day img,
+    .store-sheet .wx-day img,
+    .store-sheet .day img,
+    .store-sheet .forecast-col img {
+      max-width: 27px !important;
+      max-height: 27px !important;
+    }
+
+    #sheet .stats,
+    #sheet .stat-grid,
+    #sheet .facts,
+    #sheet .facts-grid,
+    #sheet .metrics,
+    #sheet .metric-grid,
+    #sheet .store-stats,
+    .store-sheet .stats,
+    .store-sheet .stat-grid,
+    .store-sheet .facts,
+    .store-sheet .facts-grid,
+    .store-sheet .metrics,
+    .store-sheet .metric-grid,
+    .store-sheet .store-stats {
+      gap: 6px !important;
+    }
+
+    #sheet .stat,
+    #sheet .fact,
+    #sheet .metric,
+    #sheet .stat-card,
+    #sheet .fact-card,
+    #sheet .metric-card,
+    #sheet .info-card,
+    .store-sheet .stat,
+    .store-sheet .fact,
+    .store-sheet .metric,
+    .store-sheet .stat-card,
+    .store-sheet .fact-card,
+    .store-sheet .metric-card,
+    .store-sheet .info-card {
+      min-height: 76px !important;
+      padding: 8px 5px !important;
+    }
+
+    #sheet .stat .value,
+    #sheet .fact .value,
+    #sheet .metric .value,
+    #sheet .stat-card .value,
+    #sheet .fact-card .value,
+    #sheet .metric-card .value,
+    #sheet .info-card .value,
+    .store-sheet .stat .value,
+    .store-sheet .fact .value,
+    .store-sheet .metric .value,
+    .store-sheet .stat-card .value,
+    .store-sheet .fact-card .value,
+    .store-sheet .metric-card .value,
+    .store-sheet .info-card .value {
+      font-size: 20px !important;
+    }
+
+    #sheet .stat .label,
+    #sheet .fact .label,
+    #sheet .metric .label,
+    #sheet .stat-card .label,
+    #sheet .fact-card .label,
+    #sheet .metric-card .label,
+    #sheet .info-card .label,
+    .store-sheet .stat .label,
+    .store-sheet .fact .label,
+    .store-sheet .metric .label,
+    .store-sheet .stat-card .label,
+    .store-sheet .fact-card .label,
+    .store-sheet .metric-card .label,
+    .store-sheet .info-card .label {
+      font-size: 9px !important;
+      letter-spacing: .05em !important;
     }
   }
 </style>
 
-<script id="transparentHeaderInfoScript">
+<script id="panelWeatherReadableScript">
 (function(){
-  function clearHeaderBoxes(){
-    const selectors = [
-      '.wxnow',
-      '#wxNow',
-      '.weather-now',
-      '.timebox',
-      '.time-temp',
-      '.nowbox',
-      '.clockbox',
-      '.header-time',
-      '.current-weather',
-      '.fcstrip',
-      '#fcStrip',
-      '.header-forecast'
-    ];
+  function textOf(el){
+    return (el && el.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+  }
 
+  function removeNearbyBlocks(root){
+    root = root || document;
+    const candidates = root.querySelectorAll ? root.querySelectorAll('#sheet section, #sheet .section, #sheet .card, #sheet .panel, #sheet .block, .store-sheet section, .store-sheet .section, .store-sheet .card, .store-sheet .panel, .store-sheet .block') : [];
+    candidates.forEach(el => {
+      const t = textOf(el);
+      if (t.startsWith('nearby') || /^nearby\b/.test(t)) {
+        el.style.display = 'none';
+        el.setAttribute('data-hidden-nearby','1');
+      }
+    });
+
+    root.querySelectorAll && root.querySelectorAll('#sheet h1,#sheet h2,#sheet h3,#sheet h4,#sheet .heading,#sheet .section-title,.store-sheet h1,.store-sheet h2,.store-sheet h3,.store-sheet h4,.store-sheet .heading,.store-sheet .section-title').forEach(h => {
+      if (textOf(h) === 'nearby') {
+        let el = h.parentElement;
+        while (el && el !== document.body) {
+          const cls = el.className ? String(el.className).toLowerCase() : '';
+          if (/section|card|panel|block|nearby/.test(cls) || el.tagName === 'SECTION') {
+            el.style.display = 'none';
+            el.setAttribute('data-hidden-nearby','1');
+            return;
+          }
+          el = el.parentElement;
+        }
+        h.style.display = 'none';
+      }
+    });
+  }
+
+  function fixMetricText(root){
+    root = root || document;
+
+    // Expand common truncated labels.
+    root.querySelectorAll && root.querySelectorAll('#sheet *, .store-sheet *').forEach(el => {
+      const t = (el.textContent || '').trim();
+      if (t === 'FROM YOU') el.innerHTML = 'FROM<br>YOU';
+      if (t === 'DRIVE TIME') el.innerHTML = 'DRIVE<br>TIME';
+      if (t === 'WEATHER NOW') el.innerHTML = 'WEATHER<br>NOW';
+      if (t === 'WIND') el.textContent = 'WIND';
+    });
+
+    // If metric values were visibly truncated with ellipses, remove CSS truncation inline.
+    root.querySelectorAll && root.querySelectorAll('#sheet .stat, #sheet .fact, #sheet .metric, #sheet .stat-card, #sheet .fact-card, #sheet .metric-card, #sheet .info-card, .store-sheet .stat, .store-sheet .fact, .store-sheet .metric, .store-sheet .stat-card, .store-sheet .fact-card, .store-sheet .metric-card, .store-sheet .info-card').forEach(card => {
+      card.style.overflow = 'visible';
+      card.style.height = 'auto';
+      card.style.minHeight = window.innerWidth < 760 ? '76px' : '82px';
+      card.querySelectorAll('*').forEach(child => {
+        child.style.overflow = 'visible';
+        child.style.textOverflow = 'clip';
+      });
+    });
+  }
+
+  function run(){
+    removeNearbyBlocks(document);
+    fixMetricText(document);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+
+  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(run, ms));
+
+  const mo = new MutationObserver(() => run());
+  if (document.documentElement) {
+    mo.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+
+
+<style id="finalHeaderGarageForcePatch">
+  @media (max-width: 980px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      position: fixed !important;
+      left: 50vw !important;
+      right: auto !important;
+      top: var(--garage-mobile-top, 338px) !important;
+      width: min(760px, calc(100vw - 12px)) !important;
+      max-width: calc(100vw - 12px) !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      transform: translateX(-50%) !important;
+      box-sizing: border-box !important;
+      z-index: 9000 !important;
+      overflow: hidden !important;
+    }
+
+    #garagePanel .garage-strip,
+    #garagePanel #garageStrip {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      justify-content: flex-start !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: none !important;
+    }
+
+    #garagePanel .garage-strip::-webkit-scrollbar,
+    #garagePanel #garageStrip::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    .wxnow,
+    #wxNow,
+    .weather-now,
+    .timebox,
+    .nowbox,
+    .clockbox,
+    .time-temp,
+    .header-time,
+    .current-weather,
+    .current-wx,
+    .currentWx,
+    .fcstrip,
+    #fcStrip,
+    .header-forecast,
+    .forecast-strip,
+    .forecast-top,
+    .forecast-head,
+    .top-forecast {
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      border: 0 !important;
+      outline: 0 !important;
+      box-shadow: none !important;
+      filter: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    .wxnow::before,
+    .wxnow::after,
+    #wxNow::before,
+    #wxNow::after,
+    .weather-now::before,
+    .weather-now::after,
+    .timebox::before,
+    .timebox::after,
+    .nowbox::before,
+    .nowbox::after,
+    .clockbox::before,
+    .clockbox::after,
+    .fcstrip::before,
+    .fcstrip::after,
+    #fcStrip::before,
+    #fcStrip::after,
+    .header-forecast::before,
+    .header-forecast::after {
+      display: none !important;
+      content: none !important;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+
+    .wxnow *,
+    #wxNow *,
+    .weather-now *,
+    .timebox *,
+    .nowbox *,
+    .clockbox *,
+    .fcstrip *,
+    #fcStrip *,
+    .header-forecast *,
+    .forecast-strip *,
+    .forecast-top *,
+    .top-forecast * {
+      background: transparent !important;
+      background-color: transparent !important;
+      background-image: none !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+
+    .fcstrip,
+    #fcStrip,
+    .header-forecast,
+    .forecast-strip,
+    .top-forecast {
+      position: absolute !important;
+      left: var(--forecast-left-edge, 340px) !important;
+      right: var(--forecast-right-edge, 300px) !important;
+      width: auto !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 4px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 11px !important;
+      overflow: hidden !important;
+      white-space: nowrap !important;
+      transform: none !important;
+      z-index: 3 !important;
+    }
+
+    .fcstrip .precip,
+    #fcStrip .precip,
+    .header-forecast .precip,
+    .fcstrip [class*="pop"],
+    #fcStrip [class*="pop"],
+    .header-forecast [class*="pop"] {
+      display: none !important;
+    }
+
+    .fcstrip > *,
+    #fcStrip > *,
+    .header-forecast > *,
+    .forecast-strip > *,
+    .top-forecast > * {
+      flex: 0 1 auto !important;
+      min-width: 0 !important;
+    }
+
+    .fcstrip .fc-day,
+    #fcStrip .fc-day,
+    .header-forecast .fc-day,
+    .fcstrip .fcitem,
+    #fcStrip .fcitem,
+    .header-forecast .fcitem {
+      min-width: 52px !important;
+      max-width: 62px !important;
+      flex: 0 1 58px !important;
+      text-align: center !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .fcstrip,
+    #fcStrip,
+    .header-forecast,
+    .forecast-strip,
+    .top-forecast {
+      left: var(--forecast-left-edge, 255px) !important;
+      right: var(--forecast-right-edge, 215px) !important;
+      gap: 8px !important;
+    }
+
+    .fcstrip .fc-day,
+    #fcStrip .fc-day,
+    .header-forecast .fc-day,
+    .fcstrip .fcitem,
+    #fcStrip .fcitem,
+    .header-forecast .fcitem {
+      min-width: 46px !important;
+      max-width: 56px !important;
+      flex-basis: 52px !important;
+      font-size: 12px !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    #garagePanel,
+    .garage-panel#garagePanel {
+      width: calc(100vw - 10px) !important;
+      max-width: calc(100vw - 10px) !important;
+      left: 50vw !important;
+      transform: translateX(-50%) !important;
+    }
+
+    .fcstrip,
+    #fcStrip,
+    .header-forecast,
+    .forecast-strip,
+    .top-forecast {
+      left: var(--forecast-left-edge, 150px) !important;
+      right: var(--forecast-right-edge, 160px) !important;
+      gap: 5px !important;
+    }
+
+    .fcstrip .fc-day,
+    #fcStrip .fc-day,
+    .header-forecast .fc-day,
+    .fcstrip .fcitem,
+    #fcStrip .fcitem,
+    .header-forecast .fcitem {
+      min-width: 40px !important;
+      max-width: 48px !important;
+      flex-basis: 44px !important;
+      font-size: 11px !important;
+    }
+  }
+</style>
+
+<script id="finalHeaderGarageForceScript">
+(function(){
+  function rectOf(el){
+    if(!el) return null;
+    const r = el.getBoundingClientRect();
+    return (r && r.width > 0 && r.height > 0) ? r : null;
+  }
+
+  function firstRect(selectors){
+    for(const sel of selectors){
+      const r = rectOf(document.querySelector(sel));
+      if(r) return r;
+    }
+    return null;
+  }
+
+  function toolbarBottom(){
+    const selectors = ['.controls','.filterbar','.marketbar','.market-row','.top-controls','#controls'];
+    let bottom = 0;
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        const r = rectOf(el);
+        if(r && r.bottom > bottom && r.bottom < window.innerHeight - 70) bottom = r.bottom;
+      });
+    });
+    return Math.max(92, Math.round((bottom || 250) + 8));
+  }
+
+  function forceCenterGarage(){
+    const panel = document.getElementById('garagePanel');
+    if(!panel) return;
+    if(window.matchMedia && window.matchMedia('(max-width: 980px)').matches){
+      document.documentElement.style.setProperty('--garage-mobile-top', toolbarBottom() + 'px');
+      panel.style.position = 'fixed';
+      panel.style.left = '50vw';
+      panel.style.right = 'auto';
+      panel.style.width = window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'min(760px, calc(100vw - 12px))';
+      panel.style.maxWidth = window.innerWidth <= 560 ? 'calc(100vw - 10px)' : 'calc(100vw - 12px)';
+      panel.style.minWidth = '0';
+      panel.style.margin = '0';
+      panel.style.transform = 'translateX(-50%)';
+      panel.style.zIndex = '9000';
+      panel.style.boxSizing = 'border-box';
+      panel.style.overflow = 'hidden';
+
+      const strip = panel.querySelector('#garageStrip,.garage-strip');
+      if(strip){
+        strip.style.width = '100%';
+        strip.style.maxWidth = '100%';
+        strip.style.overflowX = 'auto';
+        strip.style.overflowY = 'hidden';
+        strip.style.justifyContent = 'flex-start';
+      }
+    }
+  }
+
+  function clearBoxes(){
+    const selectors = [
+      '.wxnow','#wxNow','.weather-now','.timebox','.nowbox','.clockbox','.time-temp','.header-time','.current-weather',
+      '.fcstrip','#fcStrip','.header-forecast','.forecast-strip','.forecast-top','.forecast-head','.top-forecast'
+    ];
     document.querySelectorAll(selectors.join(',')).forEach(el => {
       el.style.background = 'transparent';
       el.style.backgroundColor = 'transparent';
       el.style.backgroundImage = 'none';
       el.style.border = '0';
+      el.style.outline = '0';
       el.style.boxShadow = 'none';
       el.style.backdropFilter = 'none';
       el.style.webkitBackdropFilter = 'none';
     });
 
-    document.querySelectorAll('.wxnow *, #wxNow *, .weather-now *, .timebox *, .fcstrip *, #fcStrip *, .header-forecast *').forEach(el => {
+    document.querySelectorAll('.wxnow *,#wxNow *,.weather-now *,.timebox *,.nowbox *,.clockbox *,.fcstrip *,#fcStrip *,.header-forecast *,.forecast-strip *,.top-forecast *').forEach(el => {
+      el.style.background = 'transparent';
       el.style.backgroundColor = 'transparent';
       el.style.backgroundImage = 'none';
       el.style.boxShadow = 'none';
+      el.style.borderColor = 'transparent';
     });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', clearHeaderBoxes);
-  else clearHeaderBoxes();
+  function moveForecastTowardLogo(){
+    const fc = document.getElementById('fcStrip') || document.querySelector('.header-forecast,.fcstrip,.forecast-strip,.top-forecast');
+    if(!fc || !(window.matchMedia && window.matchMedia('(max-width: 980px)').matches)) return;
 
-  [100, 350, 900, 1800, 3200, 5000].forEach(ms => setTimeout(clearHeaderBoxes, ms));
+    const logo = firstRect(['.brand img','.logo-wrap img','.header-logo img','.brand-logo img','.logo img','.brand','.logo-wrap','.header-logo','.brand-logo','.logo']);
+    const time = firstRect(['.wxnow','#wxNow','.weather-now','.timebox','.nowbox','.clockbox','.time-temp','.header-time','.current-weather']);
 
-  const mo = new MutationObserver(() => clearHeaderBoxes());
-  if (document.documentElement) {
-    mo.observe(document.documentElement, {childList:true, subtree:true});
+    let left = 10;
+    let right = 8;
+    if(logo) left = Math.max(8, Math.round(logo.right + 6));
+    if(time) right = Math.max(8, Math.round(window.innerWidth - time.left + 6));
+
+    document.documentElement.style.setProperty('--forecast-left-edge', left + 'px');
+    document.documentElement.style.setProperty('--forecast-right-edge', right + 'px');
+
+    fc.style.position = 'absolute';
+    fc.style.left = left + 'px';
+    fc.style.right = right + 'px';
+    fc.style.width = 'auto';
+    fc.style.maxWidth = 'none';
+    fc.style.margin = '0';
+    fc.style.justifyContent = 'center';
+    fc.style.overflow = 'hidden';
+    fc.style.background = 'transparent';
+    fc.style.boxShadow = 'none';
+    fc.style.border = '0';
+
+    fc.querySelectorAll('.precip,[class*="pop"]').forEach(el => el.style.display = 'none');
+    if(fc.scrollWidth > fc.clientWidth + 4) fc.style.gap = window.innerWidth < 720 ? '5px' : '8px';
   }
+
+  function applyAll(){
+    forceCenterGarage();
+    clearBoxes();
+    moveForecastTowardLogo();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll);
+  else applyAll();
+
+  window.addEventListener('resize', applyAll, {passive:true});
+  window.addEventListener('orientationchange', () => {
+    setTimeout(applyAll, 120);
+    setTimeout(applyAll, 350);
+  }, {passive:true});
+
+  [80, 240, 600, 1200, 2500, 5000, 8000].forEach(ms => setTimeout(applyAll, ms));
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && (e.target.closest('#garageBtn') || e.target.closest('#garagePanel'))){
+      setTimeout(applyAll, 30);
+      setTimeout(applyAll, 180);
+      setTimeout(applyAll, 520);
+    }
+  }, true);
+
+  const mo = new MutationObserver(() => applyAll());
+  if(document.documentElement) mo.observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
 

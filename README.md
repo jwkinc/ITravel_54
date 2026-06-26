@@ -1,9 +1,10 @@
-# 54th Street Field Travel Map — Transparent Header PWA
+# 54th Street Field Travel Map — Header and Garage Final PWA
 
-This GitHub Pages PWA version:
-- Centers the garage panel on phone/tablet screens
-- Uses SATX for the San Antonio market label
-- Removes the boxes behind the time, temperature, and forecast header info
+This version forces the latest mobile fixes:
+- Garage panel is centered horizontally on phone/tablet screens.
+- Time, current weather, temperature, and forecast header areas are transparent.
+- Forecast strip is pulled farther left toward the logo and uses more of the open header space.
+- Store detail panel forecast/stat-card readability fixes are preserved.
 
 ## Upload
 Upload all files and folders from this ZIP into the root of your GitHub repo.
