@@ -2491,6 +2491,35 @@ header{
 }
 </style>
 
+
+<meta name="itravel54-build" content="itravel54-fixed-20260626-001">
+<script id="itravelCacheBustScript">
+(function(){
+  const BUILD = "itravel54-fixed-20260626-001";
+  window.ITRAVEL_54_BUILD = BUILD;
+
+  async function cleanOldCaches(){
+    if(!('caches' in window)) return;
+    try {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(k => !k.includes(BUILD)).map(k => caches.delete(k)));
+    } catch(e) {}
+  }
+
+  async function updateServiceWorker(){
+    if(!('serviceWorker' in navigator)) return;
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js?v=' + encodeURIComponent(BUILD), {updateViaCache:'none'});
+      if(reg && reg.update) await reg.update();
+      if(reg && reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+    } catch(e) {}
+  }
+
+  cleanOldCaches();
+  window.addEventListener('load', updateServiceWorker);
+})();
+</script>
+
 </head>
 <body>
 <div id="app">
