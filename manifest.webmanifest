@@ -1,7 +1,7 @@
 {
-  "name": "54th Street Field Travel Map",
-  "short_name": "54 Field Map",
-  "description": "54th Street store map, routes, weather, nearby places, notes, action items, and store photos.",
+  "name": "ITravel",
+  "short_name": "ITravel",
+  "description": "ITravel store map, routes, weather, nearby places, notes, action items, and store photos.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

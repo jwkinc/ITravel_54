@@ -13,3 +13,4 @@ Settings → Pages → Deploy from a branch → `main` → `/root`.
 
 ## Install on phone
 Open the GitHub Pages URL on Android Chrome and choose **Install app** or **Add to Home screen**.
+Latest UI update: added the provided scene artwork inside the preview route panel and adjusted the 4th stacked travel card so its background art is visible.

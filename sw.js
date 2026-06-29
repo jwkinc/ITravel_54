@@ -1,5 +1,21 @@
-const CACHE_NAME = '54-field-map-mobile-panel-car-v7';
-const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'itravel-panel-fit-cleanup-v38';
+const CORE = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './assets/itravel-store-pin-base.png',
+  './assets/ui-four-panel-split.webp',
+  './assets/ui-forecast-panel-only.webp',
+  './assets/route-preview-panel-scene.webp',
+  './assets/ui-four-panel-bottom-visible.webp',
+  './assets/forecast-panel-fit-clean.webp',
+  './assets/stat-condition-fit.webp',
+  './assets/stat-weather-fit.webp',
+  './assets/stat-drive-fit.webp',
+  './assets/stat-distance-fit.webp'
+];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE)));
