@@ -1,4 +1,4 @@
-const CACHE_NAME = 'itravel-panel-fit-cleanup-v38';
+const CACHE_NAME = 'itravel-location-panel-bg-v40';
 const CORE = [
   './',
   './index.html',
@@ -6,15 +6,11 @@ const CORE = [
   './icon-192.png',
   './icon-512.png',
   './assets/itravel-store-pin-base.png',
-  './assets/ui-four-panel-split.webp',
-  './assets/ui-forecast-panel-only.webp',
-  './assets/route-preview-panel-scene.webp',
-  './assets/ui-four-panel-bottom-visible.webp',
-  './assets/forecast-panel-fit-clean.webp',
-  './assets/stat-condition-fit.webp',
-  './assets/stat-weather-fit.webp',
-  './assets/stat-drive-fit.webp',
-  './assets/stat-distance-fit.webp'
+  './assets/ui-from-you-distance-panel.webp',
+  './assets/ui-weather-now-panel.webp',
+  './assets/location-panel-background.webp',
+  './assets/route-preview-panel-scene-ui.png',
+  './assets/forecast-panel-fit-clean.webp'
 ];
 
 self.addEventListener('install', event => {

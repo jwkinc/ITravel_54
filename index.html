@@ -24434,5 +24434,110 @@ if ('serviceWorker' in navigator) {
   }
 </style>
 
+
+<style id="fromYouWeatherNowPanelUIPatch">
+  /* UI update: distance/from-you and weather-now cards use their own requested artwork */
+  #sheet .inline-travel-stats .stat.dist,
+  #sheet .inline-travel-stats .stat:nth-child(1){
+    position:relative!important;
+    overflow:hidden!important;
+    isolation:isolate!important;
+    background-color:transparent!important;
+    background-image:
+      linear-gradient(90deg, rgba(255,253,248,.72) 0%, rgba(255,253,248,.38) 34%, rgba(255,253,248,.02) 100%),
+      url("assets/ui-from-you-distance-panel.webp")!important;
+    background-repeat:no-repeat,no-repeat!important;
+    background-size:auto, cover!important;
+    background-position:0 0, center center!important;
+  }
+
+  #sheet .inline-travel-stats .stat.temp,
+  #sheet .inline-travel-stats .stat:nth-child(3){
+    position:relative!important;
+    overflow:hidden!important;
+    isolation:isolate!important;
+    background-color:transparent!important;
+    background-image:
+      linear-gradient(90deg, rgba(255,253,248,.78) 0%, rgba(255,253,248,.48) 34%, rgba(255,253,248,.08) 100%),
+      url("assets/ui-weather-now-panel.webp")!important;
+    background-repeat:no-repeat,no-repeat!important;
+    background-size:auto, cover!important;
+    background-position:0 0, center center!important;
+  }
+
+  #sheet .inline-travel-stats .stat.dist::after,
+  #sheet .inline-travel-stats .stat.temp::after,
+  #sheet .inline-travel-stats .stat:nth-child(1)::after,
+  #sheet .inline-travel-stats .stat:nth-child(3)::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  #sheet .inline-travel-stats .stat.dist .n,
+  #sheet .inline-travel-stats .stat.dist .l,
+  #sheet .inline-travel-stats .stat.temp .n,
+  #sheet .inline-travel-stats .stat.temp .l,
+  #sheet .inline-travel-stats .stat:nth-child(1) .n,
+  #sheet .inline-travel-stats .stat:nth-child(1) .l,
+  #sheet .inline-travel-stats .stat:nth-child(3) .n,
+  #sheet .inline-travel-stats .stat:nth-child(3) .l{
+    position:relative!important;
+    z-index:2!important;
+    text-shadow:0 1px 0 rgba(255,255,255,.88), 0 0 9px rgba(255,255,255,.74)!important;
+  }
+</style>
+
+
+<style id="locationPanelArtPatch">
+  /* UI update: full location sheet gets the requested scenic map artwork behind panel content */
+  #sheet{
+    position:absolute!important;
+    overflow:hidden!important;
+    background:rgba(255,249,236,.90)!important;
+    isolation:isolate!important;
+  }
+  #sheet::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(255,251,244,.18) 0%, rgba(255,249,236,.08) 22%, rgba(255,249,236,.12) 54%, rgba(255,249,236,.24) 100%),
+      url("assets/location-panel-background.webp") center center / cover no-repeat;
+  }
+  #sheet > *{
+    position:relative;
+    z-index:1;
+  }
+  #sheet .sheet-head,
+  #sheet .sheet-tabs,
+  #sheet .sheet-body,
+  #sheet .tab-pane{
+    background:transparent!important;
+  }
+  #sheet .sheet-head{
+    border-bottom-color:rgba(223,200,158,.72)!important;
+  }
+  #sheet .sheet-tabs{
+    border-bottom-color:rgba(223,200,158,.68)!important;
+    backdrop-filter:none!important;
+  }
+  #sheet .stab{
+    background:transparent!important;
+  }
+  #sheet .stab.on{
+    background:transparent!important;
+  }
+  #sheet .inline-forecast-card,
+  #sheet .inline-travel-stats .stat,
+  #sheet .info-row,
+  #sheet .action-item,
+  #sheet .photo-card,
+  #sheet .note-card{
+    box-shadow:0 2px 10px rgba(36,22,14,.05)!important;
+  }
+</style>
+
 </body>
 </html>
