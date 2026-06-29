@@ -1,4 +1,4 @@
-const CACHE_NAME = 'itravel-square-cards-photo-return-v42';
+const CACHE_NAME = 'itravel-minimal-action-notes-v44';
 const CORE = [
   './',
   './index.html',

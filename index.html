@@ -24782,5 +24782,426 @@ if ('serviceWorker' in navigator) {
 })();
 </script>
 
+
+<style id="compactActionNotesPatch">
+  /* Slimmer Action Items + Notes while keeping square card styling */
+  #sheet #tabActions,
+  #sheet #tabNotes{
+    font-size:13px!important;
+  }
+
+  #sheet #tabActions .action-panel,
+  #sheet #tabNotes .action-panel,
+  #sheet #tabNotes .notes-panel{
+    padding:10px 12px!important;
+    margin:8px 0 10px!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:rgba(255,253,248,.42)!important;
+  }
+
+  #sheet #tabActions .action-head,
+  #sheet #tabNotes .action-head{
+    margin-bottom:6px!important;
+    padding:0!important;
+  }
+
+  #sheet #tabActions .action-head b,
+  #sheet #tabNotes .action-head b{
+    font-size:14px!important;
+    line-height:1.1!important;
+  }
+
+  #sheet #tabActions .action-head small,
+  #sheet #tabNotes .action-head small{
+    display:block!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    margin-top:2px!important;
+    opacity:.75!important;
+  }
+
+  #sheet #tabActions .fl,
+  #sheet #tabNotes .fl{
+    font-size:10px!important;
+    margin:6px 0 3px!important;
+    letter-spacing:.45px!important;
+  }
+
+  #sheet #tabActions input,
+  #sheet #tabActions select,
+  #sheet #tabActions textarea,
+  #sheet #tabNotes textarea{
+    min-height:0!important;
+    height:34px!important;
+    padding:7px 9px!important;
+    font-size:13px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabActions textarea,
+  #sheet #tabNotes textarea{
+    height:54px!important;
+    min-height:54px!important;
+    resize:vertical!important;
+    line-height:1.25!important;
+  }
+
+  #sheet #tabActions .row2,
+  #sheet #tabActions .action-row3{
+    gap:7px!important;
+    margin:4px 0!important;
+  }
+
+  #sheet #tabActions .actions,
+  #sheet #tabActions .action-save-row,
+  #sheet #tabNotes .actions,
+  #sheet #tabNotes .action-save-row{
+    gap:7px!important;
+    margin-top:8px!important;
+  }
+
+  #sheet #tabActions .btn,
+  #sheet #tabNotes .btn{
+    height:36px!important;
+    min-height:36px!important;
+    padding:0 10px!important;
+    font-size:13px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabActions .action-list,
+  #sheet #tabNotes .simple-action-list{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:6px!important;
+    margin-top:8px!important;
+  }
+
+  #sheet #tabActions .action-item{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:8px!important;
+    align-items:center!important;
+    padding:8px 10px!important;
+    margin:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:rgba(255,253,248,.46)!important;
+  }
+
+  #sheet #tabActions .action-main{
+    min-width:0!important;
+  }
+
+  #sheet #tabActions .action-title{
+    font-size:14px!important;
+    line-height:1.15!important;
+    margin:0 0 3px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  #sheet #tabActions .action-meta{
+    display:flex!important;
+    gap:5px!important;
+    flex-wrap:wrap!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+    margin:0!important;
+  }
+
+  #sheet #tabActions .priority,
+  #sheet #tabActions .action-meta span{
+    padding:2px 5px!important;
+    border-radius:0!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+  }
+
+  #sheet #tabActions .action-notes{
+    margin-top:4px!important;
+    font-size:11px!important;
+    line-height:1.22!important;
+    color:#6E6256!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+
+  #sheet #tabActions .action-buttons{
+    display:flex!important;
+    gap:4px!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+  }
+
+  #sheet #tabActions .tinybtn,
+  #sheet #tabNotes .tinybtn{
+    height:30px!important;
+    min-height:30px!important;
+    padding:0 8px!important;
+    font-size:11px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabNotes .note-line{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 28px!important;
+    gap:8px!important;
+    align-items:center!important;
+    padding:8px 9px!important;
+    margin:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:rgba(255,253,248,.44)!important;
+    border:1px solid rgba(223,200,158,.72)!important;
+  }
+
+  #sheet #tabNotes .note-line > div:first-child > div:first-child{
+    font-size:13px!important;
+    line-height:1.25!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+
+  #sheet #tabNotes .note-meta{
+    font-size:9px!important;
+    line-height:1.1!important;
+    margin-top:3px!important;
+    opacity:.58!important;
+  }
+
+  #sheet #tabNotes .simple-action-delete{
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    min-height:28px!important;
+    border-radius:0!important;
+    font-size:16px!important;
+    line-height:1!important;
+  }
+
+  @media(max-width:430px){
+    #sheet #tabActions .action-item{
+      grid-template-columns:1fr!important;
+      align-items:stretch!important;
+    }
+    #sheet #tabActions .action-buttons{
+      justify-content:stretch!important;
+    }
+    #sheet #tabActions .action-buttons .tinybtn{
+      flex:1 1 0!important;
+    }
+  }
+</style>
+
+
+<style id="minimalActionNotesPatch">
+  /* Minimal Action Items / Notes: remove helper text and extra copy */
+  #sheet #tabActions .action-head,
+  #sheet #tabNotes .action-head,
+  #sheet #tabActions .fl,
+  #sheet #tabNotes .fl,
+  #sheet #tabActions .hint,
+  #sheet #tabNotes .hint,
+  #sheet #tabNotes .note-meta,
+  #sheet #tabActions .action-meta,
+  #sheet #tabActions .action-notes{
+    display:none!important;
+  }
+
+  #sheet #tabActions .action-panel,
+  #sheet #tabNotes .action-panel,
+  #sheet #tabNotes .notes-panel{
+    padding:8px!important;
+    margin:6px 0 8px!important;
+    background:rgba(255,253,248,.30)!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  #sheet #tabActions input,
+  #sheet #tabActions select,
+  #sheet #tabActions textarea,
+  #sheet #tabNotes textarea{
+    height:32px!important;
+    min-height:32px!important;
+    padding:6px 8px!important;
+    font-size:13px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabActions textarea,
+  #sheet #tabNotes textarea{
+    height:42px!important;
+    min-height:42px!important;
+  }
+
+  #sheet #tabActions .row2,
+  #sheet #tabActions .action-row3{
+    display:grid!important;
+    grid-template-columns:1fr 1fr 1fr!important;
+    gap:5px!important;
+    margin:5px 0!important;
+  }
+
+  #sheet #tabActions .actions,
+  #sheet #tabActions .action-save-row,
+  #sheet #tabNotes .actions,
+  #sheet #tabNotes .action-save-row{
+    margin-top:6px!important;
+    gap:5px!important;
+  }
+
+  #sheet #tabActions .btn,
+  #sheet #tabNotes .btn{
+    height:32px!important;
+    min-height:32px!important;
+    font-size:12px!important;
+    padding:0 8px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabActions #aiReset{
+    display:none!important;
+  }
+
+  #sheet #tabActions .action-list,
+  #sheet #tabNotes .simple-action-list{
+    gap:4px!important;
+    margin-top:6px!important;
+  }
+
+  #sheet #tabActions .action-item{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    padding:7px 8px!important;
+    min-height:34px!important;
+    gap:6px!important;
+    background:rgba(255,253,248,.34)!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  #sheet #tabActions .action-title{
+    font-size:13px!important;
+    line-height:1.1!important;
+    margin:0!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  #sheet #tabActions .action-buttons{
+    gap:3px!important;
+  }
+
+  #sheet #tabActions .tinybtn,
+  #sheet #tabNotes .tinybtn{
+    height:26px!important;
+    min-height:26px!important;
+    padding:0 6px!important;
+    font-size:10px!important;
+    border-radius:0!important;
+  }
+
+  #sheet #tabNotes .note-line{
+    grid-template-columns:minmax(0,1fr) 24px!important;
+    padding:7px 8px!important;
+    gap:6px!important;
+    min-height:34px!important;
+    background:rgba(255,253,248,.34)!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+
+  #sheet #tabNotes .note-line > div:first-child > div:first-child{
+    font-size:13px!important;
+    line-height:1.18!important;
+    margin:0!important;
+    display:-webkit-box!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+
+  #sheet #tabNotes .simple-action-delete{
+    width:24px!important;
+    height:24px!important;
+    min-width:24px!important;
+    min-height:24px!important;
+    font-size:14px!important;
+    border-radius:0!important;
+  }
+
+  @media(max-width:430px){
+    #sheet #tabActions .row2,
+    #sheet #tabActions .action-row3{
+      grid-template-columns:1fr!important;
+    }
+    #sheet #tabActions .action-item{
+      grid-template-columns:1fr!important;
+    }
+    #sheet #tabActions .action-buttons .tinybtn{
+      flex:1 1 0!important;
+    }
+  }
+</style>
+
+<script id="minimalActionNotesScript">
+(function(){
+  function applyMinimalLabels(){
+    try{
+      const title = document.querySelector('#tabActions #aiTitle');
+      const notes = document.querySelector('#tabActions #aiNotes');
+      const save = document.querySelector('#tabActions #aiSave');
+      const noteText = document.querySelector('#tabNotes #quickNoteText');
+      const noteAdd = document.querySelector('#tabNotes #quickNoteAdd');
+
+      if(title) title.placeholder = 'Title';
+      if(notes) notes.placeholder = 'Notes';
+      if(save && save.textContent.trim() === 'Add action item') save.textContent = 'Add';
+      if(save && save.textContent.trim() === 'Update action item') save.textContent = 'Save';
+      if(noteText) noteText.placeholder = 'Note';
+      if(noteAdd) noteAdd.textContent = 'Add';
+
+      document.querySelectorAll('#tabActions .action-item').forEach(row => {
+        row.querySelectorAll('.action-meta, .action-notes').forEach(el => el.remove());
+      });
+      document.querySelectorAll('#tabNotes .note-meta').forEach(el => el.remove());
+      document.querySelectorAll('#tabActions .hint, #tabNotes .hint').forEach(el => el.remove());
+    }catch(e){}
+  }
+
+  function wrapRender(name){
+    if(typeof window[name] !== 'function' || window[name].__minimalActionNotesWrapped) return;
+    const old = window[name];
+    window[name] = function(){
+      const out = old.apply(this, arguments);
+      applyMinimalLabels();
+      return out;
+    };
+    window[name].__minimalActionNotesWrapped = true;
+    try{ eval(name + ' = window[name]'); }catch(e){}
+  }
+
+  function init(){
+    wrapRender('renderActionsTab');
+    wrapRender('renderNotesTab');
+    applyMinimalLabels();
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+
+  [80, 250, 700, 1500].forEach(ms => setTimeout(init, ms));
+  document.addEventListener('click', () => setTimeout(applyMinimalLabels, 40), true);
+})();
+</script>
+
 </body>
 </html>
