@@ -1,4 +1,4 @@
-const CACHE_NAME = 'itravel-location-panel-bg-v40';
+const CACHE_NAME = 'itravel-square-cards-photo-return-v42';
 const CORE = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const CORE = [
   './assets/ui-from-you-distance-panel.webp',
   './assets/ui-weather-now-panel.webp',
   './assets/location-panel-background.webp',
+  './assets/market-tabs-banner.webp',
   './assets/route-preview-panel-scene-ui.png',
   './assets/forecast-panel-fit-clean.webp'
 ];

@@ -18,3 +18,5 @@ Latest UI update: added the provided scene artwork inside the preview route pane
 Latest UI update: distance/from-you card uses the route-map panel artwork; weather-now card uses the patio artwork.
 
 Latest UI update: the store/location sheet now uses the supplied scenic background image behind the full location panel.
+
+Latest UI update: market tabs / control row now uses the supplied banner image as the background.
